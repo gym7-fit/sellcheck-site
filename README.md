@@ -1,0 +1,58 @@
+# SellCheck (Arbeitstitel)
+
+Überblick, Meldegrenze und Steuer-Export für Verkäufer auf Vinted, Kleinanzeigen, eBay, Etsy, Amazon und mehr. Eine statische Website: Alles läuft im Browser, es gibt kein Backend und keine Konten. Eingaben bleiben im lokalen Speicher des Geräts.
+
+> **Status: Entwurf vor dem Livegang.** Name ist ein Platzhalter, Impressum und Datenschutz sind Entwürfe, das Wartelisten-Formular ist im Demo-Modus, die Seiten sind per `noindex` und `robots.txt` für Suchmaschinen gesperrt. Keine Steuer- oder Rechtsberatung.
+
+## Ansehen
+
+Lokal (Python 3 reicht, keine Installation):
+
+```bash
+npm start            # oder: python3 -m http.server 8000 --directory site
+# dann http://localhost:8000 öffnen
+```
+
+Online: nach dem ersten Push über GitHub Pages (siehe unten).
+
+## Aufbau
+
+| Pfad | Inhalt |
+| --- | --- |
+| `site/` | Die Website (wird 1:1 veröffentlicht): `index.html`, `tools.html`, `report.html`, Rechtstexte, Skripte, Styles |
+| `site/tax-lib.js`, `site/parse-lib.js` | Reine Logik (Steuerberechnung, Datei-Import), ohne DOM und getestet |
+| `tests/` | Automatische Tests (`node --test`) |
+| `docs/STEUER-EXPORT.md` | Recherche und Entscheidungen zum Steuer-Export |
+| `docs/LIVEGANG.md` | Checkliste vor dem Livegang |
+| `.github/workflows/pages.yml` | Tests und Veröffentlichung über GitHub Pages |
+
+## Tests
+
+```bash
+npm test      # 43 Tests: Import-Parser und Steuerlogik
+npm run check # Syntaxprüfung aller Skripte
+```
+
+## Veröffentlichen mit GitHub Pages
+
+1. Repository auf GitHub anlegen und `main` pushen.
+2. **Settings → Pages → Build and deployment → Source: GitHub Actions** wählen.
+3. Der Workflow testet und veröffentlicht `site/`. Die Adresse steht danach unter Settings → Pages und lautet `https://<konto>.github.io/<repo>/`.
+
+Hinweise:
+
+- GitHub Pages ist für **öffentliche** Repositories kostenlos. Private Repositories brauchen einen bezahlten Tarif.
+- GitHub Pages kann keine eigenen HTTP-Header setzen. Die Content-Security-Policy steht deshalb zusätzlich als Meta-Tag in jeder Seite. Der Schutz gegen Einbettung in fremde Seiten (`frame-ancestors`) funktioniert so nicht. Dafür bräuchte es einen Host mit Header-Support (siehe `site/_headers`, z. B. Cloudflare Pages oder Netlify).
+- Alle Links sind relativ, die Seiten laufen deshalb auch unter dem Unterpfad `/<repo>/`.
+
+## Vor dem Livegang
+
+Siehe [docs/LIVEGANG.md](docs/LIVEGANG.md). Kurzfassung: Marke und Domain prüfen, Impressum und Datenschutz ausfüllen und prüfen lassen, E-Mail-Dienst für die Warteliste anschließen, `noindex`-Tags und `site/robots.txt` entfernen, Steuer-Export von einem Steuerberater prüfen lassen.
+
+## Datenschutz im Repository
+
+Das Repository enthält **keine** Geschäftsunterlagen und keine personenbezogenen Daten. Beispieldaten in den Tests und in der Oberfläche sind frei erfunden. Es gibt keine Abhängigkeiten von Fremdservern (keine CDNs, keine Schriften, kein Tracking).
+
+## Lizenz
+
+Noch nicht festgelegt. Ohne Lizenz gilt „alle Rechte vorbehalten“. Wähle vor einer Veröffentlichung bewusst eine Lizenz (z. B. MIT, wenn der Code offen sein soll).

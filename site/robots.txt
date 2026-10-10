@@ -1,0 +1,3 @@
+# Vor dem Livegang: komplett gesperrt. Beim Livegang diese Datei und die noindex-Metatags entfernen.
+User-agent: *
+Disallow: /

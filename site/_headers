@@ -1,0 +1,18 @@
+# Security-Header für statisches Hosting (Netlify und Cloudflare Pages lesen diese Datei automatisch).
+# Bei Vercel: dieselben Werte in vercel.json unter "headers" eintragen. Bei anderem Hosting im Server einstellen.
+#
+# Wenn das Wartelisten-Formular angeschlossen wird (waitlist.js, FORM_ENDPOINT):
+# in connect-src den Host des Dienstes ergänzen, z. B.  connect-src 'self' https://api.dein-dienst.eu
+#
+# style-src braucht 'unsafe-inline', weil die Seiten style="..."-Attribute verwenden.
+# Skripte sind ausschließlich eigene Dateien, deshalb gilt script-src 'self' (kein Inline-Skript).
+
+/*
+  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; base-uri 'none'; frame-ancestors 'none'; object-src 'none'
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
+  Strict-Transport-Security: max-age=31536000; includeSubDomains

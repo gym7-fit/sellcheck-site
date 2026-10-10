@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; base-uri 'none'; object-src 'none'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Steuer-Report – SellCheck</title>
+  <meta name="robots" content="noindex">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="report.css">
+</head>
+<body>
+  <div class="toolbar-screen" role="toolbar" aria-label="Aktionen">
+    <a class="rbtn secondary" href="tools.html#steuer">← Zurück zu den Tools</a>
+    <button class="rbtn" id="print" type="button">Drucken / als PDF speichern</button>
+  </div>
+  <main id="report" class="sheet" aria-live="polite">
+    <p>Report wird erstellt …</p>
+  </main>
+  <script src="tax-lib.js"></script>
+  <script src="report.js"></script>
+</body>
+</html>

@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; base-uri 'none'; object-src 'none'">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gratis-Tools – SellCheck</title>
+  <meta name="description" content="Plattform-Überblick, Meldegrenzen-Ampel, Gewinn pro Artikel, Tracker mit Bestand und CSV-Export für Verkäufer auf Vinted, Kleinanzeigen, eBay und mehr.">
+  <meta name="theme-color" content="#0e1116">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Zum Inhalt springen</a>
+
+<header class="site-header on-dark">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="SellCheck Startseite">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><path class="tag" fill-rule="evenodd" d="M14 4h24l22 22v28a10 10 0 0 1-10 10H14A10 10 0 0 1 4 54V14A10 10 0 0 1 14 4Zm29 13.8a3.2 3.2 0 1 0 0 6.4 3.2 3.2 0 0 0 0-6.4Z"/><path class="tick" d="M17 36l8 8 15-15" fill="none" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Sell<b>Check</b></span>
+    </a>
+    <nav class="nav" aria-label="Hauptnavigation">
+      <a href="index.html">Startseite</a>
+      <a href="tools.html" aria-current="page">Tools</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page-hero on-dark">
+  <div class="wrap">
+    <span class="eyebrow">Gratis-Tools</span>
+    <h1>Alle Plattformen. Ein Überblick.</h1>
+    <p>Vinted, Kleinanzeigen, eBay und mehr an einem Ort. Alles läuft in deinem Browser, deine Eingaben bleiben auf deinem Gerät.</p>
+    <nav class="tool-nav" aria-label="Werkzeuge">
+      <a href="#ueberblick"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 10v10"/></svg>Überblick</a>
+      <a href="#import"><svg class="ico" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>Import</a>
+      <a href="#ampel"><svg class="ico" viewBox="0 0 24 24"><path d="M4 17a8 8 0 1 1 16 0"/><path d="M12 17l4-5"/></svg>Meldegrenze</a>
+      <a href="#rechner"><svg class="ico" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M14 12h2M8 16h2M14 16h2"/></svg>Gewinn pro Artikel</a>
+      <a href="#tracker"><svg class="ico" viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>Tracker</a>
+      <a href="#steuer"><svg class="ico" viewBox="0 0 24 24"><path d="M7 3h8l4 4v14H7z"/><path d="M15 3v4h4M10 12h6M10 16h6"/></svg>Steuer-Export</a>
+      <a href="#check"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>Privat oder gewerblich?</a>
+    </nav>
+  </div>
+</div>
+
+<main id="main" class="wrap tools-main">
+  <div class="notice" role="note" style="margin-bottom:22px">
+    <strong>Keine Steuer- oder Rechtsberatung.</strong> Die Tools geben Orientierung, keine verbindliche Auskunft. Prüfe die aktuellen Regeln beim Finanzamt oder bei einer Steuerberatung.
+  </div>
+
+  <!-- 0. ÜBERBLICK -->
+  <section id="ueberblick" class="tool card">
+    <div class="tool-head">
+      <div class="icon-badge"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 10v10"/></svg></div>
+      <h2>Plattform-Überblick</h2>
+    </div>
+    <p class="muted">Alles aus deinem Tracker (weiter unten) auf einen Blick: je Plattform mit eigener Meldegrenze und insgesamt. Jede Plattform zählt für sich, dein Gesamtbild zählt auch.</p>
+    <div class="field-row" style="max-width:220px">
+      <div><label for="o-year">Jahr</label><select id="o-year"></select></div>
+    </div>
+    <div class="stats" id="o-total"></div>
+    <div class="plat-list" id="o-list"></div>
+    <p id="o-hint" class="notice" hidden></p>
+    <p id="o-empty" class="muted small">Noch keine Einträge. Trage unten im Tracker deine Verkäufe ein, dann erscheint hier dein Überblick.</p>
+    <p class="small muted" style="margin:0">Plattformen melden nur, was sie sicher kennen. Kleinanzeigen etwa meldet nur Verkäufe über sein Bezahlsystem. „Flohmarkt / bar“ und „Sonstige“ werden nicht gemeldet, zählen aber für dein Gesamtbild und deine Einordnung als privat oder gewerblich.</p>
+  </section>
+
+  <!-- 0b. IMPORT -->
+  <section id="import" class="tool card">
+    <div class="tool-head">
+      <div class="icon-badge"><svg class="ico" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg></div>
+      <h2>Daten importieren</h2>
+    </div>
+    <p class="muted">Lade Verkaufsdaten aus deinen Plattformen, von PayPal oder aus dem Online-Banking als CSV-Datei. Die Datei wird <strong>nur in deinem Browser</strong> gelesen und nirgendwohin gesendet. Du prüfst die Zuordnung der Spalten, bevor etwas gespeichert wird.</p>
+
+    <h3 style="margin-top:24px">1. Datei besorgen</h3>
+    <p class="small muted">Welche Exporte es gibt, haben wir aus den Hilfeseiten der Anbieter zusammengetragen (Stand Oktober 2026). Spaltennamen ändern sich bei Anbietern öfter, deshalb erkennt SellCheck sie über Begriffe und lässt dich alles korrigieren.</p>
+    <div class="src-grid">
+      <details class="src"><summary><b>eBay</b> <span class="tag ok">Export vorhanden</span></summary>
+        <p>Im Verkäufer-Cockpit Pro unter Zahlungen die Berichte bzw. Transaktionen öffnen und als CSV speichern. Der Bericht enthält Bestellnummer, Beträge und Gebühren. Vor der Kopfzeile stehen oft Zusatzzeilen, das ist kein Problem. Ältere Daten sind nur begrenzt abrufbar, also regelmäßig herunterladen. <a href="https://www.ebay.de/help/selling/fees-credits-invoices/reconciling-ebay-sales-transactions?id=4847" rel="noopener noreferrer" target="_blank">eBay-Hilfe</a></p></details>
+      <details class="src"><summary><b>Etsy</b> <span class="tag ok">Export vorhanden</span></summary>
+        <p>Shop-Manager → Einstellungen → Optionen → „Daten herunterladen“ → Bestellungen, Typ und Zeitraum wählen, CSV herunterladen. Die Beträge sind oft englisch formatiert (1,240.00), das erkennt SellCheck. <a href="https://help.etsy.com/hc/de/articles/360000343328-Arbeitsblatt-mit-einer-Liste-deiner-Verk%C3%A4ufe-herunterladen" rel="noopener noreferrer" target="_blank">Etsy-Hilfe</a></p></details>
+      <details class="src"><summary><b>Amazon</b> <span class="tag ok">Export vorhanden</span></summary>
+        <p>Seller Central → Berichte: Bestellbericht (Textdatei mit Tabulatoren, manuell nur für die letzten 30 Tage, bei FBA „Alle Bestellungen“) oder Abrechnungsbericht (ebenfalls tabulatorgetrennt). Die Datei kannst du direkt hierher ziehen. <a href="https://developer-docs.amazon.com/sp-api/docs/report-type-values-settlement" rel="noopener noreferrer" target="_blank">Amazon-Doku</a></p></details>
+      <details class="src"><summary><b>PayPal</b> <span class="tag ok">Export vorhanden</span></summary>
+        <p>Aktivitäten → Download → Zeitraum wählen (bis zu 12 Monate pro Anfrage) → CSV. Enthält Brutto, Gebühr und Netto. Viele Käufe über Vinted und Kleinanzeigen laufen über PayPal, nutze dafür das Stichwortfeld unten. <a href="https://www.paypal.com/ch/cshelp/article/wie-kann-ich-kontoausz%C3%BCge-und-berichte-anzeigen-und-herunterladen-help145" rel="noopener noreferrer" target="_blank">PayPal-Hilfe</a></p></details>
+      <details class="src"><summary><b>Vinted</b> <span class="tag no">Kein Verkaufsexport belegt</span></summary>
+        <p>Einen offiziellen Export der Verkäufe haben wir nicht gefunden. Möglichkeiten: Auszahlungen aus dem Online-Banking oder PayPal als CSV laden und mit dem Stichwort „Vinted“ filtern, oder die Verkaufsliste kopieren und unten einfügen. Du hast außerdem ein Auskunftsrecht nach Art. 15 DSGVO (Datenkopie) bei Vinted. Welche Daten dann enthalten sind, haben wir nicht geprüft.</p></details>
+      <details class="src"><summary><b>Kleinanzeigen</b> <span class="tag no">Kein Verkaufsexport belegt</span></summary>
+        <p>Auch hier haben wir keinen offiziellen Export gefunden. Nutze Bank- oder PayPal-Auszüge mit Stichwort „Kleinanzeigen“ oder trage Verkäufe im Tracker ein. Eine Datenauskunft nach Art. 15 DSGVO ist möglich. Bar bezahlte Verkäufe stehen in keiner Datei, die trägst du selbst ein.</p></details>
+      <details class="src"><summary><b>Online-Banking</b> <span class="tag ok">CSV bei fast allen Banken</span></summary>
+        <p>Umsätze als CSV exportieren. Importiert werden nur Zeilen mit dem Stichwort deiner Plattform, zum Beispiel „Vinted|Kleinanzeigen“. Die Plattform wird dann aus dem Verwendungszweck erkannt. Der Einkaufspreis fehlt in allen Bankdaten.</p></details>
+      <details class="src"><summary><b>Eigene Tabelle</b> <span class="tag ok">Funktioniert</span></summary>
+        <p>Die CSV aus dem Tracker lässt sich wieder importieren (Sicherung und Umzug auf ein anderes Gerät). Excel- oder Google-Sheets-Tabellen speicherst du als CSV und lädst sie hoch. Du kannst Tabellen auch kopieren und unten einfügen.</p></details>
+    </div>
+
+    <h3 style="margin-top:28px">2. Datei laden</h3>
+    <label class="drop" id="i-drop" for="i-file">
+      <svg class="ico" viewBox="0 0 24 24" style="width:32px;height:32px"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
+      <span><b>CSV- oder Textdatei hierher ziehen</b> oder klicken zum Auswählen</span>
+      <small>.csv, .txt, .tsv · bis 5 MB · kein Excel (.xlsx), dort als CSV speichern</small>
+      <input id="i-file" type="file" accept=".csv,.txt,.tsv,text/csv,text/plain,text/tab-separated-values">
+    </label>
+    <details style="margin-top:12px">
+      <summary>Oder Tabelle aus der Zwischenablage einfügen</summary>
+      <textarea id="i-paste" aria-label="Tabelle aus der Zwischenablage" rows="5" placeholder="Zeilen aus Excel, Google Sheets oder einer Webseite einfügen (mit Kopfzeile)"></textarea>
+      <div class="toolbar"><button class="btn secondary small" id="i-paste-go" type="button">Einlesen</button></div>
+    </details>
+    <div class="field-row" style="max-width:420px;margin-top:14px">
+      <div>
+        <label for="i-sample">Erst mal ausprobieren?</label>
+        <select id="i-sample">
+          <option value="">Beispieldatei wählen…</option>
+          <option value="ebay">eBay-ähnlich (Semikolon, Zusatzzeilen)</option>
+          <option value="etsy">Etsy-ähnlich (englisch, US-Datum)</option>
+          <option value="amazon">Amazon-ähnlich (Tabulator)</option>
+          <option value="paypal">PayPal-ähnlich (mit Gebühren)</option>
+          <option value="bank">Bank-Umsätze (Stichwortfilter)</option>
+        </select>
+        <div class="small muted">Frei erfundene Daten, keine Originalexporte.</div>
+      </div>
+    </div>
+    <p id="i-datewarn" class="notice" hidden></p>
+    <p id="i-curwarn" class="notice" hidden style="margin-top:8px"></p>
+    <p id="i-msg" class="small" role="status" aria-live="polite" style="min-height:1.4em"></p>
+
+    <div id="i-panel" hidden>
+      <h3>3. Spalten prüfen</h3>
+      <p class="small muted">SellCheck hat geraten, welche Spalte was bedeutet. Bitte kontrolliere vor allem Datum und Verkaufsbetrag.</p>
+      <div class="map-grid" id="i-map"></div>
+      <div id="i-types" class="types" hidden></div>
+      <div class="field-row" style="margin-top:14px">
+        <div><label for="i-platform">Plattform</label><select id="i-platform"></select></div>
+        <div>
+          <label for="i-dateorder">Datumsformat</label>
+          <select id="i-dateorder"><option value="dmy">Tag.Monat.Jahr (deutsch)</option><option value="mdy">Monat/Tag/Jahr (US)</option></select>
+        </div>
+        <div><label for="i-keyword">Nur Zeilen mit Stichwort</label><input id="i-keyword" placeholder="z. B. Vinted|Kleinanzeigen"></div>
+      </div>
+      <label class="check-inline"><input id="i-positive" type="checkbox" checked> Nur Beträge über 0 importieren (ohne Erstattungen und Abbuchungen)</label>
+
+      <h3 style="margin-top:20px">4. Vorschau und Import</h3>
+      <p id="i-summary" class="small" role="status" aria-live="polite"></p>
+      <div class="table-scroll" id="i-prevwrap" hidden>
+        <table><thead><tr><th>Datum</th><th>Artikel</th><th>Plattform</th><th class="num">Verkauf</th><th class="num">Kosten</th></tr></thead><tbody id="i-prev"></tbody></table>
+      </div>
+      <p id="i-buywarn" class="notice" hidden style="margin-top:12px"></p>
+      <div class="toolbar">
+        <button class="btn" id="i-go" type="button" disabled>Jetzt importieren</button>
+      </div>
+    </div>
+    <div class="toolbar"><button class="btn secondary small" id="i-undo" type="button" hidden>Letzten Import rückgängig machen</button></div>
+    <p class="small muted" style="margin:14px 0 0">Doppelte Einträge erkennt SellCheck an Bestellnummer, Datum, Artikel und Betrag und überspringt sie beim erneuten Import.</p>
+  </section>
+
+  <!-- 1. AMPEL -->
+  <section id="ampel" class="tool card">
+    <div class="tool-head">
+      <div class="icon-badge"><svg class="ico" viewBox="0 0 24 24"><path d="M4 17a8 8 0 1 1 16 0"/><path d="M12 17l4-5"/></svg></div>
+      <h2>Meldegrenzen-Ampel</h2>
+    </div>
+    <p class="muted">Plattformen melden Verkäufer ans Bundeszentralamt für Steuern, wenn sie im Kalenderjahr eine Grenze erreichen: <strong>30 Verkäufe</strong> oder <strong>2.000 € Einnahmen</strong>, jeweils <strong>pro Plattform</strong>. Eine Meldung ist keine Steuerforderung.</p>
+
+    <div class="gauge-wrap">
+      <div class="gauge">
+        <svg viewBox="0 0 200 112" aria-hidden="true">
+          <path class="track" d="M20 100A80 80 0 0 1 180 100" fill="none" stroke-width="18" stroke-linecap="round"/>
+          <path id="a-gauge-arc" class="arc" d="M20 100A80 80 0 0 1 180 100" fill="none" stroke-width="18" stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/>
+        </svg>
+        <div class="read"><b id="a-gauge-pct">0 %</b><span>der Meldegrenze</span></div>
+      </div>
+      <div>
+        <div class="field-row">
+          <div>
+            <label for="a-count">Verkäufe in diesem Jahr</label>
+            <input id="a-count" type="number" min="0" step="1" inputmode="numeric" value="0">
+          </div>
+          <div>
+            <label for="a-sum">Einnahmen in diesem Jahr (€)</label>
+            <input id="a-sum" type="number" min="0" step="0.01" inputmode="decimal" value="0">
+          </div>
+        </div>
+        <label for="a-platform" style="margin-top:4px">Werte aus meinem Tracker übernehmen für</label>
+        <div class="inline-form"><select id="a-platform" style="flex:1 1 180px"></select><button class="btn secondary small" id="a-from-tracker" type="button">Übernehmen</button></div>
+      </div>
+    </div>
+
+    <div id="a-result" class="ampel green" role="status" aria-live="polite">
+      <strong></strong>
+      <div class="small"></div>
+    </div>
+    <div style="margin-top:18px">
+      <div class="small muted">Verkäufe: <span id="a-count-txt"></span></div>
+      <div class="meter"><div id="a-count-bar"></div></div>
+      <div class="small muted">Einnahmen: <span id="a-sum-txt"></span></div>
+      <div class="meter"><div id="a-sum-bar"></div></div>
+    </div>
+    <p class="small muted" style="margin:0">Gezählt werden Transaktionen, nicht einzelne Artikel. Befreit sind nur Verkäufer mit weniger als 30 Verkäufen <em>und</em> weniger als 2.000 €. Sobald eine der beiden Grenzen erreicht ist, wird gemeldet. Prüfe die Schwellen vor wichtigen Entscheidungen im Gesetzestext (Plattformen-Steuertransparenzgesetz).</p>
+  </section>
+
+  <!-- 2. GEWINN PRO ARTIKEL -->
+  <section id="rechner" class="tool card">
+    <div class="tool-head">
+      <div class="icon-badge"><svg class="ico" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M14 12h2M8 16h2M14 16h2"/></svg></div>
+      <h2>Gewinn pro Artikel</h2>
+    </div>
+    <p class="muted">Verkaufspreis minus Einkauf, Versand und Nebenkosten.</p>
+    <div class="field-row">
+      <div><label for="g-buy">Einkaufspreis (€)</label><input id="g-buy" type="number" min="0" step="0.01" inputmode="decimal" value="0"></div>
+      <div><label for="g-sell">Verkaufspreis (€)</label><input id="g-sell" type="number" min="0" step="0.01" inputmode="decimal" value="0"></div>
+      <div><label for="g-ship">Versand, den du zahlst (€)</label><input id="g-ship" type="number" min="0" step="0.01" inputmode="decimal" value="0"></div>
+      <div><label for="g-other">Sonstige Kosten (€)</label><input id="g-other" type="number" min="0" step="0.01" inputmode="decimal" value="0"></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="v" id="g-profit">0,00 €</div><div class="l">Gewinn</div></div>
+      <div class="stat"><div class="v" id="g-margin">–</div><div class="l">Marge (vom Verkaufspreis)</div></div>
+      <div class="stat"><div class="v" id="g-roi">–</div><div class="l">Rendite (auf den Einkauf)</div></div>
+    </div>
+    <p class="small muted" style="margin:0">Tipp: Plattform-Gebühren und Käuferschutz unterscheiden sich je Plattform (Vinted: Käufer zahlen den Käuferschutz, eBay und andere können Gebühren verlangen). Trage Gebühren unter „Sonstige Kosten“ ein und prüfe sie in deinem Konto.</p>
+  </section>
+
+  <!-- 3. TRACKER -->
+  <section id="tracker" class="tool card">
+    <div class="tool-head">
+      <div class="icon-badge"><svg class="ico" viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg></div>
+      <h2>Verkaufs-Tracker</h2>
+    </div>
+    <p class="muted">Trage jeden Verkauf (und was noch im Bestand liegt) ein und exportiere am Jahresende eine CSV für Steuerberater oder EÜR. Alles bleibt in deinem Browser. Wenn du Browserdaten löschst, sind die Einträge weg, also exportiere regelmäßig.</p>
+
+    <form id="t-form" novalidate>
+      <div class="field-row">
+        <div><label for="t-name">Artikel</label><input id="t-name" required maxlength="80" placeholder="z. B. Nike Jacke M"></div>
+        <div><label for="t-date">Verkaufsdatum</label><input id="t-date" type="date" required></div>
+        <div>
+          <label for="t-platform">Plattform</label>
+          <select id="t-platform"></select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div><label for="t-buy">Einkauf (€)</label><input id="t-buy" type="number" min="0" step="0.01" inputmode="decimal" value="0"></div>
+        <div><label for="t-sell">Verkauf (€)</label><input id="t-sell" type="number" min="0" step="0.01" inputmode="decimal" value="0"></div>
+        <div><label for="t-cost">Versand &amp; Sonstiges (€)</label><input id="t-cost" type="number" min="0" step="0.01" inputmode="decimal" value="0"></div>
+        <div>
+          <label for="t-status">Status</label>
+          <select id="t-status"><option value="sold">Verkauft</option><option value="stock">Noch im Bestand</option></select>
+        </div>
+      </div>
+      <details class="more-fields">
+        <summary>Weitere Angaben für die Steuer (optional)</summary>
+        <div class="field-row">
+          <div><label for="t-buydate">Einkaufsdatum</label><input id="t-buydate" type="date"></div>
+          <div><label for="t-receipt">Belegnummer</label><input id="t-receipt" maxlength="60" placeholder="z. B. Bestellnummer"></div>
+          <div>
+            <label for="t-kind">Gegenstandsart (nur privat)</label>
+            <select id="t-kind"><option value="">– nicht angegeben –</option><option value="everyday">Gebrauchsgegenstand (z. B. Kleidung)</option><option value="other">Sonstiges (z. B. Schmuck, Sammlerstück)</option></select>
+          </div>
+        </div>
+        <p class="small muted">In der Einnahmen-Überschuss-Rechnung zählt der Zeitpunkt der Bezahlung: Ein Einkauf ist in dem Jahr abzugsfähig, in dem du ihn bezahlt hast, auch wenn die Ware erst später verkauft wird. Deshalb braucht der Steuer-Export das Einkaufsdatum.</p>
+      </details>
+      <button class="btn" type="submit">Eintrag hinzufügen</button>
+      <span id="t-msg" class="small muted" role="status" aria-live="polite" style="margin-left:10px"></span>
+    </form>
+
+    <h3 style="margin-top:36px">Auswertung</h3>
+    <div class="field-row" style="max-width:440px">
+      <div>
+        <label for="t-year">Jahr</label>
+        <select id="t-year"></select>
+      </div>
+      <div>
+        <label for="t-filter">Plattform</label>
+        <select id="t-filter"></select>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="v" id="s-count">0</div><div class="l">Verkäufe</div></div>
+      <div class="stat"><div class="v" id="s-sum">0,00 €</div><div class="l">Einnahmen</div></div>
+      <div class="stat"><div class="v" id="s-cost">0,00 €</div><div class="l">Einkauf &amp; Kosten</div></div>
+      <div class="stat"><div class="v" id="s-profit">0,00 €</div><div class="l">Gewinn</div></div>
+      <div class="stat"><div class="v" id="s-stock">0</div><div class="l">Im Bestand (gebunden: <span id="s-stockval">0,00 €</span>)</div></div>
+    </div>
+
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>Datum</th><th>Artikel</th><th>Plattform</th><th>Status</th><th class="num">Einkauf</th><th class="num">Verkauf</th><th class="num">Kosten</th><th class="num">Gewinn</th><th></th></tr>
+        </thead>
+        <tbody id="t-body"></tbody>
+      </table>
+    </div>
+    <p id="t-more" class="muted small" hidden style="margin-top:12px"></p>
+    <p id="t-empty" class="muted small" style="margin-top:12px">Noch keine Einträge für diese Auswahl.</p>
+
+    <div class="toolbar">
+      <button class="btn secondary small" id="t-export" type="button">CSV exportieren</button>
+      <button class="btn danger small" id="t-clear" type="button">Alle Einträge löschen</button>
+    </div>
+  </section>
+
+  <!-- 3b. STEUER-EXPORT -->
+  <section id="steuer" class="tool card">
+    <div class="tool-head">
+      <div class="icon-badge"><svg class="ico" viewBox="0 0 24 24"><path d="M7 3h8l4 4v14H7z"/><path d="M15 3v4h4M10 12h6M10 16h6"/></svg></div>
+      <h2>Steuer-Export</h2>
+    </div>
+    <p class="muted">Aus deinem Tracker entsteht eine druckbare Aufstellung für die Steuererklärung (PDF über „Drucken“) sowie CSV-Dateien für Steuerberater oder Programme. Alles wird in deinem Browser berechnet.</p>
+    <div class="notice" role="note"><strong>Keine Übermittlung ans Finanzamt.</strong> ELSTER nimmt Daten nur über „Mein ELSTER“ oder zertifizierte Software entgegen. Der Report ist eine Ausfüllhilfe zum Übertragen und eine Übergabe an den Steuerberater, keine Steuererklärung und keine Steuerberatung. Prüfe die Angaben vor der Abgabe.</div>
+
+    <h3 style="margin-top:24px">1. Angaben</h3>
+    <div class="field-row">
+      <div><label for="x-year">Steuerjahr</label><select id="x-year"></select></div>
+      <div>
+        <label for="x-mode">Bin ich …</label>
+        <select id="x-mode"><option value="business">gewerblich (Anlage EÜR)</option><option value="private">privat (Anlage SO prüfen)</option></select>
+      </div>
+      <div id="x-vat-wrap">
+        <label for="x-vat">Umsatzsteuer</label>
+        <select id="x-vat"><option value="small">Kleinunternehmer (§ 19 UStG)</option><option value="regular">Regelbesteuerung (Preise enthalten USt)</option></select>
+      </div>
+      <div id="x-rate-wrap" hidden>
+        <label for="x-rate">Steuersatz</label>
+        <select id="x-rate"><option value="19">19 %</option><option value="7">7 %</option></select>
+      </div>
+    </div>
+    <details class="more-fields">
+      <summary>Name und Steuernummer auf dem Report (optional)</summary>
+      <div class="field-row" style="margin-top:12px">
+        <div><label for="x-name">Name</label><input id="x-name" maxlength="80" autocomplete="name"></div>
+        <div><label for="x-taxid">Steuernummer</label><input id="x-taxid" maxlength="40" autocomplete="off"></div>
+      </div>
+      <p class="small muted">Wird nur lokal in deinem Browser gespeichert und nur auf dem Report angezeigt. Leer lassen, wenn du es nicht drucken willst.</p>
+    </details>
+
+    <h3 style="margin-top:24px">2. Datencheck</h3>
+    <div class="stats" id="x-stats"></div>
+    <ul class="checks" id="x-checks"></ul>
+
+    <h3 style="margin-top:24px">3. Erzeugen</h3>
+    <div class="toolbar" style="margin-top:0">
+      <a class="btn" id="x-report" href="report.html" target="_blank" rel="noopener">Report ansehen und drucken</a>
+      <button class="btn secondary" id="x-journal" type="button">Journal (CSV)</button>
+      <button class="btn secondary" id="x-summary" type="button">Summen (CSV)</button>
+      <button class="btn secondary" id="x-private" type="button" hidden>Private Verkäufe, Anlage SO (CSV)</button>
+    </div>
+    <p id="x-msg" class="small muted" role="status" aria-live="polite" style="min-height:1.4em"></p>
+
+    <h3 style="margin-top:24px">So kommst du zur Steuererklärung</h3>
+    <div class="src-grid">
+      <details class="src"><summary><b>Selbst in Mein ELSTER eintragen</b> <span class="tag ok">Möglich</span></summary>
+        <p>Nach Ratgeberangaben: Mein ELSTER → Formulare &amp; Leistungen → Alle Formulare → Gewinnermittlung → Anlage EÜR. Die Beträge aus dem Report trägst du per Hand ein. Ordne sie über die Bezeichnung zu, nicht über Zeilennummern, denn die ändern sich von Jahr zu Jahr. Nicht betroffene Felder bleiben leer. Den Gewinn übernimmst du in die Anlage G (Einkünfte aus Gewerbebetrieb). Pro Betrieb gibt es eine Anlage EÜR.</p></details>
+      <details class="src"><summary><b>Steuersoftware (WISO, smartsteuer, Taxfix …)</b> <span class="tag no">Kein CSV-Import belegt</span></summary>
+        <p>Für diese Programme haben wir keinen Import von Einnahmen und Ausgaben als CSV gefunden. WISO Steuer fragt die Beträge in Feldern ab und übermittelt über die ELSTER-Schnittstelle. Nimm dafür die Summen aus dem Report. Prüfe den aktuellen Funktionsumfang beim Anbieter.</p></details>
+      <details class="src"><summary><b>Steuerberater</b> <span class="tag ok">Empfohlen ab Gewerbe</span></summary>
+        <p>Gib ihm den Report als PDF und das Journal als CSV (eine Zeile je Buchung, mit Kategorie und Belegnummer). Das DATEV-Format erzeugen wir bewusst nicht: Es braucht Kontenrahmen und Beraternummer, und ein fehlerhafter Import wäre schlimmer als keiner. Dein Steuerberater kann das Journal übernehmen.</p></details>
+      <details class="src"><summary><b>Auf Papier einreichen</b> <span class="tag no">Nur im Härtefall</span></summary>
+        <p>Die Anlage EÜR ist grundsätzlich elektronisch zu übermitteln. Papier ist nur auf Antrag in Härtefällen möglich (§ 150 Abs. 8 AO). Eine formlose Gewinnermittlung unter 17.500 € Einnahmen gibt es laut aktuellen Quellen seit 2017 nicht mehr. Ältere Ratgeber nennen sie noch. Der Report taugt als Beleg und Anlage, ersetzt aber die Anlage EÜR nicht.</p></details>
+      <details class="src"><summary><b>Privat verkauft (Anlage SO)</b> <span class="tag ok">Nur wenige Fälle</span></summary>
+        <p>Gebrauchsgegenstände wie Kleidung sind nicht steuerbar. Steuerbar können andere Gegenstände sein, die du innerhalb eines Jahres nach dem Kauf verkaufst, und nur, wenn der Gesamtgewinn im Jahr mindestens 1.000 € erreicht (§ 23 EStG; früher 600 €). Der Modus „privat“ listet deine Verkäufe dafür auf. Einordnung und Eintrag in die Anlage SO prüfst du selbst oder mit Beratung.</p></details>
+    </div>
+  </section>
+
+  <!-- 4. CHECKLISTE -->
+  <section id="check" class="tool card">
+    <div class="tool-head">
+      <div class="icon-badge"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
+      <h2>Privat oder gewerblich?</h2>
+    </div>
+    <p class="muted">Neutrale Checkliste mit Merkmalen, auf die Behörden typischerweise achten. Das Ergebnis ist <strong>keine Einstufung</strong> und ersetzt keine Beratung. Entscheidend ist immer das Gesamtbild.</p>
+    <div class="check-list" id="c-list"></div>
+    <div id="c-result" class="ampel green" role="status" aria-live="polite">
+      <strong></strong>
+      <div class="small"></div>
+    </div>
+  </section>
+
+  <!-- Wartelisten-Block -->
+  <section class="tool card cta-card">
+    <span class="label" style="background:var(--lime);color:var(--ink)">In Vorbereitung</span>
+    <h2 style="margin-top:14px">Mehr Ordnung für Reseller?</h2>
+    <p class="muted" style="max-width:560px">Ein Starter-Paket mit Guide für alle Plattformen, Google-Sheet-Tracker und EÜR-Übersicht ist in Vorbereitung (9,99 € einmalig). Lass dich zum Start benachrichtigen.</p>
+    <form class="waitlist" data-source="tools" novalidate>
+      <label for="email-tools">E-Mail</label>
+      <div class="inline-form" style="max-width:520px">
+        <input id="email-tools" name="email" type="email" required autocomplete="email" placeholder="du@beispiel.de">
+        <button class="btn" type="submit">Vormerken</button>
+      </div>
+      <label class="consent"><input type="checkbox" name="consent" required> <span>Ich möchte per E-Mail über den Start informiert werden. Abmeldung jederzeit möglich. Mehr in der <a href="datenschutz.html">Datenschutzerklärung</a>.</span></label>
+            <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+<p class="form-note small muted" role="status" aria-live="polite"></p>
+    </form>
+  </section>
+</main>
+
+<dialog id="e-dialog" class="edit-dialog" aria-labelledby="e-title">
+  <form id="e-form" method="dialog" novalidate>
+    <h2 id="e-title" style="font-size:1.4rem">Eintrag bearbeiten</h2>
+    <div class="field-row">
+      <div><label for="e-name">Artikel</label><input id="e-name" maxlength="80" required></div>
+      <div><label for="e-date">Datum (Verkauf bzw. Einkauf)</label><input id="e-date" type="date" required></div>
+      <div><label for="e-platform">Plattform</label><select id="e-platform"></select></div>
+      <div><label for="e-status">Status</label><select id="e-status"><option value="sold">Verkauft</option><option value="stock">Noch im Bestand</option></select></div>
+    </div>
+    <div class="field-row">
+      <div><label for="e-buy">Einkauf (€)</label><input id="e-buy" type="number" min="0" step="0.01" inputmode="decimal"></div>
+      <div><label for="e-sell">Verkauf (€)</label><input id="e-sell" type="number" min="0" step="0.01" inputmode="decimal"></div>
+      <div><label for="e-cost">Versand &amp; Sonstiges (€)</label><input id="e-cost" type="number" min="0" step="0.01" inputmode="decimal"></div>
+    </div>
+    <div class="field-row">
+      <div><label for="e-buydate">Einkaufsdatum</label><input id="e-buydate" type="date"></div>
+      <div><label for="e-receipt">Belegnummer</label><input id="e-receipt" maxlength="60"></div>
+      <div><label for="e-kind">Gegenstandsart (nur privat)</label><select id="e-kind"><option value="">– nicht angegeben –</option><option value="everyday">Gebrauchsgegenstand</option><option value="other">Sonstiges</option></select></div>
+    </div>
+    <p id="e-msg" class="small neg" role="alert" style="min-height:1.2em"></p>
+    <div class="toolbar" style="margin-top:0"><button class="btn" type="submit">Speichern</button><button class="btn secondary" id="e-cancel" type="button">Abbrechen</button></div>
+  </form>
+</dialog>
+
+
+<footer class="on-dark" style="border-top:1px solid #262b33">
+  <div class="wrap">
+    <div class="cols">
+      <div>
+        <a class="brand" href="index.html" aria-label="SellCheck Startseite">
+          <svg viewBox="0 0 64 64" aria-hidden="true"><path class="tag" fill-rule="evenodd" d="M14 4h24l22 22v28a10 10 0 0 1-10 10H14A10 10 0 0 1 4 54V14A10 10 0 0 1 14 4Zm29 13.8a3.2 3.2 0 1 0 0 6.4 3.2 3.2 0 0 0 0-6.4Z"/><path class="tick" d="M17 36l8 8 15-15" fill="none" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Sell<b>Check</b></span>
+        </a>
+        <p style="margin-top:14px;color:#8a909b">Check, was wirklich bleibt.</p>
+      </div>
+      <div>
+        <h4>Seiten</h4>
+        <ul>
+          <li><a href="index.html">Startseite</a></li>
+          <li><a href="tools.html">Gratis-Tools</a></li>
+          <li><a href="brand.html">Marke &amp; Design</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Rechtliches</h4>
+        <ul>
+          <li><a href="impressum.html">Impressum</a></li>
+          <li><a href="datenschutz.html">Datenschutz</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="legal">
+      <p>SellCheck (Arbeitstitel) ist ein unabhängiges Projekt und mit keiner der genannten Plattformen verbunden. Plattformnamen sind Marken ihrer jeweiligen Inhaber.</p>
+      <p style="margin:0">Keine Steuer- oder Rechtsberatung. Alle Angaben ohne Gewähr, Stand Oktober 2026.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="tax-lib.js"></script>
+<script src="tools.js"></script>
+<script src="parse-lib.js"></script>
+<script src="import.js"></script>
+<script src="tax-ui.js"></script>
+<script src="waitlist.js"></script>
+</body>
+</html>
