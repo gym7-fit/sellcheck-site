@@ -42,3 +42,11 @@ Die Seite ist statisch, es gibt kein eigenes Backend. Die Anmeldung läuft desha
 - **Brute-Force:** Im Demo-Modus sperrt die Seite nach 5 Fehlversuchen 60 Sekunden, das ist nur eine Hürde im Browser. Bei Supabase gelten dessen Rate-Limits.
 - **Gemeinsame Origin:** Solange die Seite unter `gym7-fit.github.io` liegt, teilt sie den Browser-Speicher mit den anderen Projekten des Kontos, auch die Sitzung. Siehe `docs/LIVEGANG.md`.
 - **Mehrere Konten pro Browser** teilen sich dieselben Tool-Daten. Eine getrennte Ablage je Konto gibt es erst mit Server-Daten.
+
+## Aktueller Stand (11.10.2026)
+
+- Eigenes Supabase-Projekt „sellcheck database“, Region Frankfurt (eu-central-1), Referenz `xjogkqttzfsgjeqhkndf`.
+- Eingetragen in `site/auth-config.js`: Project-URL und anon-Key. Damit ist der Demo-Modus aus, Registrierung und Anmeldung laufen über Supabase.
+- Eingestellt: E-Mail-Anmeldung an, Bestätigungs-Mail Pflicht, Mindestlänge 10, Site-URL `https://gym7-fit.github.io/sellcheck-site/`, Redirect-URLs `login.html` und `tools.html` (plus lokale Testadressen).
+- Data API ist aus; die App nutzt nur Auth. Soll später etwas in der Cloud gespeichert werden, Data API einschalten und für jede Tabelle Row Level Security anlegen.
+- Offen: eigener SMTP-Absender (der Standard-Absender von Supabase ist stark begrenzt und für den echten Betrieb ungeeignet), Absender-Texte der Mails auf Deutsch.
