@@ -4,6 +4,8 @@ Die Seiten sind statisch (HTML, CSS, JS, kein Build-Schritt) und liegen im Ordne
 
 ## 1. Vor dem Veröffentlichen (Pflicht)
 
+- [ ] **Hosting vom VITARO-Backoffice trennen.** Solange SellCheck unter `gym7-fit.github.io` liegt, teilt es sich die Origin mit den anderen Seiten dieses Kontos, unter anderem dem Backoffice mit Kundendaten und Supabase-Sitzungen. Der Browser-Speicher (localStorage) gilt pro Origin: Ein Skriptfehler (XSS) in einer der Seiten könnte die Daten der anderen lesen. Für die Vorab-Ansicht ist das vertretbar (SellCheck hat keine Kundendaten und eine strenge CSP), **vor dem Livegang** gehört SellCheck auf eine eigene Domain oder in ein eigenes Konto.
+
 - [ ] **Name und Marke:** „SellCheck“ ist ein Platzhalter. Marke bei DPMA und EUIPO prüfen, erst dann Domain sichern. `sellcheck.de` war am 9. Okt 2026 laut DENIC frei, `.com`, `.app`, `.io` waren vergeben (Stichtagsangabe, keine Reservierung).
 - [ ] **Impressum:** `impressum.html` ausfüllen (gelbe Platzhalter), Hinweisbox und `noindex` entfernen.
 - [ ] **Datenschutz:** `datenschutz.html` ausfüllen (Hosting-Anbieter, E-Mail-Dienst, Aufsichtsbehörde, Fristen) und von einem Rechtstexte-Dienst oder einer Kanzlei prüfen lassen.

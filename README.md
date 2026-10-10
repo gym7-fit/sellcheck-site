@@ -41,6 +41,7 @@ npm run check # Syntaxprüfung aller Skripte
 
 Hinweise:
 
+- **Gemeinsame Origin:** Unter `<konto>.github.io` teilen sich alle Projekte eines Kontos denselben Browser-Speicher. Das ist für die Vorab-Ansicht in Ordnung, für den Livegang sollte SellCheck auf eine eigene Domain oder in ein eigenes Konto (siehe docs/LIVEGANG.md).
 - GitHub Pages ist für **öffentliche** Repositories kostenlos. Private Repositories brauchen einen bezahlten Tarif.
 - GitHub Pages kann keine eigenen HTTP-Header setzen. Die Content-Security-Policy steht deshalb zusätzlich als Meta-Tag in jeder Seite. Der Schutz gegen Einbettung in fremde Seiten (`frame-ancestors`) funktioniert so nicht. Dafür bräuchte es einen Host mit Header-Support (siehe `site/_headers`, z. B. Cloudflare Pages oder Netlify).
 - Alle Links sind relativ, die Seiten laufen deshalb auch unter dem Unterpfad `/<repo>/`.
