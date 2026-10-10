@@ -20,7 +20,8 @@ Online: nach dem ersten Push über GitHub Pages (siehe unten).
 | Pfad | Inhalt |
 | --- | --- |
 | `site/` | Die Website (wird 1:1 veröffentlicht): `index.html`, `tools.html`, `report.html`, Rechtstexte, Skripte, Styles |
-| `site/tax-lib.js`, `site/parse-lib.js` | Reine Logik (Steuerberechnung, Datei-Import), ohne DOM und getestet |
+| `site/tax-lib.js`, `site/parse-lib.js`, `site/wizard-lib.js` | Reine Logik (Steuerberechnung, Datei-Import, Freischalt-Regeln des Ablaufs), ohne DOM und getestet |
+| `site/wizard.js`, `site/wizard.css` | Oberfläche des geführten Ablaufs auf `tools.html` (sechs Schritte, dann Überprüfungsseite) |
 | `tests/` | Automatische Tests (`node --test`) |
 | `docs/STEUER-EXPORT.md` | Recherche und Entscheidungen zum Steuer-Export |
 | `docs/LIVEGANG.md` | Checkliste vor dem Livegang |
@@ -31,7 +32,7 @@ Online: nach dem ersten Push über GitHub Pages (siehe unten).
 ## Tests
 
 ```bash
-npm test      # Import-Parser, Steuerlogik, Anmeldung
+npm test      # Import-Parser, Steuerlogik, Anmeldung, Schritt-Regeln
 npm run check # Syntaxprüfung aller Skripte
 ```
 

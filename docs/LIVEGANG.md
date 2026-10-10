@@ -47,7 +47,7 @@ In `social/`: `og-image.png` (1200×630, Link-Vorschau), `profilbild.png` (800×
 
 ## 5. Tests
 
-Import-Logik und Steuerberechnung (43 Tests), im Repo-Hauptordner:
+Import-Logik, Steuerberechnung, Anmeldung und Freischalt-Regeln des Ablaufs, im Repo-Hauptordner:
 
 ```bash
 npm test

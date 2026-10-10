@@ -30,6 +30,11 @@ const el = (tag, text, cls) => {
   return e;
 };
 const isSold = (s) => s.status !== "stock";
+// Das gewählte Steuerjahr steht in Schritt 1 (#w-year). Solange noch keins gewählt ist: aktuelles Jahr.
+const currentYear = () => {
+  const v = document.getElementById("w-year");
+  return v && v.value ? v.value : String(new Date().getFullYear());
+};
 const profitOf = (s) => s.sell - s.buy - s.cost;
 
 /* ---------- Speicher ---------- */
@@ -121,47 +126,36 @@ function renderAmpel() {
 ["a-count", "a-sum"].forEach((id) => $(id).addEventListener("input", renderAmpel));
 
 $("a-from-tracker").addEventListener("click", () => {
-  const year = $("o-year").value || String(new Date().getFullYear());
+  const year = currentYear();
   const rows = sales.filter((s) => isSold(s) && s.date.startsWith(year) && s.platform === $("a-platform").value);
   $("a-count").value = rows.length;
   $("a-sum").value = rows.reduce((a, s) => a + s.sell, 0).toFixed(2);
   renderAmpel();
 });
 
-/* ---------- 2. Gewinn pro Artikel ---------- */
-function renderProfit() {
-  const buy = num($("g-buy"));
-  const sell = num($("g-sell"));
-  const cost = num($("g-ship")) + num($("g-other"));
+/* ---------- Live-Vorschau im Eingabeformular ---------- */
+function renderLive() {
+  const out = $("t-live");
+  if (!out) return;
+  if ($("t-status").value === "stock") {
+    out.textContent = "Noch im Bestand: Der Einkauf mindert deinen Gewinn schon im Einkaufsjahr.";
+    return;
+  }
+  const buy = num($("t-buy"));
+  const sell = num($("t-sell"));
+  const cost = num($("t-cost"));
+  if (!sell) {
+    out.textContent = "";
+    return;
+  }
   const profit = sell - buy - cost;
-  $("g-profit").textContent = eur.format(profit);
-  $("g-profit").className = "v " + (profit > 0 ? "pos" : profit < 0 ? "neg" : "");
-  $("g-margin").textContent = sell > 0 ? pct.format((profit / sell) * 100) + " %" : "–";
-  $("g-roi").textContent = buy > 0 ? pct.format((profit / buy) * 100) + " %" : "–";
+  const margin = sell > 0 ? " · Marge " + pct.format((profit / sell) * 100) + " %" : "";
+  out.textContent = `Gewinn bei diesem Artikel: ${eur.format(profit)}${margin}`;
 }
-["g-buy", "g-sell", "g-ship", "g-other"].forEach((id) => $(id).addEventListener("input", renderProfit));
+["t-buy", "t-sell", "t-cost", "t-status"].forEach((id) => $(id).addEventListener("input", renderLive));
 
 /* ---------- Jahre ---------- */
 $("t-date").valueAsDate = new Date();
-
-function fillYears() {
-  const current = new Date().getFullYear();
-  const years = new Set([current, ...sales.map((s) => Number(s.date.slice(0, 4)))]);
-  const sorted = [...years].sort((a, b) => b - a);
-  ["t-year", "o-year"].forEach((id) => {
-    const sel = $(id);
-    const keep = sel.value;
-    sel.replaceChildren(
-      ...sorted.map((y) => {
-        const o = el("option", String(y));
-        o.value = String(y);
-        return o;
-      })
-    );
-    if (keep && years.has(Number(keep))) sel.value = keep;
-  });
-  $("o-year").value = $("t-year").value;
-}
 
 /* ---------- Plattform-Überblick ---------- */
 function stat(value, label, cls) {
@@ -171,7 +165,7 @@ function stat(value, label, cls) {
 }
 
 function renderOverview() {
-  const year = $("o-year").value;
+  const year = currentYear();
   const rows = sales.filter((s) => s.date.startsWith(year));
   const sold = rows.filter(isSold);
   const stock = rows.filter((s) => !isSold(s));
@@ -240,7 +234,7 @@ function renderOverview() {
 
 /* ---------- 3. Tracker ---------- */
 function filteredRows() {
-  const year = $("t-year").value;
+  const year = currentYear();
   const plat = $("t-filter").value;
   return sales.filter((s) => s.date.startsWith(year) && (!plat || s.platform === plat));
 }
@@ -329,7 +323,6 @@ function renderTracker() {
 
 const refreshListeners = [];
 function refresh() {
-  fillYears();
   renderTracker();
   renderOverview();
   refreshListeners.forEach((fn) => fn());
@@ -364,26 +357,16 @@ $("t-form").addEventListener("submit", (e) => {
     status,
     ...optionalFields($("t-buydate").value, $("t-receipt").value, $("t-kind").value),
   });
-  saveSales(sales);
+  const ok = saveSales(sales);
   $("t-name").value = "";
   $("t-buydate").value = $("t-receipt").value = $("t-kind").value = "";
   $("t-buy").value = $("t-sell").value = $("t-cost").value = "0";
-  if (storageOk) $("t-msg").textContent = "Gespeichert.";
-  fillYears();
-  $("t-year").value = date.slice(0, 4);
-  $("o-year").value = date.slice(0, 4);
-  renderTracker();
-  renderOverview();
-});
-$("t-year").addEventListener("change", () => {
-  $("o-year").value = $("t-year").value;
-  renderTracker();
-  renderOverview();
-});
-$("o-year").addEventListener("change", () => {
-  $("t-year").value = $("o-year").value;
-  renderTracker();
-  renderOverview();
+  renderLive();
+  const entryYear = date.slice(0, 4);
+  const wrongYear = entryYear !== currentYear();
+  if (ok) $("t-msg").textContent = wrongYear ? `Gespeichert, gehört aber zum Jahr ${entryYear}, nicht zu ${currentYear()}.` : "Gespeichert.";
+  refresh();
+  document.dispatchEvent(new CustomEvent("sellcheck:added", { detail: { year: entryYear, ok, wrongYear } }));
 });
 $("t-filter").addEventListener("change", renderTracker);
 
@@ -398,7 +381,7 @@ $("t-export").addEventListener("click", () => {
     isSold(s) ? T.cellN(T.cents(s.sell) - T.cents(s.buy) - T.cents(s.cost)) : '""',
     T.cellT(s.buyDate || ""), T.cellT(s.receipt || ""), T.cellT(KIND_LABEL[s.kind] || ""),
   ]);
-  download(T.toCsv(head, body), `sellcheck-verkaeufe-${$("t-year").value}.csv`);
+  download(T.toCsv(head, body), `sellcheck-verkaeufe-${currentYear()}.csv`);
 });
 
 function download(text, filename) {
@@ -491,32 +474,62 @@ const SIGNALS = [
 
 const list = $("c-list");
 SIGNALS.forEach((text, i) => {
-  const label = document.createElement("label");
-  const cb = document.createElement("input");
-  cb.type = "checkbox";
-  cb.id = "sig" + i;
-  label.append(cb, el("span", text));
-  list.append(label);
+  const fs = document.createElement("fieldset");
+  fs.className = "quiz-q";
+  const lg = document.createElement("legend");
+  lg.textContent = text;
+  fs.append(lg);
+  [["yes", "Ja"], ["no", "Nein"]].forEach(([v, label]) => {
+    const l = document.createElement("label");
+    l.className = "quiz-opt";
+    const r = document.createElement("input");
+    r.type = "radio";
+    r.name = "sig" + i;
+    r.value = v;
+    l.append(r, el("span", label));
+    fs.append(l);
+  });
+  list.append(fs);
 });
 
+// Ergebnis des Schnelltests: wie viele beantwortet, wie viele Ja, und eine Orientierung.
+function quizState() {
+  const yes = list.querySelectorAll('input[value="yes"]:checked').length;
+  const no = list.querySelectorAll('input[value="no"]:checked').length;
+  const answered = yes + no;
+  let recommend = null;
+  if (answered === SIGNALS.length) recommend = yes >= 4 ? "business" : yes <= 1 ? "private" : "unclear";
+  return { yes, no, answered, total: SIGNALS.length, recommend };
+}
+
 function renderCheck() {
-  const n = list.querySelectorAll("input:checked").length;
+  const q = quizState();
   const box = $("c-result");
+  const strong = box.querySelector("strong");
+  const info = box.querySelector("div");
+  if (q.answered < q.total) {
+    box.className = "ampel yellow";
+    strong.textContent = `Noch ${q.total - q.answered} ${q.total - q.answered === 1 ? "Frage" : "Fragen"} offen`;
+    info.textContent = "Beantworte alle Fragen, dann bekommst du eine Orientierung.";
+    $("quiz-apply").hidden = true;
+    return;
+  }
   const [title, text, cls] =
-    n >= 4
-      ? ["Viele Merkmale treffen zu", "Bei diesem Bild lohnt sich eine persönliche Klärung mit Finanzamt oder Steuerberatung (Gewerbeanmeldung, Einkommen- und ggf. Umsatzsteuer). Bis dahin: alle Einkäufe und Verkäufe sauber dokumentieren, über alle Plattformen hinweg.", "red"]
-      : n >= 2
-      ? ["Einzelne Merkmale treffen zu", "Beobachte deine Entwicklung. Führe ab jetzt Buch über Einkäufe und Verkäufe und kläre im Zweifel frühzeitig, wie du eingestuft wirst.", "yellow"]
-      : ["Kaum Merkmale", "Das klingt nach gelegentlichem privatem Verkauf. Behalte die Meldegrenzen im Blick, mehr ist meist nicht nötig.", "green"];
+    q.recommend === "business"
+      ? ["Spricht eher für gewerblich", "Viele Merkmale treffen zu. Bei diesem Bild lohnt sich eine persönliche Klärung mit Finanzamt oder Steuerberatung (Gewerbeanmeldung, Einkommen- und ggf. Umsatzsteuer). Bis dahin: alle Einkäufe und Verkäufe sauber dokumentieren.", "red"]
+      : q.recommend === "unclear"
+      ? ["Nicht eindeutig", "Einzelne Merkmale treffen zu. Beobachte deine Entwicklung und kläre im Zweifel frühzeitig, wie du eingestuft wirst. Wähle bis dahin die Art, die besser zu deinem Alltag passt.", "yellow"]
+      : ["Spricht eher für privat", "Das klingt nach gelegentlichem privatem Verkauf. Behalte die Meldegrenzen im Blick, mehr ist meist nicht nötig.", "green"];
   box.className = "ampel " + cls;
-  box.querySelector("strong").textContent = `${title} (${n} von ${SIGNALS.length})`;
-  box.querySelector("div").textContent = text + " Das ist keine Einstufung und keine Steuerberatung.";
+  strong.textContent = title;
+  info.textContent = text + " Das ist keine Einstufung und keine Steuerberatung.";
+  $("quiz-apply").hidden = q.recommend === "unclear";
 }
 list.addEventListener("change", renderCheck);
 
 /* ---------- Start ---------- */
 renderAmpel();
-renderProfit();
+renderLive();
 refresh();
 renderCheck();
 
@@ -541,12 +554,8 @@ window.SellCheck = {
     return ids.length ? ids[0] : null;
   },
   onRefresh(fn) { refreshListeners.push(fn); },
+  refresh,
   download,
-  showYear(y) {
-    fillYears();
-    $("t-year").value = y;
-    $("o-year").value = y;
-    renderTracker();
-    renderOverview();
-  },
+  year: currentYear,
+  quiz: quizState,
 };

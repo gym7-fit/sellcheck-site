@@ -218,11 +218,11 @@
       return;
     }
     updateUndo();
-    $("i-msg").textContent = `${fresh.length} Einträge importiert. Du findest sie im Überblick und im Tracker.`;
+    $("i-msg").textContent = `${fresh.length} Einträge importiert.`;
     $("i-panel").hidden = true;
-    const years = fresh.map((e) => e.date.slice(0, 4)).sort();
-    SC.showYear(years[years.length - 1]);
-    $("ueberblick").scrollIntoView({ behavior: "smooth" });
+    const byYear = {};
+    fresh.forEach((e) => { const y = e.date.slice(0, 4); byYear[y] = (byYear[y] || 0) + 1; });
+    document.dispatchEvent(new CustomEvent("sellcheck:imported", { detail: { count: fresh.length, byYear } }));
     current = { entries: [], stats: null };
   });
 
