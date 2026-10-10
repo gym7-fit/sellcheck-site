@@ -1,6 +1,6 @@
 # SellCheck (Arbeitstitel)
 
-Überblick, Meldegrenze und Steuer-Export für Verkäufer auf Vinted, Kleinanzeigen, eBay, Etsy, Amazon und mehr. Eine statische Website: Alles läuft im Browser, es gibt kein Backend und keine Konten. Eingaben bleiben im lokalen Speicher des Geräts.
+Überblick, Meldegrenze und Steuer-Export für Verkäufer auf Vinted, Kleinanzeigen, eBay, Etsy, Amazon und mehr. Eine statische Website: Alles läuft im Browser, es gibt kein eigenes Backend. Anmeldung über Supabase Auth (sobald konfiguriert) oder Demo-Modus. Eingaben bleiben im lokalen Speicher des Geräts.
 
 > **Status: Entwurf vor dem Livegang.** Name ist ein Platzhalter, Impressum und Datenschutz sind Entwürfe, das Wartelisten-Formular ist im Demo-Modus, die Seiten sind per `noindex` und `robots.txt` für Suchmaschinen gesperrt. Keine Steuer- oder Rechtsberatung.
 
@@ -24,12 +24,14 @@ Online: nach dem ersten Push über GitHub Pages (siehe unten).
 | `tests/` | Automatische Tests (`node --test`) |
 | `docs/STEUER-EXPORT.md` | Recherche und Entscheidungen zum Steuer-Export |
 | `docs/LIVEGANG.md` | Checkliste vor dem Livegang |
+| `docs/AUTH-SETUP.md` | Anmeldung einrichten (Supabase), Demo-Modus erklärt |
+| `site/auth-config.js` | Einstellungen der Anmeldung |
 | `.github/workflows/pages.yml` | Tests und Veröffentlichung über GitHub Pages |
 
 ## Tests
 
 ```bash
-npm test      # 43 Tests: Import-Parser und Steuerlogik
+npm test      # Import-Parser, Steuerlogik, Anmeldung
 npm run check # Syntaxprüfung aller Skripte
 ```
 

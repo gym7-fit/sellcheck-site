@@ -277,4 +277,33 @@
     if (s) load(s.text, s.platform, s.keyword);
     e.target.value = "";
   });
+
+  /* ---------- Kachel-Auswahl (Datenquellen, Abgabewege) ---------- */
+  document.documentElement.classList.add("js");
+  document.querySelectorAll("[data-tabs]").forEach((root) => {
+    const tabs = [...root.querySelectorAll('[role="tab"]')];
+    const panels = tabs.map((t) => document.getElementById(t.getAttribute("aria-controls")));
+    if (!tabs.length) return;
+    function select(i, focus) {
+      tabs.forEach((t, k) => {
+        const on = k === i;
+        t.setAttribute("aria-selected", on ? "true" : "false");
+        t.tabIndex = on ? 0 : -1;
+        panels[k].hidden = !on;
+      });
+      if (focus) tabs[i].focus();
+    }
+    tabs.forEach((t, i) => {
+      t.addEventListener("click", () => select(i, false));
+      t.addEventListener("keydown", (e) => {
+        const map = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
+        if (e.key in map) {
+          e.preventDefault();
+          select((i + map[e.key] + tabs.length) % tabs.length, true);
+        } else if (e.key === "Home") { e.preventDefault(); select(0, true); }
+        else if (e.key === "End") { e.preventDefault(); select(tabs.length - 1, true); }
+      });
+    });
+    select(0, false);
+  });
 })();

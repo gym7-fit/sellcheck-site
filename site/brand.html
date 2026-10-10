@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; base-uri 'none'; object-src 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://*.supabase.co; form-action 'none'; base-uri 'none'; object-src 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Marke &amp; Design – SellCheck</title>
   <meta name="description" content="Logo, Farben, Schrift und Tonalität der Marke SellCheck.">
@@ -10,6 +10,9 @@
   <meta name="robots" content="noindex">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
+  <script src="auth-config.js"></script>
+  <script src="auth-lib.js"></script>
+  <script src="auth.js"></script>
 </head>
 <body>
 <a class="skip" href="#main">Zum Inhalt springen</a>
@@ -21,8 +24,12 @@
       <span>Sell<b>Check</b></span>
     </a>
     <nav class="nav" aria-label="Hauptnavigation">
-      <a href="index.html">Startseite</a>
+      <a class="hide-sm" href="index.html">Startseite</a>
       <a href="tools.html">Tools</a>
+    <a class="auth-guest" href="login.html">Anmelden</a>
+      <a class="btn small auth-guest" href="register.html">Registrieren</a>
+      <a class="auth-user" href="tools.html" hidden>Zu den Tools</a>
+      <button class="btn small secondary auth-user" id="logout-btn" type="button" hidden>Abmelden</button>
     </nav>
   </div>
 </header>

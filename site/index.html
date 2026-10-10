@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; base-uri 'none'; object-src 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://*.supabase.co; form-action 'none'; base-uri 'none'; object-src 'none'">
   <meta name="robots" content="noindex, nofollow">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>SellCheck – Alle Plattformen. Ein Überblick.</title>
@@ -10,6 +10,9 @@
   <meta name="theme-color" content="#0e1116">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
+  <script src="auth-config.js"></script>
+  <script src="auth-lib.js"></script>
+  <script src="auth.js"></script>
 </head>
 <body>
 <a class="skip" href="#main">Zum Inhalt springen</a>
@@ -24,7 +27,10 @@
       <a class="hide-sm" href="#tools">Tools</a>
       <a class="hide-sm" href="#angebot">Angebot</a>
       <a class="hide-sm" href="#faq">FAQ</a>
-      <a class="btn small" href="tools.html">Gratis starten</a>
+      <a class="auth-guest" href="login.html">Anmelden</a>
+      <a class="btn small auth-guest" href="register.html">Registrieren</a>
+      <a class="auth-user" href="tools.html" hidden>Zu den Tools</a>
+      <button class="btn small secondary auth-user" id="logout-btn" type="button" hidden>Abmelden</button>
     </nav>
   </div>
 </header>
@@ -38,9 +44,9 @@
         <h1>Check, was <em>wirklich bleibt.</em></h1>
         <p class="lead">Alle Plattformen, ein Überblick: Gewinn pro Artikel, Meldegrenze pro Plattform und dein Bestand an einem Ort. Ohne Excel-Chaos und ohne Zugriff auf deine Konten.</p>
         <div class="cta">
-          <a class="btn" href="tools.html">Gratis-Überblick öffnen
+          <a class="btn" href="register.html">Kostenlos registrieren
             <svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-          <a class="btn secondary" href="#angebot">Starter-Paket ansehen</a>
+          <a class="btn secondary" href="login.html">Anmelden</a>
         </div>
         <ul class="chips" aria-label="Plattformen, die du erfassen kannst">
           <li>Vinted</li><li>Kleinanzeigen</li><li>eBay</li><li>Etsy</li><li>Amazon</li><li>Flohmarkt / bar</li><li>+ weitere</li>
@@ -110,7 +116,7 @@
       <div class="section-head">
         <span class="eyebrow">Gratis-Tools</span>
         <h2>Sechs Werkzeuge. Direkt im Browser.</h2>
-        <p>Kein Konto, keine Installation. Deine Eingaben bleiben auf deinem Gerät.</p>
+        <p>Kostenlos mit Konto, ohne Installation. Deine Eingaben bleiben auf deinem Gerät.</p>
       </div>
       <div class="bento">
         <a class="card tool-card featured-tool" href="tools.html#ueberblick">
@@ -275,6 +281,10 @@
         <p>Nein, und das ist Absicht. ELSTER nimmt Daten nur über „Mein ELSTER“ oder zertifizierte Software entgegen. SellCheck erzeugt deshalb eine druckbare Aufstellung mit den Beträgen in der Reihenfolge der Anlage EÜR, die du in ELSTER abtippst, und CSV-Dateien (Journal, Summen) für Steuerberater oder Programme. Einen CSV-Import für Steuersoftware wie WISO, smartsteuer oder Taxfix haben wir nicht belegt gefunden.</p>
       </details>
       <details>
+        <summary>Warum brauche ich ein Konto?</summary>
+        <p>Mit dem Konto bekommst du Zugang zu den Tools und später die geplante Sicherung über mehrere Geräte. Deine Eingaben bleiben dabei auf deinem Gerät. Mit einem Konto lassen sich außerdem die Pro-Funktionen freischalten, sobald es sie gibt. Solange der Anmeldedienst noch nicht eingerichtet ist, läuft die Seite im Demo-Modus: Konten gelten dann nur in deinem Browser.</p>
+      </details>
+      <details>
         <summary>Welche Plattformen kann ich eintragen?</summary>
         <p>Vorgewählt sind Vinted, Kleinanzeigen, eBay, Etsy, Amazon, Flohmarkt/bar und Sonstige. Du trägst deine Verkäufe selbst ein, deshalb funktioniert jede Plattform.</p>
       </details>
@@ -301,8 +311,8 @@
   <section class="on-dark" style="text-align:center">
     <div class="wrap">
       <h2 style="max-width:760px;margin:0 auto .4em">Sieh in 30 Sekunden, wo du stehst.</h2>
-      <p class="muted" style="margin-bottom:28px">Kostenlos, ohne Anmeldung.</p>
-      <a class="btn" href="tools.html">Zum Gratis-Überblick
+      <p class="muted" style="margin-bottom:28px">Kostenlos. Die Registrierung dauert eine Minute.</p>
+      <a class="btn" href="register.html">Kostenlos registrieren
         <svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     </div>
   </section>

@@ -1,8 +1,8 @@
 <!doctype html>
-<html lang="de">
+<html lang="de" data-auth="required">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; base-uri 'none'; object-src 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://*.supabase.co; form-action 'none'; base-uri 'none'; object-src 'none'">
   <meta name="robots" content="noindex, nofollow">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Gratis-Tools – SellCheck</title>
@@ -10,6 +10,9 @@
   <meta name="theme-color" content="#0e1116">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
+  <script src="auth-config.js"></script>
+  <script src="auth-lib.js"></script>
+  <script src="auth.js"></script>
 </head>
 <body>
 <a class="skip" href="#main">Zum Inhalt springen</a>
@@ -21,8 +24,12 @@
       <span>Sell<b>Check</b></span>
     </a>
     <nav class="nav" aria-label="Hauptnavigation">
-      <a href="index.html">Startseite</a>
-      <a href="tools.html" aria-current="page">Tools</a>
+      <a class="hide-sm" href="index.html">Startseite</a>
+      <a class="hide-sm" href="tools.html" aria-current="page">Tools</a>
+    <a class="auth-guest" href="login.html">Anmelden</a>
+      <a class="btn small auth-guest" href="register.html">Registrieren</a>
+      <a class="auth-user" href="tools.html" hidden>Zu den Tools</a>
+      <button class="btn small secondary auth-user" id="logout-btn" type="button" hidden>Abmelden</button>
     </nav>
   </div>
 </header>
@@ -76,23 +83,96 @@
 
     <h3 style="margin-top:24px">1. Datei besorgen</h3>
     <p class="small muted">Welche Exporte es gibt, haben wir aus den Hilfeseiten der Anbieter zusammengetragen (Stand Oktober 2026). Spaltennamen ändern sich bei Anbietern öfter, deshalb erkennt SellCheck sie über Begriffe und lässt dich alles korrigieren.</p>
-    <div class="src-grid">
-      <details class="src"><summary><b>eBay</b> <span class="tag ok">Export vorhanden</span></summary>
-        <p>Im Verkäufer-Cockpit Pro unter Zahlungen die Berichte bzw. Transaktionen öffnen und als CSV speichern. Der Bericht enthält Bestellnummer, Beträge und Gebühren. Vor der Kopfzeile stehen oft Zusatzzeilen, das ist kein Problem. Ältere Daten sind nur begrenzt abrufbar, also regelmäßig herunterladen. <a href="https://www.ebay.de/help/selling/fees-credits-invoices/reconciling-ebay-sales-transactions?id=4847" rel="noopener noreferrer" target="_blank">eBay-Hilfe</a></p></details>
-      <details class="src"><summary><b>Etsy</b> <span class="tag ok">Export vorhanden</span></summary>
-        <p>Shop-Manager → Einstellungen → Optionen → „Daten herunterladen“ → Bestellungen, Typ und Zeitraum wählen, CSV herunterladen. Die Beträge sind oft englisch formatiert (1,240.00), das erkennt SellCheck. <a href="https://help.etsy.com/hc/de/articles/360000343328-Arbeitsblatt-mit-einer-Liste-deiner-Verk%C3%A4ufe-herunterladen" rel="noopener noreferrer" target="_blank">Etsy-Hilfe</a></p></details>
-      <details class="src"><summary><b>Amazon</b> <span class="tag ok">Export vorhanden</span></summary>
-        <p>Seller Central → Berichte: Bestellbericht (Textdatei mit Tabulatoren, manuell nur für die letzten 30 Tage, bei FBA „Alle Bestellungen“) oder Abrechnungsbericht (ebenfalls tabulatorgetrennt). Die Datei kannst du direkt hierher ziehen. <a href="https://developer-docs.amazon.com/sp-api/docs/report-type-values-settlement" rel="noopener noreferrer" target="_blank">Amazon-Doku</a></p></details>
-      <details class="src"><summary><b>PayPal</b> <span class="tag ok">Export vorhanden</span></summary>
-        <p>Aktivitäten → Download → Zeitraum wählen (bis zu 12 Monate pro Anfrage) → CSV. Enthält Brutto, Gebühr und Netto. Viele Käufe über Vinted und Kleinanzeigen laufen über PayPal, nutze dafür das Stichwortfeld unten. <a href="https://www.paypal.com/ch/cshelp/article/wie-kann-ich-kontoausz%C3%BCge-und-berichte-anzeigen-und-herunterladen-help145" rel="noopener noreferrer" target="_blank">PayPal-Hilfe</a></p></details>
-      <details class="src"><summary><b>Vinted</b> <span class="tag no">Kein Verkaufsexport belegt</span></summary>
-        <p>Einen offiziellen Export der Verkäufe haben wir nicht gefunden. Möglichkeiten: Auszahlungen aus dem Online-Banking oder PayPal als CSV laden und mit dem Stichwort „Vinted“ filtern, oder die Verkaufsliste kopieren und unten einfügen. Du hast außerdem ein Auskunftsrecht nach Art. 15 DSGVO (Datenkopie) bei Vinted. Welche Daten dann enthalten sind, haben wir nicht geprüft.</p></details>
-      <details class="src"><summary><b>Kleinanzeigen</b> <span class="tag no">Kein Verkaufsexport belegt</span></summary>
-        <p>Auch hier haben wir keinen offiziellen Export gefunden. Nutze Bank- oder PayPal-Auszüge mit Stichwort „Kleinanzeigen“ oder trage Verkäufe im Tracker ein. Eine Datenauskunft nach Art. 15 DSGVO ist möglich. Bar bezahlte Verkäufe stehen in keiner Datei, die trägst du selbst ein.</p></details>
-      <details class="src"><summary><b>Online-Banking</b> <span class="tag ok">CSV bei fast allen Banken</span></summary>
-        <p>Umsätze als CSV exportieren. Importiert werden nur Zeilen mit dem Stichwort deiner Plattform, zum Beispiel „Vinted|Kleinanzeigen“. Die Plattform wird dann aus dem Verwendungszweck erkannt. Der Einkaufspreis fehlt in allen Bankdaten.</p></details>
-      <details class="src"><summary><b>Eigene Tabelle</b> <span class="tag ok">Funktioniert</span></summary>
-        <p>Die CSV aus dem Tracker lässt sich wieder importieren (Sicherung und Umzug auf ein anderes Gerät). Excel- oder Google-Sheets-Tabellen speicherst du als CSV und lädst sie hoch. Du kannst Tabellen auch kopieren und unten einfügen.</p></details>
+    <div class="src-groups" id="src-groups" data-tabs>
+      <div class="src-group">
+        <div class="src-group-label"><span class="dot ok"></span>Export vorhanden</div>
+        <div class="src-tiles" role="tablist" aria-label="Datenquelle wählen (mit Export)">
+          <button type="button" class="src-tile" role="tab" id="tab-ebay" aria-controls="src-ebay" aria-selected="true"><span class="mono">e</span><span class="src-name">eBay</span></button>
+          <button type="button" class="src-tile" role="tab" id="tab-etsy" aria-controls="src-etsy" aria-selected="false" tabindex="-1"><span class="mono">E</span><span class="src-name">Etsy</span></button>
+          <button type="button" class="src-tile" role="tab" id="tab-amazon" aria-controls="src-amazon" aria-selected="false" tabindex="-1"><span class="mono">a</span><span class="src-name">Amazon</span></button>
+          <button type="button" class="src-tile" role="tab" id="tab-paypal" aria-controls="src-paypal" aria-selected="false" tabindex="-1"><span class="mono">P</span><span class="src-name">PayPal</span></button>
+          <button type="button" class="src-tile" role="tab" id="tab-bank" aria-controls="src-bank" aria-selected="false" tabindex="-1"><span class="mono">€</span><span class="src-name">Online-Banking</span></button>
+          <button type="button" class="src-tile" role="tab" id="tab-own" aria-controls="src-own" aria-selected="false" tabindex="-1"><span class="mono">⊞</span><span class="src-name">Eigene Tabelle</span></button>
+        </div>
+      </div>
+      <div class="src-group">
+        <div class="src-group-label"><span class="dot no"></span>Kein Verkaufsexport belegt</div>
+        <div class="src-tiles" role="tablist" aria-label="Datenquelle wählen (ohne Export)">
+          <button type="button" class="src-tile" role="tab" id="tab-vinted" aria-controls="src-vinted" aria-selected="false" tabindex="-1"><span class="mono">V</span><span class="src-name">Vinted</span></button>
+          <button type="button" class="src-tile" role="tab" id="tab-kleinanzeigen" aria-controls="src-kleinanzeigen" aria-selected="false" tabindex="-1"><span class="mono">K</span><span class="src-name">Kleinanzeigen</span></button>
+        </div>
+      </div>
+
+      <div class="src-panels">
+        <article class="src-panel" role="tabpanel" id="src-ebay" aria-labelledby="tab-ebay">
+          <header><h4>eBay</h4><span class="tag ok">Export vorhanden</span></header>
+          <dl class="src-facts">
+            <div><dt>Wo</dt><dd>Verkäufer-Cockpit Pro → Zahlungen → Berichte bzw. Transaktionen</dd></div>
+            <div><dt>Format</dt><dd>CSV mit Bestellnummer, Beträgen und Gebühren</dd></div>
+            <div><dt>Gut zu wissen</dt><dd>Zusatzzeilen vor der Kopfzeile sind kein Problem. Ältere Daten sind nur begrenzt abrufbar, lade regelmäßig herunter.</dd></div>
+          </dl>
+          <a class="src-link" href="https://www.ebay.de/help/selling/fees-credits-invoices/reconciling-ebay-sales-transactions?id=4847" rel="noopener noreferrer" target="_blank">eBay-Hilfe öffnen</a>
+        </article>
+        <article class="src-panel" role="tabpanel" id="src-etsy" aria-labelledby="tab-etsy">
+          <header><h4>Etsy</h4><span class="tag ok">Export vorhanden</span></header>
+          <dl class="src-facts">
+            <div><dt>Wo</dt><dd>Shop-Manager → Einstellungen → Optionen → Daten herunterladen → Bestellungen</dd></div>
+            <div><dt>Format</dt><dd>CSV, Typ und Zeitraum wählbar</dd></div>
+            <div><dt>Gut zu wissen</dt><dd>Beträge sind oft englisch formatiert (1,240.00). SellCheck erkennt das.</dd></div>
+          </dl>
+          <a class="src-link" href="https://help.etsy.com/hc/de/articles/360000343328-Arbeitsblatt-mit-einer-Liste-deiner-Verk%C3%A4ufe-herunterladen" rel="noopener noreferrer" target="_blank">Etsy-Hilfe öffnen</a>
+        </article>
+        <article class="src-panel" role="tabpanel" id="src-amazon" aria-labelledby="tab-amazon">
+          <header><h4>Amazon</h4><span class="tag ok">Export vorhanden</span></header>
+          <dl class="src-facts">
+            <div><dt>Wo</dt><dd>Seller Central → Berichte: Bestellbericht oder Abrechnungsbericht</dd></div>
+            <div><dt>Format</dt><dd>Textdatei mit Tabulatoren, direkt hier hineinziehbar</dd></div>
+            <div><dt>Gut zu wissen</dt><dd>Der Bestellbericht lässt sich manuell nur für die letzten 30 Tage erzeugen. Bei FBA nutzt du „Alle Bestellungen“.</dd></div>
+          </dl>
+          <a class="src-link" href="https://developer-docs.amazon.com/sp-api/docs/report-type-values-settlement" rel="noopener noreferrer" target="_blank">Amazon-Dokumentation öffnen</a>
+        </article>
+        <article class="src-panel" role="tabpanel" id="src-paypal" aria-labelledby="tab-paypal">
+          <header><h4>PayPal</h4><span class="tag ok">Export vorhanden</span></header>
+          <dl class="src-facts">
+            <div><dt>Wo</dt><dd>Aktivitäten → Download, Zeitraum wählen</dd></div>
+            <div><dt>Format</dt><dd>CSV mit Brutto, Gebühr und Netto (bis zu 12 Monate je Anfrage)</dd></div>
+            <div><dt>Gut zu wissen</dt><dd>Viele Käufe über Vinted und Kleinanzeigen laufen über PayPal. Nutze dafür das Stichwortfeld beim Import.</dd></div>
+          </dl>
+          <a class="src-link" href="https://www.paypal.com/ch/cshelp/article/wie-kann-ich-kontoausz%C3%BCge-und-berichte-anzeigen-und-herunterladen-help145" rel="noopener noreferrer" target="_blank">PayPal-Hilfe öffnen</a>
+        </article>
+        <article class="src-panel" role="tabpanel" id="src-bank" aria-labelledby="tab-bank">
+          <header><h4>Online-Banking</h4><span class="tag ok">CSV bei fast allen Banken</span></header>
+          <dl class="src-facts">
+            <div><dt>Wo</dt><dd>Umsatzübersicht → Export als CSV</dd></div>
+            <div><dt>Format</dt><dd>CSV mit Buchungstag, Verwendungszweck und Betrag</dd></div>
+            <div><dt>Gut zu wissen</dt><dd>Importiert werden nur Zeilen mit deinem Stichwort, zum Beispiel „Vinted|Kleinanzeigen“. Der Einkaufspreis fehlt in allen Bankdaten und wird im Tracker nachgetragen.</dd></div>
+          </dl>
+        </article>
+        <article class="src-panel" role="tabpanel" id="src-own" aria-labelledby="tab-own">
+          <header><h4>Eigene Tabelle</h4><span class="tag ok">Funktioniert</span></header>
+          <dl class="src-facts">
+            <div><dt>Wo</dt><dd>Excel oder Google Sheets → als CSV speichern</dd></div>
+            <div><dt>Format</dt><dd>CSV mit Kopfzeile. Auch aus der Zwischenablage einfügbar.</dd></div>
+            <div><dt>Gut zu wissen</dt><dd>Der CSV-Export aus dem Tracker lässt sich wieder importieren, auch als Sicherung oder für ein anderes Gerät.</dd></div>
+          </dl>
+        </article>
+        <article class="src-panel" role="tabpanel" id="src-vinted" aria-labelledby="tab-vinted">
+          <header><h4>Vinted</h4><span class="tag no">Kein Verkaufsexport belegt</span></header>
+          <dl class="src-facts">
+            <div><dt>Wo</dt><dd>Einen offiziellen Export der Verkäufe haben wir nicht gefunden.</dd></div>
+            <div><dt>Möglichkeiten</dt><dd>Bank- oder PayPal-Auszug mit dem Stichwort „Vinted“ importieren, oder die Verkaufsliste kopieren und unten einfügen.</dd></div>
+            <div><dt>Gut zu wissen</dt><dd>Du kannst eine Datenkopie nach Art. 15 DSGVO verlangen. Welche Daten sie enthält, haben wir nicht geprüft.</dd></div>
+          </dl>
+        </article>
+        <article class="src-panel" role="tabpanel" id="src-kleinanzeigen" aria-labelledby="tab-kleinanzeigen">
+          <header><h4>Kleinanzeigen</h4><span class="tag no">Kein Verkaufsexport belegt</span></header>
+          <dl class="src-facts">
+            <div><dt>Wo</dt><dd>Auch hier haben wir keinen offiziellen Export gefunden.</dd></div>
+            <div><dt>Möglichkeiten</dt><dd>Bank- oder PayPal-Auszug mit dem Stichwort „Kleinanzeigen“ importieren oder Verkäufe im Tracker eintragen.</dd></div>
+            <div><dt>Gut zu wissen</dt><dd>Bar bezahlte Verkäufe stehen in keiner Datei, die trägst du selbst ein. Eine Datenauskunft nach Art. 15 DSGVO ist möglich.</dd></div>
+          </dl>
+        </article>
+      </div>
     </div>
 
     <h3 style="margin-top:28px">2. Datei laden</h3>
@@ -346,17 +426,59 @@
     <p id="x-msg" class="small muted" role="status" aria-live="polite" style="min-height:1.4em"></p>
 
     <h3 style="margin-top:24px">So kommst du zur Steuererklärung</h3>
-    <div class="src-grid">
-      <details class="src"><summary><b>Selbst in Mein ELSTER eintragen</b> <span class="tag ok">Möglich</span></summary>
-        <p>Nach Ratgeberangaben: Mein ELSTER → Formulare &amp; Leistungen → Alle Formulare → Gewinnermittlung → Anlage EÜR. Die Beträge aus dem Report trägst du per Hand ein. Ordne sie über die Bezeichnung zu, nicht über Zeilennummern, denn die ändern sich von Jahr zu Jahr. Nicht betroffene Felder bleiben leer. Den Gewinn übernimmst du in die Anlage G (Einkünfte aus Gewerbebetrieb). Pro Betrieb gibt es eine Anlage EÜR.</p></details>
-      <details class="src"><summary><b>Steuersoftware (WISO, smartsteuer, Taxfix …)</b> <span class="tag no">Kein CSV-Import belegt</span></summary>
-        <p>Für diese Programme haben wir keinen Import von Einnahmen und Ausgaben als CSV gefunden. WISO Steuer fragt die Beträge in Feldern ab und übermittelt über die ELSTER-Schnittstelle. Nimm dafür die Summen aus dem Report. Prüfe den aktuellen Funktionsumfang beim Anbieter.</p></details>
-      <details class="src"><summary><b>Steuerberater</b> <span class="tag ok">Empfohlen ab Gewerbe</span></summary>
-        <p>Gib ihm den Report als PDF und das Journal als CSV (eine Zeile je Buchung, mit Kategorie und Belegnummer). Das DATEV-Format erzeugen wir bewusst nicht: Es braucht Kontenrahmen und Beraternummer, und ein fehlerhafter Import wäre schlimmer als keiner. Dein Steuerberater kann das Journal übernehmen.</p></details>
-      <details class="src"><summary><b>Auf Papier einreichen</b> <span class="tag no">Nur im Härtefall</span></summary>
-        <p>Die Anlage EÜR ist grundsätzlich elektronisch zu übermitteln. Papier ist nur auf Antrag in Härtefällen möglich (§ 150 Abs. 8 AO). Eine formlose Gewinnermittlung unter 17.500 € Einnahmen gibt es laut aktuellen Quellen seit 2017 nicht mehr. Ältere Ratgeber nennen sie noch. Der Report taugt als Beleg und Anlage, ersetzt aber die Anlage EÜR nicht.</p></details>
-      <details class="src"><summary><b>Privat verkauft (Anlage SO)</b> <span class="tag ok">Nur wenige Fälle</span></summary>
-        <p>Gebrauchsgegenstände wie Kleidung sind nicht steuerbar. Steuerbar können andere Gegenstände sein, die du innerhalb eines Jahres nach dem Kauf verkaufst, und nur, wenn der Gesamtgewinn im Jahr mindestens 1.000 € erreicht (§ 23 EStG; früher 600 €). Der Modus „privat“ listet deine Verkäufe dafür auf. Einordnung und Eintrag in die Anlage SO prüfst du selbst oder mit Beratung.</p></details>
+    <div class="src-groups" data-tabs>
+      <div class="src-group">
+        <div class="src-group-label"><span class="dot ok"></span>Abgabeweg wählen</div>
+        <div class="src-tiles" role="tablist" aria-label="Abgabeweg wählen">
+          <button type="button" class="src-tile" role="tab" id="tab-elster" aria-controls="tx-elster" aria-selected="true"><span class="mono">E</span><span class="src-name">Mein ELSTER</span></button>
+          <button type="button" class="src-tile" role="tab" id="tab-software" aria-controls="tx-software" aria-selected="false" tabindex="-1"><span class="mono">S</span><span class="src-name">Steuersoftware</span></button>
+          <button type="button" class="src-tile" role="tab" id="tab-berater" aria-controls="tx-berater" aria-selected="false" tabindex="-1"><span class="mono">B</span><span class="src-name">Steuerberater</span></button>
+          <button type="button" class="src-tile" role="tab" id="tab-papier" aria-controls="tx-papier" aria-selected="false" tabindex="-1"><span class="mono">P</span><span class="src-name">Papier</span></button>
+          <button type="button" class="src-tile" role="tab" id="tab-so" aria-controls="tx-so" aria-selected="false" tabindex="-1"><span class="mono">§</span><span class="src-name">Privat (Anlage SO)</span></button>
+        </div>
+      </div>
+      <div class="src-panels">
+        <article class="src-panel" role="tabpanel" id="tx-elster" aria-labelledby="tab-elster">
+          <header><h4>Selbst in Mein ELSTER eintragen</h4><span class="tag ok">Möglich</span></header>
+          <dl class="src-facts">
+            <div><dt>Wo</dt><dd>Nach Ratgeberangaben: Mein ELSTER → Formulare &amp; Leistungen → Alle Formulare → Gewinnermittlung → Anlage EÜR. Die Oberfläche kann abweichen.</dd></div>
+            <div><dt>So geht's</dt><dd>Die Beträge aus dem Report trägst du per Hand ein. Ordne sie über die Bezeichnung zu, nicht über Zeilennummern, denn die ändern sich von Jahr zu Jahr. Nicht betroffene Felder bleiben leer.</dd></div>
+            <div><dt>Danach</dt><dd>Den Gewinn übernimmst du in die Anlage G (Einkünfte aus Gewerbebetrieb). Pro Betrieb gibt es eine Anlage EÜR.</dd></div>
+          </dl>
+        </article>
+        <article class="src-panel" role="tabpanel" id="tx-software" aria-labelledby="tab-software">
+          <header><h4>Steuersoftware (WISO, smartsteuer, Taxfix …)</h4><span class="tag no">Kein CSV-Import belegt</span></header>
+          <dl class="src-facts">
+            <div><dt>Stand</dt><dd>Für diese Programme haben wir keinen Import von Einnahmen und Ausgaben als CSV gefunden.</dd></div>
+            <div><dt>So geht's</dt><dd>WISO Steuer fragt die Beträge in Feldern ab und übermittelt über die ELSTER-Schnittstelle. Nimm dafür die Summen aus dem Report.</dd></div>
+            <div><dt>Gut zu wissen</dt><dd>Prüfe den aktuellen Funktionsumfang beim Anbieter.</dd></div>
+          </dl>
+        </article>
+        <article class="src-panel" role="tabpanel" id="tx-berater" aria-labelledby="tab-berater">
+          <header><h4>Steuerberater</h4><span class="tag ok">Empfohlen ab Gewerbe</span></header>
+          <dl class="src-facts">
+            <div><dt>Du gibst</dt><dd>Den Report als PDF und das Journal als CSV (eine Zeile je Buchung, mit Kategorie und Belegnummer).</dd></div>
+            <div><dt>Format</dt><dd>Das DATEV-Format erzeugen wir bewusst nicht: Es braucht Kontenrahmen und Beraternummer, und ein fehlerhafter Import wäre schlimmer als keiner.</dd></div>
+            <div><dt>Gut zu wissen</dt><dd>Dein Steuerberater kann das Journal übernehmen.</dd></div>
+          </dl>
+        </article>
+        <article class="src-panel" role="tabpanel" id="tx-papier" aria-labelledby="tab-papier">
+          <header><h4>Auf Papier einreichen</h4><span class="tag no">Nur im Härtefall</span></header>
+          <dl class="src-facts">
+            <div><dt>Regel</dt><dd>Die Anlage EÜR ist grundsätzlich elektronisch zu übermitteln. Papier ist nur auf Antrag in Härtefällen möglich (§ 150 Abs. 8 AO).</dd></div>
+            <div><dt>Formlos?</dt><dd>Eine formlose Gewinnermittlung unter 17.500 € Einnahmen gibt es laut aktuellen Quellen seit 2017 nicht mehr. Ältere Ratgeber nennen sie noch.</dd></div>
+            <div><dt>Der Report</dt><dd>Er taugt als Beleg und Anlage, ersetzt aber die Anlage EÜR nicht.</dd></div>
+          </dl>
+        </article>
+        <article class="src-panel" role="tabpanel" id="tx-so" aria-labelledby="tab-so">
+          <header><h4>Privat verkauft (Anlage SO)</h4><span class="tag ok">Nur wenige Fälle</span></header>
+          <dl class="src-facts">
+            <div><dt>Regel</dt><dd>Gebrauchsgegenstände wie Kleidung sind nicht steuerbar. Steuerbar können andere Gegenstände sein, die du innerhalb eines Jahres nach dem Kauf verkaufst, und nur, wenn der Gesamtgewinn im Jahr mindestens 1.000 € erreicht (§ 23 EStG, früher 600 €).</dd></div>
+            <div><dt>Hier</dt><dd>Der Modus „privat“ listet deine Verkäufe dafür auf.</dd></div>
+            <div><dt>Gut zu wissen</dt><dd>Einordnung und Eintrag in die Anlage SO prüfst du selbst oder mit Beratung.</dd></div>
+          </dl>
+        </article>
+      </div>
     </div>
   </section>
 
