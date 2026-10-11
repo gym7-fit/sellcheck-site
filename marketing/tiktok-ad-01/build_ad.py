@@ -24,10 +24,13 @@ from multiprocessing import Pool
 
 from PIL import Image, ImageDraw, ImageFont
 
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "logo-final"))
+import sellcheck_logo as LOGO  # echtes SellCheck-Logo (Variante 6B)
+
 W, H, FPS, S = 1080, 1920, 30, 2          # S = Supersampling-Faktor
 # Dauer je Szene = Basiszeit der Animation x Streckung (langsamer = besser lesbar)
-BASE = {1: 2.6, 2: 3.2, 3: 7.4, 4: 2.8, 5: 3.1}
-SLOW = {1: 1.35, 2: 1.5, 3: 1.25, 4: 1.25, 5: 1.2}
+BASE = {1: 2.6, 2: 3.2, 3: 8.4, 4: 2.8, 5: 3.1}
+SLOW = {1: 1.35, 2: 1.5, 3: 1.2, 4: 1.25, 5: 1.2}
 START = {}
 _t = 0.0
 for _k in (1, 2, 3, 4, 5):
@@ -58,7 +61,7 @@ WEIGHT = {"bold": 0, "demi": 2, "medium": 5, "regular": 7, "heavy": 8}
 
 # Szenen (Sekunden)
 T_S1, T_S2, T_S3, T_S4, T_S5 = (START[k] for k in (1, 2, 3, 4, 5))
-S3_B = 4.4  # Beat b (Report) beginnt in Basiszeit 4,4 s nach Szenenstart (Szene 3)
+S3_B = 5.4  # Beat b (Report) beginnt in Basiszeit 5,4 s nach Szenenstart (Szene 3)
 
 
 def at(scene, base_t):
@@ -148,16 +151,10 @@ def pop_segments(L, cx, base_y, segs, t, start, dur=0.35):
 
 
 def brand(L, t):
-    """Marke von Sekunde 0 an (kleines Logo + Wortmarke), mittig oben in der Safe Zone."""
-    y = 250
-    wm_w = L.width("SellCheck", 46, "heavy")
-    total = 56 + 16 + wm_w
-    x0 = 540 - total / 2
-    L.rrect(x0, y - 28, x0 + 56, y + 28, 15, fill=col(LIME))
-    L.line([(x0 + 15, y + 2), (x0 + 25, y + 13), (x0 + 42, y - 11)], col(INK), 7)
-    L.text(x0 + 56 + 16, y + 16, "Sell", 46, "heavy", col(PAPER), "ls")
-    sell_w = L.width("Sell", 46, "heavy")
-    L.text(x0 + 56 + 16 + sell_w, y + 16, "Check", 46, "heavy", col(LIME), "ls")
+    """Marke von Sekunde 0 an (echtes Logo, klein), mittig oben in der Safe Zone."""
+    h = 66
+    w, _ = LOGO.lockup_size(h * S)
+    LOGO.draw_lockup(L.d, 540 * S - w / 2, (250 - h / 2) * S, h * S, on_dark=True)
 
 
 def pill(L, cx, cy, w, h, fill, outline=None):
@@ -247,53 +244,75 @@ def money(v):
 
 
 def scene_demo(L, t):
-    # Titelzeile je nach Beat
-    if t < 1.9:
+    # Titelzeile je nach Beat (Basiszeit)
+    if t < 1.5:
         pop_text(L, 540, 400, "Datei rein.", 100, "heavy", PAPER, t, 0.0)
     elif t < S3_B:
-        pop_text(L, 540, 400, "Ampel an.", 100, "heavy", LIME, t, 1.9)
+        pop_text(L, 540, 400, "Ampel an.", 100, "heavy", LIME, t, 1.5)
     else:
         pop_text(L, 540, 400, "Report raus.", 100, "heavy", PAPER, t, S3_B)
 
-    # Beat a: Karte mit Ampel
+    # Beat a1: Ablagefläche, Datei landet darin (nichts überlagert anderen Inhalt)
+    zone_a = 1.0 - ease_out(prog(t, 1.45, 0.25))
+    if zone_a > 0:
+        a = 255 * zone_a
+        landed = t >= 0.85
+        z0, z1 = 110, 910
+        L.rrect(z0, 520, z1, 1080, 44, fill=col(INK2, a), outline=col(LIME if landed else (74, 82, 94), a), width=4)
+        # Pfeil nach oben und Hinweis
+        L.line([(510, 640), (510, 590)], col(MUTED, a), 8)
+        L.line([(486, 612), (510, 588), (534, 612)], col(MUTED, a), 8)
+        L.text(510, 700, "CSV hier ablegen", 40, "medium", col(MUTED, a), "mm")
+        fp = prog(t, 0.1, 0.7)
+        if fp > 0:
+            fy = 380 + ease_out(fp) * (860 - 380)
+            sc = 1.0 + (0.06 * math.sin(clamp((t - 0.8) / 0.25) * math.pi) if t >= 0.8 else 0.0)
+            pill(L, 510, fy, 640 * sc, 104 * sc, col(PAPER, a))
+            # kleines Dokument-Symbol
+            L.rrect(510 - 290 * sc, fy - 26 * sc, 510 - 252 * sc, fy + 26 * sc, 6, fill=col(INK, a))
+            L.text(510 - 230 * sc, fy, "eBay_Transaktionen.csv", 34 * sc, "bold", col(INK, a), "lm")
+        if landed:
+            lp = prog(t, 0.9, 0.3)
+            check_circle(L, 510 - 130, 990, 24 * (0.6 + 0.4 * ease_back(lp)))
+            L.text(510 - 90, 990, "Datei gelesen", 40, "heavy", col(PAPER, a * clamp(lp * 3)), "lm")
+
+    # Beat a2: Karte mit Ampel
     slide_out = ease_out(prog(t, S3_B - 0.05, 0.45))
-    if slide_out < 1.0:
+    card_p = ease_out(prog(t, 1.55, 0.55))
+    if slide_out < 1.0 and card_p > 0:
         ox = -1100 * slide_out
-        cp = ease_out(prog(t, 0.15, 0.55))
-        oy = (1 - cp) * 700
+        oy = (1 - card_p) * 700
         x0, y0, x1, y1 = 80 + ox, 500 + oy, 940 + ox, 1420 + oy
-        red_hit = t >= 3.05
-        L.rrect(x0, y0, x1, y1, 44, fill=col(PAPER), outline=col(RED) if red_hit and (t % 0.5) < 0.3 and t < 3.9 else None, width=6)
+        red_t = 4.15
+        flash = t >= red_t and t < red_t + 0.8 and (t % 0.5) < 0.3
+        L.rrect(x0, y0, x1, y1, 44, fill=col(PAPER), outline=col(RED) if flash else None, width=6)
         L.text(x0 + 50, y0 + 62, "Meldegrenzen 2026", 46, "heavy", col(INK), "lm")
         pill(L, x1 - 130, y0 + 62, 190, 50, col(LIME))
         L.text(x1 - 130, y0 + 62, "Ampel", 28, "heavy", col(INK), "mm")
         L.text(x1 - 50, y1 - 34, "Beispieldaten", 24, "medium", col(DARKMUTED), "rm")
-        # Datei-Chip fällt ein
-        fp = prog(t, 0.25, 0.5)
-        if 0 < fp < 1:
-            fy = y0 - 260 + ease_out(fp) * 330
-            pill(L, 540 + ox, fy, 560, 78, col(INK2))
-            L.text(540 + ox, fy, "eBay_Transaktionen.csv", 32, "bold", col(PAPER), "mm")
         for i, (name, v, lim, label, money_mode) in enumerate(ROWS):
-            st = 0.9 + i * 0.28
+            st = 2.0 + i * 0.28
             rp = prog(t, st, 0.35)
             if rp <= 0:
                 continue
             ry = y0 + 150 + i * 182 + (1 - ease_out(rp)) * 30
-            a = 255 * clamp(rp * 3)
-            L.circle(x0 + 62, ry + 20, 14, col(DOT[name], a))
-            L.text(x0 + 90, ry + 20, name, 42, "bold", col(INK, a), "lm")
+            k = clamp(rp * 3)
+
+            def fc(c, k=k):  # auf dem Karton überblenden statt Transparenz (sonst entsteht ein Loch)
+                return tuple(int(PAPER[j] + (c[j] - PAPER[j]) * k) for j in range(3)) + (255,)
+            L.circle(x0 + 62, ry + 20, 14, fc(DOT[name]))
+            L.text(x0 + 90, ry + 20, name, 42, "bold", fc(INK), "lm")
             fillp = ease_out(prog(t, st + 0.15, 0.8))
             val = v * fillp
             vt = f"{money(val)} / {money(lim)} €" if money_mode else f"{int(round(val))} / {lim} Verkäufe"
-            L.text(x1 - 50, ry + 20, vt, 36, "medium", col(DARKMUTED, a), "rm")
+            L.text(x1 - 50, ry + 20, vt, 36, "medium", fc(DARKMUTED), "rm")
             bx0, bx1, by = x0 + 50, x1 - 50, ry + 62
-            L.rrect(bx0, by, bx1, by + 30, 15, fill=col(TRACK, a))
+            L.rrect(bx0, by, bx1, by + 30, 15, fill=fc(TRACK))
             ratio = min(1.0, v / lim) * fillp
             if ratio > 0.01:
                 final = min(1.0, v / lim)
                 colr = RED if final >= 1 else (AMBER if final >= 0.8 else GREEN)
-                L.rrect(bx0, by, bx0 + (bx1 - bx0) * ratio, by + 30, 15, fill=col(colr, a))
+                L.rrect(bx0, by, bx0 + (bx1 - bx0) * ratio, by + 30, 15, fill=fc(colr))
             if fillp > 0.95:
                 final = min(1.0, v / lim)
                 if final >= 1:
@@ -302,7 +321,7 @@ def scene_demo(L, t):
                     txt, c2 = "Fast erreicht", (176, 112, 0)
                 else:
                     txt, c2 = "Alles im grünen Bereich", DEEPGREEN
-                L.text(bx0, by + 64, txt, 31, "bold", col(c2, a), "lm")
+                L.text(bx0, by + 64, txt, 31, "bold", fc(c2), "lm")
 
     # Beat b: Report-Blatt
     sp = ease_out(prog(t, S3_B + 0.1, 0.6))
@@ -345,23 +364,25 @@ def scene_benefits(L, t):
 
 def scene_cta(L, t):
     p = prog(t, 0.0, 0.5)
-    sc = 0.6 + 0.4 * ease_back(p)
-    size = 190 * sc
-    L.rrect(540 - size / 2, 520 - size / 2, 540 + size / 2, 520 + size / 2, size * 0.27, fill=col(LIME, 255 * clamp(p * 3)))
-    cx, cy = 540, 520
-    k = size / 190
-    L.line([(cx - 44 * k, cy + 4 * k), (cx - 14 * k, cy + 36 * k), (cx + 48 * k, cy - 34 * k)], col(INK), 22 * k)
-    pop_segments(L, 540, 860, [("Sell", 128, "heavy", PAPER), ("Check", 128, "heavy", LIME)], t, 0.25)
-    pop_text(L, 540, 1000, "Gratis testen.", 96, "heavy", PAPER, t, 0.6)
+    sc = 0.75 + 0.25 * ease_back(p)
+    h = 170 * sc
+    w, _ = LOGO.lockup_size(h * S)
+    # Logo wird mit Alpha eingeblendet: auf eigener Ebene zeichnen und zusammenführen
+    tmp = Image.new("RGBA", L.im.size, (0, 0, 0, 0))
+    LOGO.draw_lockup(ImageDraw.Draw(tmp), 540 * S - w / 2, (640 - h / 2) * S, h * S, on_dark=True)
+    a = tmp.getchannel("A").point(lambda v: int(v * clamp(p * 3)))
+    tmp.putalpha(a)
+    L.im.alpha_composite(tmp)
+    pop_text(L, 540, 860, "Gratis testen.", 100, "heavy", PAPER, t, 0.5)
     pp = prog(t, 1.0, 0.4)
     if pp > 0:
         pulse = 1 + 0.03 * math.sin(max(0, t - 1.4) * 9)
-        pill(L, 540, 1160, 640 * pulse * (0.85 + 0.15 * ease_back(pp)), 120 * pulse, col(LIME, 255 * clamp(pp * 3)))
-        L.text(540 - 30, 1160, "Link unten antippen", 46, "heavy", col(INK, 255 * clamp(pp * 3)), "mm")
-        ax, ay = 540 + 255, 1160
+        pill(L, 540, 1060, 640 * pulse * (0.85 + 0.15 * ease_back(pp)), 120 * pulse, col(LIME, 255 * clamp(pp * 3)))
+        L.text(540 - 30, 1060, "Link unten antippen", 46, "heavy", col(INK, 255 * clamp(pp * 3)), "mm")
+        ax, ay = 540 + 255, 1060
         L.line([(ax, ay - 14), (ax, ay + 16)], col(INK, 255 * clamp(pp * 3)), 8)
         L.line([(ax - 14, ay + 3), (ax, ay + 18), (ax + 14, ay + 3)], col(INK, 255 * clamp(pp * 3)), 8)
-    pop_text(L, 540, 1330, "Orientierung, keine Steuer- oder Rechtsberatung.", 28, "medium", MUTED, t, 1.6, dur=0.3)
+    pop_text(L, 540, 1250, "Orientierung, keine Steuer- oder Rechtsberatung.", 28, "medium", MUTED, t, 1.6, dur=0.3)
 
 
 SCENES = {
@@ -428,10 +449,36 @@ def vo_lines(variant):
     return [
         (at(1, 0.15), "Vinted meldet dich ab dreißig Verkäufen.", START[2]),
         (at(2, 0.10), "Aber du verkaufst nicht nur dort. Und jede Plattform zählt einzeln.", START[3]),
-        (at(3, 1.15), "Lade deine Verkäufe hoch, sieh die Ampel pro Plattform, und druck den Report aus.", START[4] - 0.2),
+        (at(3, 0.30), "Lade deine Verkäufe hoch.", at(3, 1.5)),
+        (at(3, 1.75), "Sieh die Ampel pro Plattform.", at(3, S3_B - 0.2)),
+        (at(3, S3_B + 0.10), "Und druck den Report aus.", START[4] - 0.2),
         (at(4, 0.10), "Alle Plattformen. Ein Überblick.", START[5]),
         (at(5, 0.0), "SellCheck. Gratis testen. Link unten antippen.", DUR - 0.25),
     ]
+
+
+def fmt_srt(t):
+    ms = int(round(t * 1000))
+    return f"{ms // 3600000:02d}:{ms // 60000 % 60:02d}:{ms // 1000 % 60:02d},{ms % 1000:03d}"
+
+
+def write_script_files():
+    """Sprechertext mit Zeitmarken (zum Selbst-Einsprechen) und Untertitel-Datei (.srt, z. B. für CapCut)."""
+    lines = vo_lines("A")
+    rows, srt = [], []
+    for i, (t0, text, limit) in enumerate(lines, 1):
+        words = len(text.split())
+        end = min(t0 + max(1.8, words / 2.6), limit)
+        rows.append(f"| {t0:5.1f} s | {end:5.1f} s | {text} |")
+        srt.append(f"{i}\n{fmt_srt(t0)} --> {fmt_srt(end)}\n{text}\n")
+    md = ("# Sprechertext zur Ad (Variante A)\n\n"
+          f"Länge des Videos: {DUR:.1f} s. Die Zeiten sind Einsatzpunkte: Beginne den Satz zu diesem Zeitpunkt und "
+          "sprich so, dass er vor dem nächsten Eintrag endet. Locker und freundlich, nicht werblich.\n\n"
+          "| Start | spätestens Ende | Text |\n| --- | --- | --- |\n" + "\n".join(rows) + "\n")
+    os.makedirs(OUT, exist_ok=True)
+    open(os.path.join(OUT, "sprechertext.md"), "w", encoding="utf-8").write(md)
+    open(os.path.join(OUT, "untertitel.srt"), "w", encoding="utf-8").write("\n".join(srt))
+    return md
 
 
 def tts(text, name):
@@ -537,10 +584,11 @@ def build_audio(variant, path, with_voice=False):
         pop(at(2, 0.0), 640)
         pop(at(2, 0.18), 720)
 
-    add(sfx, at(3, 0.3), tone(180, 0.18, "sine", 8.0, 60), 0.5)    # Datei landet
+    add(sfx, at(3, 0.8), tone(180, 0.18, "sine", 8.0, 60), 0.5)    # Datei landet
+    ding(at(3, 0.95), 784.0)                                           # "Datei gelesen"
     for i in range(4):
-        tick(at(3, 0.9 + i * 0.28 + 0.15), 1100 + i * 120)
-    blip_down(at(3, 3.05))
+        tick(at(3, 2.0 + i * 0.28 + 0.15), 1100 + i * 120)
+    blip_down(at(3, 4.15))
     ding(at(3, S3_B + 1.6), 659.25)                                 # Summe ist oben angekommen
     for i, f in enumerate((523.25, 659.25, 783.99)):
         ding(at(4, 0.35 + i * 0.4), f)
@@ -607,7 +655,7 @@ def main():
             for k, _ in enumerate(pool.imap_unordered(render_frame, [(i, variant) for i in range(NF)], chunksize=8)):
                 if k % 150 == 0:
                     print(f"  {k}/{NF}", flush=True)
-    for with_voice in ([False, True] if variant == "A" else [False]):
+    for with_voice in ([False, True] if (variant == "A" and os.environ.get("AD_VO") == "1") else [False]):
         tag = "mit_Sprecher" if with_voice else "ohne_Sprecher"
         print(f"Ton ({tag}) …", flush=True)
         wav = os.path.join(FRAMES, f"audio_{variant}_{tag}.wav")
@@ -616,6 +664,8 @@ def main():
         print("Encoding …", flush=True)
         encode(variant, wav, mp4)
         print("Fertig:", mp4, flush=True)
+    if variant == "A":
+        write_script_files()
 
 
 if __name__ == "__main__":

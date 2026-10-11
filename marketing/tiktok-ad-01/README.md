@@ -1,20 +1,19 @@
-# TikTok-Ad 01: „Meldegrenze“ (Stand 11.10.2026, Version 2)
+# TikTok-Ad 01: „Meldegrenze“ (Stand 11.10.2026, Version 3)
 
-Version 2 nach Feedback: Texte stehen länger (Szenen gestreckt), keine Rausch-Effekte mehr, zusätzlich eine Fassung mit Sprecher.
+Version 3 nach Feedback: echtes Logo (Variante 6B), keine Überlagerung mehr in der Demo, ohne Computerstimme.
 
 | Datei | Inhalt |
 | --- | --- |
-| `out/sellcheck_tiktok_ad_A_mit_Sprecher.mp4` | Hook A, Systemstimme (macOS „Anna“), Musik leiser darunter |
-| `out/sellcheck_tiktok_ad_A_ohne_Sprecher.mp4` | Hook A, nur Musikbett und weiche Effekte (zum Einsprechen oder für TikTok-Musik) |
-| `out/sellcheck_tiktok_ad_B_ohne_Sprecher.mp4` | Hook B („POV: 4 Plattformen …“) zum Testen gegen A |
+| `out/sellcheck_tiktok_ad_A_ohne_Sprecher.mp4` | Hook A „Vinted meldet dich ab 30 Verkäufen“, Musikbett und weiche Effekte |
+| `out/sprechertext.md` | Sprechertext mit Einsatzzeiten zum Selbst-Einsprechen |
+| `out/untertitel.srt` | Untertitel mit denselben Zeiten (z. B. für CapCut) |
 
-Länge 24,8 s, 1080×1920, 30 fps, H.264 + AAC. Hook A: „Vinted meldet dich ab 30 Verkäufen.“ mit tickendem Zähler.
-Die Videos entstehen mit `python3 marketing/tiktok-ad-01/build_ad.py A` (oder `B`). Texte, Zeiten und Sprechertext stehen im Skript.
-Andere Stimme: `AD_VOICE=Flo python3 …` (verfügbar auf diesem Mac: Anna, Flo, Sandy, Shelley, Eddy, Reed, Rocko). Tempo: `AD_VOICE_RATE=150`.
+Länge 25,6 s, 1080×1920, 30 fps, H.264 + AAC. Erzeugen: `python3 marketing/tiktok-ad-01/build_ad.py A`.
+Die Systemstimme lässt sich mit `AD_VO=1` weiterhin erzeugen (`…_mit_Sprecher.mp4`), klingt aber künstlich und ist nicht empfohlen.
+Das Logo kommt aus `marketing/logo-final/sellcheck_logo.py`.
 
-Zeitplan: Hook 0–3,5 s · Problem 3,5–8,3 s · Demo 8,3–17,6 s · Nutzen 17,6–21,1 s · Handlung 21,1–24,8 s.
-Jeder Inhalt steht nach dem Einblenden mindestens etwa 1,2 s, die letzten Zeilen jeder Szene 1,5 s und mehr.
-Wer auf 15 s kürzen will: Szene „Nutzen“ streichen und die Demo straffen (Streckungsfaktoren `SLOW` im Skript).
+Zeitplan: Hook 0–3,5 s · Problem 3,5–8,3 s · Demo 8,3–18,4 s · Nutzen 18,4–21,9 s · Handlung 21,9–25,6 s.
+Demo in drei Schritten: Datei ablegen („Datei rein.“), Ampel („Ampel an.“), Report („Report raus.“).
 
 ## Was die Recherche ergeben hat (und wie es umgesetzt ist)
 
@@ -35,15 +34,15 @@ Quellen sind überwiegend Agentur- und Tool-Blogs, nicht TikTok selbst. Richtwer
 Technik (TikTok In-Feed, laut Hilfe-Center, Stand Juni 2026): MP4 oder MOV, 9:16, mindestens 540×960, höchstens 500 MB, mindestens 516 kbit/s.
 Unsere Dateien: 1080×1920, etwa 6 MB, H.264. Das passt.
 
-## Skript (Bild und Sprecher-Text, so wie er in der Fassung mit Sprecher gesprochen wird)
+## Skript (Bild und Sprecher-Text, Einsatzzeiten stehen in `out/sprechertext.md`)
 
 | Zeit | Bild | Sprecher |
 | --- | --- | --- |
 | 0,0–3,5 | „Vinted meldet dich ab 30 Verkäufen.“ Zähler 27, 28, 29, 30, rot: „Meldegrenze erreicht“ | „Vinted meldet dich ab dreißig Verkäufen.“ |
 | 3,5–8,3 | „Aber du verkaufst nicht nur dort.“ Vinted, Kleinanzeigen, eBay, Etsy mit „?“. „Jede zählt einzeln.“ | „Aber du verkaufst nicht nur dort. Und jede Plattform zählt einzeln.“ |
-| 8,3–17,6 | „Datei rein. Ampel an. Report raus.“ Ampel mit vier Plattformen, danach Report mit Gewinn | „Lade deine Verkäufe hoch, sieh die Ampel pro Plattform, und druck den Report aus.“ |
-| 17,6–21,1 | Drei Haken: Alle Plattformen, Meldegrenzen als Ampel, Steuer-Report zum Drucken | „Alle Plattformen. Ein Überblick.“ |
-| 21,1–24,8 | Logo, „Gratis testen.“, „Link unten antippen“ | „SellCheck. Gratis testen. Link unten antippen.“ |
+| 8,3–18,4 | „Datei rein. Ampel an. Report raus.“ Ampel mit vier Plattformen, danach Report mit Gewinn | „Lade deine Verkäufe hoch. Sieh die Ampel pro Plattform. Und druck den Report aus.“ |
+| 18,4–21,9 | Drei Haken: Alle Plattformen, Meldegrenzen als Ampel, Steuer-Report zum Drucken | „Alle Plattformen. Ein Überblick.“ |
+| 21,9–25,6 | Logo, „Gratis testen.“, „Link unten antippen“ | „SellCheck. Gratis testen. Link unten antippen.“ |
 
 Variante B ersetzt die ersten sechs Sekunden: „POV: Du verkaufst auf 4 Plattformen und hast keine Ahnung, wo du stehst.“, dann „Ab 30 Verkäufen oder 2.000 € im Jahr meldet dich die Plattform an die Steuerbehörde. Jede Plattform zählt einzeln. Meldung heißt nicht automatisch: Steuern zahlen.“
 
