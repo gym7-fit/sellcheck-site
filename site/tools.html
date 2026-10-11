@@ -244,45 +244,35 @@
       <small>.csv, .txt, .tsv · bis 5 MB · kein Excel (.xlsx), dort als CSV speichern</small>
       <input id="i-file" type="file" accept=".csv,.txt,.tsv,text/csv,text/plain,text/tab-separated-values">
     </label>
-    <details style="margin-top:12px">
-      <summary>Oder Tabelle aus der Zwischenablage einfügen</summary>
-      <textarea id="i-paste" aria-label="Tabelle aus der Zwischenablage" rows="5" placeholder="Zeilen aus Excel, Google Sheets oder einer Webseite einfügen (mit Kopfzeile)"></textarea>
-      <div class="toolbar"><button class="btn secondary small" id="i-paste-go" type="button">Einlesen</button></div>
-    </details>
-    <div class="field-row" style="max-width:420px;margin-top:14px">
-      <div>
-        <label for="i-sample">Erst mal ausprobieren?</label>
-        <select id="i-sample">
-          <option value="">Beispieldatei wählen…</option>
-          <option value="ebay">eBay-ähnlich (Semikolon, Zusatzzeilen)</option>
-          <option value="etsy">Etsy-ähnlich (englisch, US-Datum)</option>
-          <option value="amazon">Amazon-ähnlich (Tabulator)</option>
-          <option value="paypal">PayPal-ähnlich (mit Gebühren)</option>
-          <option value="bank">Bank-Umsätze (Stichwortfilter)</option>
-        </select>
-        <div class="small muted">Frei erfundene Daten, keine Originalexporte.</div>
+    <details class="more-fields more-ways" style="margin-top:14px">
+      <summary>Weitere Wege: Tabelle einfügen oder mit Beispieldaten ausprobieren</summary>
+      <div class="more-ways-body">
+        <div>
+          <label for="i-paste">Tabelle aus der Zwischenablage einfügen</label>
+          <textarea id="i-paste" rows="5" placeholder="Zeilen aus Excel, Google Sheets oder einer Webseite einfügen (mit Kopfzeile)"></textarea>
+          <div class="toolbar"><button class="btn secondary small" id="i-paste-go" type="button">Einlesen</button></div>
+        </div>
+        <div>
+          <label for="i-sample">Beispieldaten laden (frei erfunden, nur zum Ansehen)</label>
+          <select id="i-sample">
+            <option value="">Beispiel wählen…</option>
+            <option value="ebay">eBay-ähnlich</option>
+            <option value="etsy">Etsy-ähnlich</option>
+            <option value="amazon">Amazon-ähnlich</option>
+            <option value="paypal">PayPal-ähnlich</option>
+            <option value="bank">Bank-Umsätze</option>
+          </select>
+          <div class="small muted">Die Beispieldaten landen nach dem Import in deiner Liste. Du kannst den Import mit „Rückgängig“ wieder entfernen.</div>
+        </div>
       </div>
-    </div>
+    </details>
     <p id="i-datewarn" class="notice" hidden></p>
     <p id="i-curwarn" class="notice" hidden style="margin-top:8px"></p>
     <p id="i-msg" class="small" role="status" aria-live="polite" style="min-height:1.4em"></p>
 
     <div id="i-panel" hidden>
-      <h3>Spalten prüfen</h3>
-      <p class="small muted">SellCheck hat geraten, welche Spalte was bedeutet. Bitte kontrolliere vor allem Datum und Verkaufsbetrag.</p>
-      <div class="map-grid" id="i-map"></div>
-      <div id="i-types" class="types" hidden></div>
-      <div class="field-row" style="margin-top:14px">
-        <div><label for="i-platform">Plattform</label><select id="i-platform"></select></div>
-        <div>
-          <label for="i-dateorder">Datumsformat</label>
-          <select id="i-dateorder"><option value="dmy">Tag.Monat.Jahr (deutsch)</option><option value="mdy">Monat/Tag/Jahr (US)</option></select>
-        </div>
-        <div><label for="i-keyword">Nur Zeilen mit Stichwort</label><input id="i-keyword" placeholder="z. B. Vinted|Kleinanzeigen"></div>
-      </div>
-      <label class="check-inline"><input id="i-positive" type="checkbox" checked> Nur Beträge über 0 importieren (ohne Erstattungen und Abbuchungen)</label>
-
-      <h3 style="margin-top:20px">Vorschau und Import</h3>
+      <h3>Das haben wir erkannt</h3>
+      <p id="i-recognized" class="small muted"></p>
       <p id="i-summary" class="small" role="status" aria-live="polite"></p>
       <div class="table-scroll" id="i-prevwrap" hidden>
         <table><thead><tr><th>Datum</th><th>Artikel</th><th>Plattform</th><th class="num">Verkauf</th><th class="num">Kosten</th></tr></thead><tbody id="i-prev"></tbody></table>
@@ -291,6 +281,22 @@
       <div class="toolbar">
         <button class="btn" id="i-go" type="button" disabled>Jetzt importieren</button>
       </div>
+
+      <details class="more-fields" id="i-adv" style="margin-top:18px">
+        <summary>Stimmt etwas nicht? Spalten und Einstellungen anpassen</summary>
+        <p class="small muted">Meist ist hier nichts zu tun. Ändere nur etwas, wenn in der Vorschau Datum oder Beträge falsch aussehen.</p>
+        <div class="map-grid" id="i-map"></div>
+        <div id="i-types" class="types" hidden></div>
+        <div class="field-row" style="margin-top:14px">
+          <div><label for="i-platform">Plattform</label><select id="i-platform"></select></div>
+          <div>
+            <label for="i-dateorder">Datumsformat</label>
+            <select id="i-dateorder"><option value="dmy">Tag.Monat.Jahr (deutsch)</option><option value="mdy">Monat/Tag/Jahr (US)</option></select>
+          </div>
+          <div><label for="i-keyword">Nur Zeilen mit Stichwort</label><input id="i-keyword" placeholder="z. B. Vinted|Kleinanzeigen"></div>
+        </div>
+        <label class="check-inline"><input id="i-positive" type="checkbox" checked> Nur Beträge über 0 importieren (ohne Erstattungen und Abbuchungen)</label>
+      </details>
     </div>
     <div class="toolbar"><button class="btn secondary small" id="i-undo" type="button" hidden>Letzten Import rückgängig machen</button></div>
     <p class="small muted" style="margin:14px 0 0">Doppelte Einträge erkennt SellCheck an Bestellnummer, Datum, Artikel und Betrag und überspringt sie beim erneuten Import.</p>

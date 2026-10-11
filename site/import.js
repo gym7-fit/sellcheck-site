@@ -69,10 +69,11 @@
     $("i-keyword").value = keyword || "";
     $("i-positive").checked = !state.own;
     state.typeChecked = new Map();
+    if ($("i-adv")) $("i-adv").open = false;
     buildMapping();
     $("i-panel").hidden = false;
     $("i-panel").scrollIntoView({ behavior: "smooth", block: "start" });
-    msg.textContent = `${state.rows.length} Zeilen erkannt (Trennzeichen: ${d === "\t" ? "Tab" : d}). Bitte prüfe die Spalten unten.`;
+    msg.textContent = `${state.rows.length} Zeilen erkannt (Trennzeichen: ${d === "\t" ? "Tab" : d}). Prüfe unten die Vorschau.`;
   }
 
   /* ---------- Zuordnung ---------- */
@@ -188,6 +189,15 @@
     if (s.noAmount) parts.push(`${s.noAmount} ohne gültigen Betrag (z. B. Erstattungen)`);
     if (s.noDate) parts.push(`${s.noDate} ohne lesbares Datum`);
     $("i-summary").textContent = parts.join(" · ");
+    // Kurz sagen, was erkannt wurde, damit niemand das Raster öffnen muss, um es zu prüfen
+    const nm = (c) => (c >= 0 && state.headers[c] ? `„${state.headers[c]}“` : null);
+    const seen = [["Datum", nm(state.map.date)], ["Verkaufsbetrag", nm(state.map.amount)], ["Artikel", nm(state.map.name)]]
+      .filter((x) => x[1]).map((x) => `${x[0]} = ${x[1]}`);
+    const feeCols = (state.map.fees || []).map(nm).filter(Boolean);
+    if (feeCols.length) seen.push(`Gebühren = ${feeCols.join(", ")}`);
+    $("i-recognized").textContent = seen.length ? "Spalten: " + seen.join(" · ") : "";
+    // Ist nichts importierbar, die Anpassungen gleich aufklappen
+    if (s.ok === 0 && $("i-adv")) $("i-adv").open = true;
     $("i-go").disabled = s.ok === 0;
     $("i-prev").replaceChildren(
       ...res.entries.slice(0, 8).map((e) => {

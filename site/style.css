@@ -455,3 +455,9 @@ form[hidden] { display: none; }
   .auth-side { border-radius: var(--radius) var(--radius) 0 0; padding: 32px 24px; }
   .auth-card { border-left: 1px solid var(--line); border-top: 0; border-radius: 0 0 var(--radius) var(--radius); padding: 28px 24px; }
 }
+
+/* Import: Feineinstellungen und Zusatzwege eingeklappt */
+details.more-ways { margin-top: 14px; }
+.more-ways-body { display: grid; gap: 18px; padding-top: 6px; }
+.more-ways-body label { display: block; font-weight: 700; margin-bottom: 6px; }
+.more-ways-body textarea { width: 100%; }
