@@ -29,10 +29,10 @@ import sellcheck_logo as LOGO  # echtes SellCheck-Logo (Variante 6B)
 
 W, H, FPS, S = 1080, 1920, 30, 2          # S = Supersampling-Faktor
 # Variante: A und B (Hook-Tests der ersten Ad), V2 = "Frist"-Version (Überblick, Ende Januar, Nutzen, Handlung)
-VAR = sys.argv[1].upper() if len(sys.argv) > 1 and sys.argv[1].upper() in ("A", "B", "V2", "V3") else os.environ.get("AD_VARIANT", "A")
+VAR = sys.argv[1].upper() if len(sys.argv) > 1 and sys.argv[1].upper() in ("A", "B", "V2", "V3", "V7") else os.environ.get("AD_VARIANT", "A")
 os.environ["AD_VARIANT"] = VAR  # damit Worker-Prozesse dieselbe Variante nutzen
 # Dauer je Szene = Basiszeit der Animation x Streckung
-V2LIKE = VAR in ("V2", "V3")
+V2LIKE = VAR in ("V2", "V3", "V7")
 if VAR == "V2":
     KEYS = (1, 2, 3, 4)
     BASE = {1: 2.4, 2: 4.0, 3: 7.9, 4: 3.4}
@@ -42,6 +42,11 @@ elif VAR == "V3":
     KEYS = (1, 2, 3, 4)
     BASE = {1: 2.4, 2: 4.0, 3: 7.9, 4: 3.4}
     TARGET = {1: 2.6, 2: 8.2, 3: 8.1, 4: 4.1}  # nach Messung der Sprechzeiten (Clips 2,4 / 8,0 / 8,0 / 3,9 s)
+    SLOW = {k: TARGET[k] / BASE[k] for k in KEYS}
+elif VAR == "V7":
+    KEYS = (1, 2, 3, 4)
+    BASE = {1: 2.4, 2: 4.0, 3: 7.9, 4: 3.4}
+    TARGET = {1: 4.1, 2: 5.6, 3: 8.7, 4: 4.1}  # nach Messung der Sprechzeiten (Clips 3,9 / 5,2 / 8,4 / 3,7 s)
     SLOW = {k: TARGET[k] / BASE[k] for k in KEYS}
 else:
     KEYS = (1, 2, 3, 4, 5)
@@ -83,6 +88,9 @@ CAP2_T = 1.5  # Basiszeit, ab der in der Demo die zweite Überschrift steht
 FRIST_T = (2.1, 2.6, 3.1, 3.2)  # Einblendzeiten (Basiszeit) in der Fristszene: Zeile 1, Zeile 2, Hinweis 1, Hinweis 2
 if VAR == "V3":
     S3_B, CAP2_T, FRIST_T = 5.95, 2.95, (1.95, 2.6, 1.3, 1.4)  # Schwellen beim Sprechen von "ab dreißig" / "zweitausend", Hinweis schon bei "melden dich"
+P7_T = (0.5, 2.07, 0.79, 1.07, 2.71, 3.04)  # Reseller-Gewinnszene (Basiszeit): Überschrift 1, Überschrift 2, Karte, Verkauf, Einkauf, Gewinn
+if VAR == "V7":
+    S3_B, CAP2_T = 6.0, 1.4
 DEMO_SHIFT = 1.4 if VAR == "V3" else 0.0  # Karte/Ampel erst, wenn "und siehst pro Plattform" gesprochen wird
 
 
@@ -412,7 +420,7 @@ def scene_cta(L, t):
         ax, ay = 540 + ax_off, ly
         L.line([(ax, ay - 14), (ax, ay + 16)], col(INK, 255 * clamp(pp * 3)), 8)
         L.line([(ax - 14, ay + 3), (ax, ay + 18), (ax + 14, ay + 3)], col(INK, 255 * clamp(pp * 3)), 8)
-    if VAR == "V3":
+    if VAR in ("V3", "V7"):
         pop_text(L, 540, 1290, "Unabhängig von den genannten Plattformen.", 28, "medium", MUTED, t, 1.6, dur=0.3)
         pop_text(L, 540, 1330, "Orientierung, keine Steuer- oder Rechtsberatung.", 28, "medium", MUTED, t, 1.7, dur=0.3)
     else:
@@ -433,6 +441,50 @@ def scene_v3_hook(L, t):
         n = int(12 + 35 * ease_out(prog(t, 0.9, 1.3)))
         L.text(540, top + 205, str(n), 200, "heavy", col(PAPER, a), "mm")
         L.text(540, top + 345, "Beispieldaten", 26, "medium", col(MUTED, a), "mm")
+
+
+def scene_v7_hook(L, t):
+    """Du bist Reseller, oder willst wissen, was du wirklich verdienst?"""
+    pop_text(L, 540, 450, "Du bist", 88, "heavy", PAPER, t, 0.0)
+    pop_text(L, 540, 580, "Reseller,", 130, "heavy", LIME, t, 0.29)
+    pop_text(L, 540, 720, "oder willst wissen,", 70, "heavy", PAPER, t, 0.82)
+    pop_segments(L, 540, 835, [("was du ", 66, "heavy", PAPER), ("wirklich", 66, "heavy", LIME), (" verdienst?", 66, "heavy", PAPER)], t, 1.43, 0.4)
+    platform_list(L, t, 1040, 1.55, 0.1, 112)
+
+
+def scene_v7_profit(L, t):
+    """Nicht der Umsatz zählt, sondern was nach dem Einkauf bleibt (Beispielartikel)."""
+    pop_text(L, 540, 420, "Nicht dein Umsatz.", 78, "heavy", PAPER, t, P7_T[0])
+    pop_text(L, 540, 530, "Dein Gewinn zählt.", 78, "heavy", LIME, t, P7_T[1])
+    cp = ease_out(prog(t, P7_T[2], 0.55))
+    if cp <= 0:
+        return
+    x0, y0, x1, y1 = 110, 650 + (1 - cp) * 600, 970, 1340 + (1 - cp) * 600
+    L.rrect(x0, y0, x1, y1, 40, fill=col(PAPER))
+    L.text(x0 + 50, y0 + 62, "Sneaker, Gr. 42", 44, "heavy", col(INK), "lm")
+    pill(L, x1 - 140, y0 + 62, 200, 50, col(LIME))
+    L.text(x1 - 140, y0 + 62, "Artikel", 28, "heavy", col(INK), "mm")
+    L.text(x1 - 50, y1 - 34, "Beispieldaten", 24, "medium", col(DARKMUTED), "rm")
+
+    def fc(c, k):  # auf dem Karton überblenden statt Transparenz
+        return tuple(int(PAPER[j] + (c[j] - PAPER[j]) * k) for j in range(3)) + (255,)
+
+    def eur(v):
+        return f"{v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    k1 = clamp(prog(t, P7_T[3], 0.3) * 3)
+    k2 = clamp(prog(t, P7_T[4], 0.3) * 3)
+    if k1 > 0:
+        L.text(x0 + 50, y0 + 170, "Verkauf", 42, "medium", fc(DARKMUTED, k1), "lm")
+        L.text(x1 - 50, y0 + 170, eur(38) + " €", 48, "bold", fc(INK, k1), "rm")
+    if k2 > 0:
+        L.text(x0 + 50, y0 + 270, "Einkauf", 42, "medium", fc(DARKMUTED, k2), "lm")
+        L.text(x1 - 50, y0 + 270, "– " + eur(12) + " €", 48, "bold", fc(RED, k2), "rm")
+        L.line([(x0 + 50, y0 + 345), (x1 - 50, y0 + 345)], col(TRACK), 4)
+    gp = prog(t, P7_T[5], 0.7)
+    if gp > 0:
+        L.rrect(x0 + 40, y0 + 390, x1 - 40, y0 + 600, 28, fill=col((228, 246, 214)))
+        L.text(x0 + 76, y0 + 450, "Gewinn nach Einkauf", 34, "medium", col(DEEPGREEN), "lm")
+        L.text(x0 + 76, y0 + 535, eur(26 * ease_out(gp)) + " €", 84, "heavy", col(DEEPGREEN), "lm")
 
 
 def scene_v2_hook(L, t):
@@ -470,6 +522,7 @@ SCENES = {
     "B": [(1, scene_hook_b), (2, scene_problem_b)],
     "V2": [(1, scene_v2_hook), (2, scene_v2_deadline)],
     "V3": [(1, scene_v3_hook), (2, scene_v2_deadline)],
+    "V7": [(1, scene_v7_hook), (2, scene_v7_profit)],
 }
 COMMON = [(3, scene_demo), (4, scene_cta)] if V2LIKE else [(3, scene_demo), (4, scene_benefits), (5, scene_cta)]
 
@@ -526,6 +579,13 @@ VO_RATE = os.environ.get("AD_VOICE_RATE", "165")    # Wörter pro Minute
 
 # Sprechertext je Variante: (absolute Startzeit, Text, spätestes Ende)
 def vo_lines(variant):
+    if variant == "V7":
+        return [
+            (at(1, 0.05), "[curious] Du bist Reseller, oder willst wissen, was du WIRKLICH verdienst?", START[2]),
+            (at(2, 0.05), "Dann zählt nicht dein UMSATZ. Sondern, was dir nach dem Einkauf ÜBRIG bleibt.", START[3]),
+            (at(3, 0.05), "Und weil du viel umsetzt, bist du schnell an der Grenze: DREIßIG Verkäufe oder ZWEItausend Euro, pro Plattform. SellCheck zeigt dir BEIDES.", START[4]),
+            (at(4, -0.10), "SellCheck. Jetzt GRATIS testen. Einfach unten antippen.", DUR - 0.05),
+        ]
     if variant == "V3":
         return [
             (at(1, 0.05), "[curious] Du verkaufst viel auf Vinted und Co?", START[2]),
@@ -735,6 +795,15 @@ def build_audio(variant, path, with_voice=False, voice_files=None):
         blip_down(at(1, 1.65))
         for i in range(4):
             pop(at(2, 0.55 + i * 0.2), 480 + i * 60)
+    elif variant == "V7":
+        pop(at(1, 0.0), 520)
+        pop(at(1, 0.29), 600)
+        pop(at(1, 0.82), 560)
+        pop(at(1, 1.43), 640)
+        pop(at(2, P7_T[2]), 480)
+        pop(at(2, P7_T[3]), 620)
+        pop(at(2, P7_T[4]), 560)
+        ding(at(2, P7_T[5] + 0.7), 659.25)  # Gewinn steht
     elif variant == "V3":
         for i, base in enumerate((0.9, 1.15, 1.4, 1.65)):
             tick(at(1, base), 1300 + i * 150)
@@ -759,10 +828,10 @@ def build_audio(variant, path, with_voice=False, voice_files=None):
         tick(at(3, 2.0 + DEMO_SHIFT + i * 0.28 + 0.15), 1100 + i * 120)
     blip_down(at(3, 4.15 + DEMO_SHIFT))
     ding(at(3, S3_B + 1.6), 659.25)                                 # Summe ist oben angekommen
-    if variant not in ("V2", "V3"):
+    if variant not in ("V2", "V3", "V7"):
         for i, f in enumerate((523.25, 659.25, 783.99)):
             ding(at(4, 0.35 + i * 0.4), f)
-    cta = 4 if variant in ("V2", "V3") else 5
+    cta = 4 if variant in ("V2", "V3", "V7") else 5
     for j, f in enumerate((523.25, 659.25, 783.99, 1046.5)):
         ding(at(cta, 0.9) + j * 0.1, f)
 
@@ -829,7 +898,7 @@ def main():
         print("Testframes gerendert")
         return
     if only == "voice":
-        folder = sys.argv[3] if len(sys.argv) > 3 else os.environ.get("AD_VOICE_DIR", os.path.join(HERE, {"V2": "voice_v2", "V3": "voice_v3"}.get(variant, "voice")))
+        folder = sys.argv[3] if len(sys.argv) > 3 else os.environ.get("AD_VOICE_DIR", os.path.join(HERE, {"V2": "voice_v2", "V3": "voice_v3", "V7": "voice_v7"}.get(variant, "voice")))
         files = find_voice_files(folder)
         missing = [i + 1 for i, f in enumerate(files) if not f]
         if len(missing) == len(files):

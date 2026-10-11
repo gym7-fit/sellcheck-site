@@ -101,3 +101,9 @@ Deutschland, 18–44 Jahre, Interessen Secondhand, Mode, Online-Shopping, Resell
 4. **Mail-Versand:** Registrierungs-Mails laufen über ein Gmail-Konto (etwa 500 Mails pro Tag, 30 pro Stunde eingestellt). Bei echtem Anzeigenverkehr reicht das nicht.
 5. **Name:** SellCheck ist nicht auf Markenrechte geprüft.
 6. **Konto:** Du brauchst ein TikTok-Werbekonto (Ads Manager) und musst die Anzeige selbst hochladen. Das habe ich nicht getan und nicht tun können.
+
+## Version 7 („Reseller“, V7)
+
+Hook „Du bist Reseller, oder willst wissen, was du wirklich verdienst?“, dann Gewinn statt Umsatz (Beispielartikel: Verkauf 38 €, Einkauf 12 €, Gewinn 26 €), Meldegrenze pro Plattform, CTA. Stimme: ElevenLabs „Mats“ (`HvPMqVH31pBg9ThkOUPw`), Clips in `voice_v7/1.mp3 … 4.mp3`.
+Erzeugen: `python3 marketing/tiktok-ad-01/build_ad.py V7` und danach `… V7 voice`. Ausgabe: `out/sellcheck_tiktok_ad_V7_mit_Stimme.mp4` (ca. 22,5 s).
+Zeiten: `TARGET`, `P7_T`, `CAP2_T`, `S3_B` sind auf die gemessenen Clip-Längen (3,9 / 5,2 / 8,4 / 3,7 s) abgestimmt.
