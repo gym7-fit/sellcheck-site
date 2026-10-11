@@ -49,4 +49,5 @@ Die Seite ist statisch, es gibt kein eigenes Backend. Die Anmeldung läuft desha
 - Eingetragen in `site/auth-config.js`: Project-URL und anon-Key. Damit ist der Demo-Modus aus, Registrierung und Anmeldung laufen über Supabase.
 - Eingestellt: E-Mail-Anmeldung an, Bestätigungs-Mail Pflicht, Mindestlänge 10, Site-URL `https://gym7-fit.github.io/sellcheck-site/`, Redirect-URLs `login.html` und `tools.html` (plus lokale Testadressen).
 - Data API ist aus; die App nutzt nur Auth. Soll später etwas in der Cloud gespeichert werden, Data API einschalten und für jede Tabelle Row Level Security anlegen.
-- Offen: eigener SMTP-Absender (der Standard-Absender von Supabase ist stark begrenzt und für den echten Betrieb ungeeignet), Absender-Texte der Mails auf Deutsch.
+- Mail-Versand: eigener SMTP-Server über Gmail (`smtp.gmail.com`, Port 465, Absender `info.sellcheck@gmail.com`, App-Passwort nur im Supabase-Dashboard). Mail-Limit 30 pro Stunde, Gmail erlaubt etwa 500 pro Tag. Mail-Vorlagen sind auf Deutsch.
+- Später: eigene Domain mit Mail-Adresse. Dann nur die SMTP-Felder in Supabase tauschen (Authentication → Emails → SMTP Settings), die App bleibt unverändert.
