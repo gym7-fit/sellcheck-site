@@ -203,13 +203,19 @@ DATA = [
     },
     {
         "slug": "vinted", "name": "Vinted", "mono": "V", "kind": "noexport",
-        "teaser": "Kein Verkaufsexport belegt. Wege über Auszahlungen und Datenkopie.",
+        "teaser": "Kein Verkaufsexport belegt. Auszahlungsverlauf im Geldbeutel und weitere Wege.",
         "headline": "Vinted: So bekommst du deine Verkaufsdaten",
-        "lead": "Eine fertige Verkaufsliste zum Herunterladen haben wir bei Vinted nicht gefunden. Es gibt drei Wege, die in der Praxis funktionieren.",
-        "facts": [("Verkaufsexport", "nicht belegt"), ("Bester Weg", "Auszahlungen im Bankauszug oder bei PayPal"), ("Zusätzlich", "Datenkopie nach Art. 15 DSGVO (ZIP)")],
-        "search": "Kopie deiner Kontodaten",
+        "lead": "Eine fertige Verkaufsliste zum Herunterladen haben wir bei Vinted nicht gefunden. Im Vinted-Geldbeutel siehst du aber deine Auszahlungen je Jahr, dazu gibt es weitere Wege.",
+        "facts": [("Verkaufsexport", "nicht belegt"), ("Übersicht", "Geldbeutel → Verlauf: Auszahlungen je Jahr"), ("Zusätzlich", "Datenkopie nach Art. 15 DSGVO (ZIP)")],
+        "search": "Geldbeutel",
         "ways": [
-            {"title": "Weg 1: Auszahlungen über Bank oder PayPal importieren", "steps": [
+            {"title": "Weg 1: Auszahlungsverlauf im Vinted-Geldbeutel", "steps": [
+                S("Geldbeutel öffnen", "Öffne in der Vinted-App oder im Browser deinen Vinted-Geldbeutel (englisch: Vinted Wallet).", ["Vinted", "Geldbeutel"]),
+                S("Verlauf und Jahr wählen", "Wähle „Verlauf“ (englisch: History) und dann das Jahr, das du prüfen willst.", ["Geldbeutel", "Verlauf", "Jahr"]),
+                S("Auszahlungen ablesen", "Du siehst deine bisherigen und laufenden Auszahlungen mit Betrag, Startdatum, teilweise verdeckten Bankdaten und Ankunftsdatum."),
+                S("In SellCheck übernehmen", "Das sind Auszahlungen, keine einzelnen Verkäufe. Trage deine Verkäufe in SellCheck im Schritt 3 unter „Von Hand eintragen“ ein oder importiere den Kontoauszug (Weg 2)."),
+            ]},
+            {"title": "Weg 2: Auszahlungen über Bank oder PayPal importieren", "steps": [
                 S("Auszahlungen finden", "Vinted zahlt dein Guthaben auf dein Bankkonto aus. Suche im Kontoauszug nach „Vinted“. Der genaue Buchungstext kann je nach Bank und Zahlungsweg anders aussehen. Läuft die Auszahlung über PayPal, steht sie im PayPal-Aktivitätsbericht."),
                 S("Export besorgen", "Lade den Kontoauszug oder den PayPal-Bericht als CSV herunter. Die Anleitungen dafür:", items=[
                     "Online-Banking: Anleitung öffnen (bank.html)",
@@ -217,22 +223,27 @@ DATA = [
                 ]),
                 S("Mit Stichwort importieren", "Setze beim Import das Stichwort „Vinted“. Den Einkaufspreis ergänzt du danach im Schritt „Angaben vervollständigen“."),
             ]},
-            {"title": "Weg 2: Datenkopie bei Vinted anfordern", "steps": [
+            {"title": "Weg 3: Datenkopie bei Vinted anfordern", "steps": [
                 S("Daten anfordern", "Tippe auf dein Profilsymbol und öffne „Einstellungen“. Wähle „Datenschutzeinstellungen“, dann „Kontodaten verwalten“ und „Daten anfordern“.", ["Profil", "Einstellungen", "Datenschutzeinstellungen", "Kontodaten verwalten", "Daten anfordern"]),
                 S("Per E-Mail bestätigen", "Vinted schickt dir eine E-Mail mit einem Bestätigungslink. Er ist 24 Stunden gültig. Sei dabei in deinem Vinted-Konto angemeldet."),
                 S("Warten und herunterladen", "Die Aufbereitung dauert meist wenige Minuten, kann aber bis zu 30 Tage dauern. Danach kommt eine E-Mail mit einem Button. Melde dich an und tippe auf „Download“."),
             ]},
-            {"title": "Weg 3: Von Hand eintragen", "steps": [
+            {"title": "Weg 4: Von Hand eintragen", "steps": [
                 S("Verkäufe selbst eintragen", "Bei wenigen Verkäufen ist das am schnellsten. Wechsle in SellCheck im Schritt 3 auf „Von Hand eintragen“."),
             ]},
         ],
         "good": [
-            "Die Datenkopie ist ein ZIP-Archiv mit HTML-Dateien, Fotos und PDFs. Darin stehen unter anderem Profildaten, eingestellte Artikel und Nachrichten.",
-            "Das ist keine CSV-Tabelle, SellCheck kann sie nicht direkt einlesen. Ob deine Verkäufe mit Preisen darin stehen, haben wir nicht geprüft.",
-            "In der App können die Bezeichnungen leicht anders heißen. Englisch: „Privacy settings“, „Manage account data“, „Request data“.",
+            "Der Verlauf zeigt Auszahlungen, nicht jede einzelne Verkaufsbuchung. Guthaben, das du direkt für Käufe auf Vinted ausgibst, taucht dort nicht als Auszahlung auf. Die Summe der Auszahlungen kann also unter deinen Verkäufen liegen.",
+            "DAC7: Vinted meldet Verkäufer ab 30 Verkäufen oder mehr als 2.000 € je Kalenderjahr an die Steuerbehörden. Auf vinted.de/dac7 kannst du deinen „DAC7-Status“ prüfen. Was dort genau angezeigt wird, haben wir nicht gesehen, dafür braucht es ein Konto.",
+            "Die Datenkopie ist ein ZIP-Archiv mit HTML-Dateien, Fotos und PDFs. Das ist keine CSV-Tabelle, SellCheck kann sie nicht direkt einlesen. Ob deine Verkäufe mit Preisen darin stehen, haben wir nicht geprüft.",
+            "In der App können die Bezeichnungen leicht anders heißen. Englisch: „Privacy settings“, „Manage account data“, „Request data“, „Wallet“, „History“.",
         ],
         "alt": "",
-        "sources": [("Vinted-Hilfe: Wie du eine Kopie deiner Kontodaten bekommst (englisch)", "https://www.vinted.com/help/1374")],
+        "sources": [
+            ("Vinted-Hilfe: Einnahmen auszahlen lassen (englisch)", "https://www.vinted.com/help/68-einnahmen-auszahlen-lassen"),
+            ("Vinted: Was ist DAC7?", "https://www.vinted.de/dac7"),
+            ("Vinted-Hilfe: Wie du eine Kopie deiner Kontodaten bekommst (englisch)", "https://www.vinted.com/help/1374"),
+        ],
     },
     {
         "slug": "kleinanzeigen", "name": "Kleinanzeigen", "mono": "K", "kind": "noexport",

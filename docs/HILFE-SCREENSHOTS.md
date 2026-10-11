@@ -26,5 +26,6 @@ Hinweis: Ein Screenshot einer fremden Oberfläche ist urheber- und markenrechtli
 | `amazon-1-1.png` | Seller Central, Menü „Bestellungen“ → „Bestellberichte“ |
 | `amazon-2-1.png` | Seller Central, „Zahlungen“ → „Berichts-Repository“ |
 | `paypal-1-3.png` | Aktivitäten mit dem Download-Symbol |
-| `vinted-2-1.png` | Einstellungen → Datenschutzeinstellungen → Daten anfordern |
+| `vinted-1-2.png` | Vinted-Geldbeutel → Verlauf mit Jahresauswahl |
+| `vinted-3-1.png` | Einstellungen → Datenschutzeinstellungen → Daten anfordern |
 | `kleinanzeigen-3-1.png` | Hilfe-Center, Bereich „Daten und Datenschutz“ |
