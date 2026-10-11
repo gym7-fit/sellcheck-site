@@ -25,7 +25,7 @@ Bis dahin läuft das Formular im Demo-Modus und speichert nichts.
 
 ## 3a. GitHub Pages (Vorabansicht)
 
-Der Workflow `.github/workflows/pages.yml` testet und veröffentlicht `site/`. Unter Settings → Pages muss „GitHub Actions“ als Quelle gewählt sein. Vor dem echten Livegang entfernen: `<meta name="robots" content="noindex, nofollow">` in allen Seiten (bei Rechtstexten und Marken-Seite je nach Wunsch) und `site/robots.txt`. GitHub Pages setzt keine eigenen Header: Die CSP steht als Meta-Tag in den Seiten, `frame-ancestors` und die übrigen Header aus `_headers` greifen nur bei Hosts mit Header-Unterstützung.
+Der Workflow `.github/workflows/pages.yml` testet und veröffentlicht `site/`. Unter Settings → Pages muss „GitHub Actions“ als Quelle gewählt sein. Vor dem echten Livegang entfernen: `<meta name="robots" content="noindex, nofollow">` in allen Seiten (bei Rechtstexten und Marken-Seite je nach Wunsch; bei den Hilfeseiten unter `site/hilfe/` steht er im Generator `scripts/build-hilfe.py`, danach `python3 scripts/build-hilfe.py` ausführen) und `site/robots.txt`. GitHub Pages setzt keine eigenen Header: Die CSP steht als Meta-Tag in den Seiten, `frame-ancestors` und die übrigen Header aus `_headers` greifen nur bei Hosts mit Header-Unterstützung.
 
 ## 3. Hosting
 

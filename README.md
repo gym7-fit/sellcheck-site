@@ -21,6 +21,7 @@ Online: nach dem ersten Push über GitHub Pages (siehe unten).
 | --- | --- |
 | `site/` | Die Website (wird 1:1 veröffentlicht): `index.html`, `tools.html`, `report.html`, Rechtstexte, Skripte, Styles |
 | `site/tax-lib.js`, `site/parse-lib.js`, `site/wizard-lib.js` | Reine Logik (Steuerberechnung, Datei-Import, Freischalt-Regeln des Ablaufs), ohne DOM und getestet |
+| `site/hilfe/`, `site/hilfe.css`, `scripts/build-hilfe.py` | Hilfeseiten „Wo finde ich meine Exportdatei?“ je Datenquelle. Texte stehen im Skript, `python3 scripts/build-hilfe.py` erzeugt die Seiten neu |
 | `site/wizard.js`, `site/wizard.css` | Oberfläche des geführten Ablaufs auf `tools.html` (sechs Schritte, dann Überprüfungsseite) |
 | `tests/` | Automatische Tests (`node --test`) |
 | `docs/STEUER-EXPORT.md` | Recherche und Entscheidungen zum Steuer-Export |
@@ -32,7 +33,7 @@ Online: nach dem ersten Push über GitHub Pages (siehe unten).
 ## Tests
 
 ```bash
-npm test      # Import-Parser, Steuerlogik, Anmeldung, Schritt-Regeln
+npm test      # Import-Parser, Steuerlogik, Anmeldung, Schritt-Regeln, Hilfeseiten
 npm run check # Syntaxprüfung aller Skripte
 ```
 

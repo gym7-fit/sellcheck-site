@@ -1,0 +1,55 @@
+/* Hilfeseiten (hilfe/*.html): Anleitungen zum Auffinden der Exportdateien. */
+.help-hero { padding: 48px 0 40px; background: var(--ink); }
+.help-hero h1 { margin: 6px 0 12px; font-size: clamp(1.7rem, 4.2vw, 2.5rem); letter-spacing: -.03em; }
+.help-hero p { max-width: 62ch; color: #c5cad3; margin: 0; }
+.help-back { display: inline-block; margin-bottom: 18px; font-weight: 700; color: var(--lime); text-decoration: none; }
+.help-back:hover { text-decoration: underline; }
+.help-main { padding-top: 28px; padding-bottom: 56px; display: grid; gap: 30px; max-width: 880px; }
+.help-main h2 { margin: 0 0 14px; font-size: 1.35rem; letter-spacing: -.02em; }
+.help-top { display: flex; flex-wrap: wrap; gap: 14px 24px; align-items: flex-start; justify-content: space-between; }
+.help-facts { display: grid; gap: 0; margin: 0; flex: 1 1 420px; border: 1.5px solid var(--line); border-radius: var(--radius); background: var(--surface); overflow: hidden; }
+.help-facts > div { display: grid; grid-template-columns: 110px 1fr; gap: 16px; padding: 12px 18px; border-top: 1px solid var(--line); }
+.help-facts > div:first-child { border-top: 0; }
+.help-facts dt { font-size: .78rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding-top: 2px; }
+.help-facts dd { margin: 0; }
+.help-note { margin: 0; padding: 12px 16px; border-radius: var(--radius-sm); background: var(--surface-2); color: var(--muted); font-size: .92rem; }
+
+.help-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.help-step { display: grid; grid-template-columns: 38px 1fr; gap: 16px; padding: 18px; border: 1.5px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.help-step .n { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: var(--lime); color: var(--ink); font-weight: 800; }
+.help-step h3 { margin: 4px 0 6px; font-size: 1.08rem; letter-spacing: -.01em; }
+.help-step p { margin: 0 0 8px; }
+.help-step ul { margin: 6px 0 0; padding-left: 20px; }
+.help-step li + li { margin-top: 4px; }
+
+/* Menüweg als Kette: zeigt, wo man klickt, ohne ein Abbild der fremden Oberfläche zu behaupten */
+.help-path { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0 0 !important; }
+.help-path .chip { padding: 5px 11px; border-radius: 999px; border: 1.5px solid var(--text); background: var(--bg); font-weight: 700; font-size: .88rem; line-height: 1.2; }
+.help-path .chip:last-child { background: var(--lime); border-color: var(--lime); color: var(--ink); }
+.help-path .sep { color: var(--muted); font-weight: 800; }
+
+.help-shot { margin: 14px 0 0; }
+.help-shot img { display: block; width: 100%; height: auto; border-radius: var(--radius-sm); border: 1.5px solid var(--line); }
+.help-shot figcaption { margin-top: 6px; font-size: .84rem; color: var(--muted); }
+
+.help-next, .help-good, .help-alt, .help-sources { padding: 22px; border: 1.5px solid var(--line); border-radius: var(--radius); background: var(--bg); }
+.help-next ol, .help-next ul, .help-good ul, .help-sources ul { margin: 0; padding-left: 22px; display: grid; gap: 8px; }
+.help-next .btn { margin-top: 18px; }
+.help-alt p { margin: 0; }
+
+.help-cards { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.help-card { display: flex; gap: 14px; align-items: flex-start; padding: 16px; border: 1.5px solid var(--line); border-radius: var(--radius); background: var(--surface); color: var(--text); text-decoration: none; transition: border-color .15s, transform .15s; }
+.help-card:hover { border-color: var(--text); transform: translateY(-1px); }
+.help-card .mono { flex: none; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--lime); color: var(--ink); font-weight: 800; font-size: 1.1rem; }
+.help-card b { display: block; font-size: 1.05rem; }
+.help-card .t { display: block; color: var(--muted); font-size: .92rem; margin: 2px 0 8px; }
+
+.help-footer { padding: 28px 0; border-top: 1px solid #262b33; }
+.help-footer p { margin: 0 0 6px; color: #8a909b; font-size: .92rem; }
+.help-footer a { color: #c5cad3; }
+
+@media (max-width: 600px) {
+  .help-facts > div { grid-template-columns: 1fr; gap: 2px; }
+  .help-step { grid-template-columns: 1fr; gap: 10px; padding: 16px; }
+  .help-hero { padding: 36px 0 30px; }
+}
