@@ -449,7 +449,7 @@ def vo_lines(variant):
     return [
         (at(1, 0.15), "Vinted meldet dich ab dreißig Verkäufen.", START[2]),
         (at(2, 0.10), "Aber du verkaufst nicht nur dort. Und jede Plattform zählt einzeln.", START[3]),
-        (at(3, 0.30), "Lade deine Verkäufe hoch.", at(3, 1.5)),
+        (at(3, 0.30), "Lade deine Verkäufe hoch.", at(3, 1.72)),
         (at(3, 1.75), "Sieh die Ampel pro Plattform.", at(3, S3_B - 0.2)),
         (at(3, S3_B + 0.10), "Und druck den Report aus.", START[4] - 0.2),
         (at(4, 0.10), "Alle Plattformen. Ein Überblick.", START[5]),
@@ -481,6 +481,32 @@ def write_script_files():
     return md
 
 
+def load_clip(path, name):
+    """Beliebiges Audio (mp3, m4a, wav, aiff) als Mono-Samples mit 44,1 kHz laden (nutzt macOS afconvert)."""
+    wav = os.path.join(FRAMES, f"clip_{name}.wav")
+    subprocess.run(["afconvert", "-f", "WAVE", "-d", "LEI16@44100", "-c", "1", path, wav], check=True)
+    with wave.open(wav) as w:
+        raw = w.readframes(w.getnframes())
+    vals = struct.unpack("<" + "h" * (len(raw) // 2), raw)
+    pk = max(abs(v) for v in vals) or 1
+    return [v / pk * 0.9 for v in vals]
+
+
+def find_voice_files(folder):
+    """Erwartet Dateien 1.*, 2.*, ... in der Reihenfolge der Sprechertext-Zeilen (siehe voice/texte.txt)."""
+    exts = (".mp3", ".m4a", ".wav", ".aiff", ".aif", ".caf", ".mp4")
+    files = []
+    for i in range(1, len(vo_lines("A")) + 1):
+        hit = None
+        for ext in exts:
+            p = os.path.join(folder, f"{i}{ext}")
+            if os.path.exists(p):
+                hit = p
+                break
+        files.append(hit)
+    return files
+
+
 def tts(text, name):
     aiff = os.path.join(FRAMES, f"vo_{name}.aiff")
     wav = os.path.join(FRAMES, f"vo_{name}.wav")
@@ -493,7 +519,7 @@ def tts(text, name):
     return [v / pk * 0.9 for v in vals]
 
 
-def build_audio(variant, path, with_voice=False):
+def build_audio(variant, path, with_voice=False, voice_files=None):
     n = int(SR * DUR)
     music = [0.0] * n
     sfx = [0.0] * n
@@ -600,7 +626,12 @@ def build_audio(variant, path, with_voice=False):
     vo = [0.0] * n
     if with_voice:
         for idx, (t0, text, limit) in enumerate(vo_lines(variant)):
-            samples = tts(text, f"{variant}{idx}")
+            if voice_files:
+                if idx >= len(voice_files) or not voice_files[idx]:
+                    continue
+                samples = load_clip(voice_files[idx], f"{variant}{idx}")
+            else:
+                samples = tts(text, f"{variant}{idx}")
             end = t0 + len(samples) / SR
             flag = "" if end <= limit else "  <-- ZU LANG"
             print(f"  Sprecher {idx + 1}: {t0:5.2f}s bis {end:5.2f}s (Fenster bis {limit:5.2f}s){flag}", flush=True)
@@ -648,6 +679,26 @@ def main():
         for sec in secs:
             render_frame((int(sec * FPS), variant))
         print("Testframes gerendert")
+        return
+    if only == "voice":
+        folder = sys.argv[3] if len(sys.argv) > 3 else os.environ.get("AD_VOICE_DIR", os.path.join(HERE, "voice"))
+        files = find_voice_files(folder)
+        missing = [i + 1 for i, f in enumerate(files) if not f]
+        if len(missing) == len(files):
+            raise SystemExit(f"Keine Sprachdateien in {folder} gefunden (erwartet 1.mp3 … {len(files)}.mp3)")
+        if missing:
+            print("Hinweis: es fehlen die Clips", missing, flush=True)
+        frames_dir = os.path.join(FRAMES, variant)
+        if len([f for f in os.listdir(frames_dir) if f.endswith(".jpg")]) < NF:
+            print("Frames fehlen, rendere zuerst …", flush=True)
+            with Pool() as pool:
+                list(pool.imap_unordered(render_frame, [(i, variant) for i in range(NF)], chunksize=8))
+        wav = os.path.join(FRAMES, f"audio_{variant}_mit_Stimme.wav")
+        print("Ton mit Stimme …", flush=True)
+        build_audio(variant, wav, True, files)
+        mp4 = os.path.join(OUT, f"sellcheck_tiktok_ad_{variant}_mit_Stimme.mp4")
+        encode(variant, wav, mp4)
+        print("Fertig:", mp4, flush=True)
         return
     if only != "audio":
         print(f"Variante {variant}: rendere {NF} Frames ({DUR} s) …", flush=True)

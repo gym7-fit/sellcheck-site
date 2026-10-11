@@ -12,6 +12,16 @@ Länge 25,6 s, 1080×1920, 30 fps, H.264 + AAC. Erzeugen: `python3 marketing/tik
 Die Systemstimme lässt sich mit `AD_VO=1` weiterhin erzeugen (`…_mit_Sprecher.mp4`), klingt aber künstlich und ist nicht empfohlen.
 Das Logo kommt aus `marketing/logo-final/sellcheck_logo.py`.
 
+## Mit natürlicher Stimme
+
+Eine natürliche Stimme lässt sich mit den lokalen Werkzeugen nicht erzeugen. Der Mischweg ist aber fertig:
+1. Die sieben Zeilen aus `voice/texte.txt` selbst einsprechen oder mit einer Stimme-Software erzeugen (TikTok, CapCut, ElevenLabs …).
+2. Als `voice/1.mp3` … `voice/7.mp3` ablegen (auch `.m4a`, `.wav`).
+3. `python3 marketing/tiktok-ad-01/build_ad.py A voice` → `out/sellcheck_tiktok_ad_A_mit_Stimme.mp4`.
+
+Das Skript legt jeden Clip zur passenden Szene, senkt die Musik darunter ab und meldet Clips, die zu lang sind.
+Alternativ eine bessere Systemstimme installieren (macOS: Systemeinstellungen → Bedienungshilfen → Gesprochene Inhalte → Systemstimme → Stimmen verwalten → Deutsch, Premium oder Siri-Stimme) und mit `AD_VOICE="<Name der Stimme>" AD_VO=1 python3 marketing/tiktok-ad-01/build_ad.py A audio` neu mischen.
+
 Zeitplan: Hook 0–3,5 s · Problem 3,5–8,3 s · Demo 8,3–18,4 s · Nutzen 18,4–21,9 s · Handlung 21,9–25,6 s.
 Demo in drei Schritten: Datei ablegen („Datei rein.“), Ampel („Ampel an.“), Report („Report raus.“).
 
