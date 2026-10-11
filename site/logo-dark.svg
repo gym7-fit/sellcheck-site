@@ -1,5 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 64" role="img" aria-label="SellCheck">
-  <path fill="#C8F169" fill-rule="evenodd" d="M14 4h24l22 22v28a10 10 0 0 1-10 10H14A10 10 0 0 1 4 54V14A10 10 0 0 1 14 4Zm29 13.8a3.2 3.2 0 1 0 0 6.4 3.2 3.2 0 0 0 0-6.4Z"/>
-  <path d="M17 36l8 8 15-15" fill="none" stroke="#0E1116" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-  <text x="76" y="45" font-family="'Avenir Next','Segoe UI Variable Display','Segoe UI',system-ui,sans-serif" font-size="36" font-weight="800" letter-spacing="-1" fill="#F6F4EE">Sell<tspan fill="#C8F169">Check</tspan></text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 286.6 55" role="img" aria-label="SellCheck"><polygon points="1.1999999999999993,1.2000000000000002 37.2,1.2000000000000002 37.2,53.2 32.2,47.7 27.2,53.2 22.2,47.7 17.2,53.2 12.2,47.7 7.199999999999999,53.2 1.1999999999999993,47.7" fill="#C8F169" stroke="#C8F169" stroke-width="2.4" stroke-linejoin="round"/><polyline points="9.2,25.2 16.7,32.7 30.2,17.2" fill="none" stroke="#0E1116" stroke-width="6.4" stroke-linecap="round" stroke-linejoin="round"/><text x="49.4" y="46.2" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="700" font-size="52.8" letter-spacing="-1.85"><tspan fill="#F6F4EE">Sell</tspan><tspan fill="#C8F169">Check</tspan></text></svg>

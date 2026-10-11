@@ -12,7 +12,7 @@ p { margin: 0 0 8px; }
 .sub { color: var(--muted); margin-bottom: 14px; }
 .brandline { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; font-weight: 800; letter-spacing: -.03em; }
 .brandline .mark { display: inline-flex; align-items: center; gap: 8px; }
-.brandline svg { width: 26px; height: 26px; }
+.brandline svg { height: 28px; width: auto; }
 .brandline small { font-weight: 500; color: var(--muted); letter-spacing: 0; }
 table { width: 100%; border-collapse: collapse; font-size: 9.5pt; }
 th, td { text-align: left; padding: 5px 7px; border-bottom: 1px solid var(--line); vertical-align: top; }

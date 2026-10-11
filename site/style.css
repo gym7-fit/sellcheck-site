@@ -64,11 +64,11 @@ p { margin: 0 0 1em; }
 :focus-visible { outline: 3px solid var(--lime-strong); outline-offset: 2px; border-radius: 6px; }
 
 /* ---------- Logo ---------- */
-.brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; font-weight: 800; font-size: 1.3rem; letter-spacing: -.04em; }
-.brand svg { width: 34px; height: 34px; flex: none; }
-.brand .tag { fill: var(--lime); }
+.brand { display: inline-flex; align-items: center; gap: 7px; text-decoration: none; color: inherit; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: 700; font-size: 1.35rem; letter-spacing: -.035em; line-height: 1; }
+.brand svg { height: 36px; width: auto; flex: none; }
+.brand .tag { fill: var(--lime); stroke: var(--lime); stroke-width: 2.4; stroke-linejoin: round; }
 .brand .tick { stroke: var(--ink); }
-.brand b { font-weight: 800; color: var(--lime); }
+.brand b { font-weight: 700; color: var(--lime); }
 
 /* ---------- Dark-Bereiche (immer dunkel, auch im Light Mode) ---------- */
 .on-dark { background: var(--ink); color: var(--paper); --muted: #a2a8b3; --line: #2b313b; }
