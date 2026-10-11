@@ -12,6 +12,12 @@ Länge 25,6 s, 1080×1920, 30 fps, H.264 + AAC. Erzeugen: `python3 marketing/tik
 Die Systemstimme lässt sich mit `AD_VO=1` weiterhin erzeugen (`…_mit_Sprecher.mp4`), klingt aber künstlich und ist nicht empfohlen.
 Das Logo kommt aus `marketing/logo-final/sellcheck_logo.py`.
 
+## Mit lokaler Stimme (Piper, „Thorsten“)
+
+`out/sellcheck_tiktok_ad_A_mit_Stimme.mp4` nutzt die freie deutsche Stimme Thorsten (CC0) über Piper.
+Erzeugung und bekanntes Problem der Mac-Version stehen in `make_voice.py`. Die Stimme ist deutlich besser als die
+macOS-Systemstimme, bleibt aber hörbar synthetisch. Für Werbung mit höchster Natürlichkeit eigene Aufnahme oder ElevenLabs.
+
 ## Mit natürlicher Stimme
 
 Eine natürliche Stimme lässt sich mit den lokalen Werkzeugen nicht erzeugen. Der Mischweg ist aber fertig:
