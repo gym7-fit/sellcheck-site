@@ -12,7 +12,15 @@ Länge 25,6 s, 1080×1920, 30 fps, H.264 + AAC. Erzeugen: `python3 marketing/tik
 Die Systemstimme lässt sich mit `AD_VO=1` weiterhin erzeugen (`…_mit_Sprecher.mp4`), klingt aber künstlich und ist nicht empfohlen.
 Das Logo kommt aus `marketing/logo-final/sellcheck_logo.py`.
 
-## Mit ElevenLabs-Stimme „Pauli“ (aktuell)
+## Version 2 („Frist“, V2)
+
+Hook: „Hast du noch den Überblick über all deine Verkäufe?“, dann Kalenderblatt 31. Januar 2027 (Plattformen melden das Vorjahr,
+ab 30 Verkäufen oder 2.000 € je Plattform), Demo mit Nutzen („Grenzen im Blick“, „Das bleibt dir“), Handlung „Jetzt gratis testen“.
+Erzeugen: `python3 marketing/tiktok-ad-01/build_ad.py V2` und danach `… V2 voice` (Clips in `voice_v2/1.mp3 … 6.mp3`).
+Ausgabe: `out/sellcheck_tiktok_ad_V2_mit_Stimme.mp4` (ca. 22 s). Bewusst **kein** „ab 2027 ist es Pflicht“: Dafür gibt es keinen Beleg.
+Belegt ist: Plattformen melden das Vorjahr bis 31. Januar (PStTG/DAC7, seit 2023), Schwellen 30 Verkäufe oder 2.000 € je Plattform.
+
+## Mit ElevenLabs-Stimme „Pauli“ (Version A)
 
 `out/sellcheck_tiktok_ad_A_mit_Stimme.mp4` nutzt die deutsche Stimme „Pauli“ (ElevenLabs, jung, warm, natürlich).
 Die sieben Clips liegen als `voice/1.mp3 … 7.mp3` (nicht eingecheckt), gemischt mit `build_ad.py A voice`.
