@@ -29,8 +29,8 @@ import sellcheck_logo as LOGO  # echtes SellCheck-Logo (Variante 6B)
 
 W, H, FPS, S = 1080, 1920, 30, 2          # S = Supersampling-Faktor
 # Dauer je Szene = Basiszeit der Animation x Streckung (langsamer = besser lesbar)
-BASE = {1: 2.6, 2: 3.2, 3: 8.4, 4: 2.8, 5: 3.4}
-SLOW = {1: 1.35, 2: 1.5, 3: 1.2, 4: 1.25, 5: 1.2}
+BASE = {1: 2.6, 2: 3.2, 3: 7.9, 4: 2.8, 5: 3.4}
+SLOW = {1: 1.1, 2: 1.45, 3: 0.8, 4: 0.95, 5: 1.05}
 START = {}
 _t = 0.0
 for _k in (1, 2, 3, 4, 5):
@@ -447,13 +447,13 @@ def vo_lines(variant):
     if variant != "A":
         return []
     return [
-        (at(1, 0.15), "Vinted meldet dich ab dreißig Verkäufen.", START[2]),
-        (at(2, 0.10), "Aber du verkaufst nicht nur dort. Und jede Plattform zählt einzeln.", START[3]),
-        (at(3, 0.30), "Lade deine Verkäufe hoch.", at(3, 1.72)),
-        (at(3, 1.75), "Sieh die Ampel pro Plattform.", at(3, S3_B - 0.2)),
-        (at(3, S3_B + 0.10), "Und druck den Report aus.", START[4] - 0.2),
-        (at(4, 0.10), "Alle Plattformen. Ein Überblick.", START[5]),
-        (at(5, 0.0), "SellCheck. Gratis testen. Link unten antippen.", DUR - 0.25),
+        (at(1, 0.05), "Vinted meldet dich ab dreißig Verkäufen.", START[2]),
+        (at(2, 0.05), "Aber du verkaufst nicht nur dort. Und jede Plattform zählt einzeln.", START[3] + 0.2),
+        (at(3, 0.05), "Lade deine Verkäufe hoch.", at(3, 2.4)),
+        (at(3, 1.50), "Sieh die Ampel pro Plattform.", at(3, S3_B + 0.1)),
+        (at(3, S3_B - 0.55), "Und druck den Report aus.", START[4] + 0.1),
+        (at(4, -0.30), "Alle Plattformen. Ein Überblick.", START[5] + 0.1),
+        (at(5, -0.35), "SellCheck. Gratis testen. Link unten antippen.", DUR - 0.05),
     ]
 
 
@@ -489,7 +489,13 @@ def load_clip(path, name):
         raw = w.readframes(w.getnframes())
     vals = struct.unpack("<" + "h" * (len(raw) // 2), raw)
     pk = max(abs(v) for v in vals) or 1
-    return [v / pk * 0.9 for v in vals]
+    out = [v / pk * 0.9 for v in vals]
+    # Stille am Anfang und Ende entfernen (30 ms Puffer), damit die Sätze direkt aneinander anschließen
+    thr = 0.02
+    first = next((i for i, v in enumerate(out) if abs(v) > thr), 0)
+    last = next((i for i in range(len(out) - 1, -1, -1) if abs(out[i]) > thr), len(out) - 1)
+    pad = int(0.03 * 44100)
+    return out[max(0, first - pad): min(len(out), last + pad)]
 
 
 def find_voice_files(folder):
@@ -625,7 +631,9 @@ def build_audio(variant, path, with_voice=False, voice_files=None):
     duck = [1.0] * n
     vo = [0.0] * n
     if with_voice:
+        prev_end = 0.0
         for idx, (t0, text, limit) in enumerate(vo_lines(variant)):
+            t0 = max(t0, prev_end + 0.04)
             if voice_files:
                 if idx >= len(voice_files) or not voice_files[idx]:
                     continue
@@ -633,6 +641,7 @@ def build_audio(variant, path, with_voice=False, voice_files=None):
             else:
                 samples = tts(text, f"{variant}{idx}")
             end = t0 + len(samples) / SR
+            prev_end = end
             flag = "" if end <= limit else "  <-- ZU LANG"
             print(f"  Sprecher {idx + 1}: {t0:5.2f}s bis {end:5.2f}s (Fenster bis {limit:5.2f}s){flag}", flush=True)
             add(vo, t0, samples, 1.0)

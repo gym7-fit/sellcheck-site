@@ -16,7 +16,7 @@ Das Logo kommt aus `marketing/logo-final/sellcheck_logo.py`.
 
 `out/sellcheck_tiktok_ad_A_mit_Stimme.mp4` nutzt die deutsche Stimme „Pauli“ (ElevenLabs, jung, warm, natürlich).
 Die sieben Clips liegen als `voice/1.mp3 … 7.mp3` (nicht eingecheckt), gemischt mit `build_ad.py A voice`.
-Länge 25,97 s. Hinweis zur Lizenz: Für Werbung braucht es bei ElevenLabs in der Regel einen bezahlten Tarif (kommerzielle Nutzung prüfen).
+Länge 20,1 s (Stille an den Clips entfernt, Sätze direkt aneinander, Szenen an die Sprechzeit angepasst; längste Pause 0,4 s). Hinweis zur Lizenz: Für Werbung braucht es bei ElevenLabs in der Regel einen bezahlten Tarif (kommerzielle Nutzung prüfen).
 
 ## Mit lokaler Stimme (Piper, „Thorsten“)
 
