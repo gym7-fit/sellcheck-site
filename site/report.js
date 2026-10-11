@@ -67,7 +67,7 @@
     p2.setAttribute("stroke-linejoin", "round");
     svg.append(p1, p2);
     mark.append(svg, document.createTextNode("SellCheck"));
-    bl.append(mark, h("small", "Arbeitstitel · erstellt am " + new Date().toLocaleDateString("de-DE")));
+    bl.append(mark, h("small", "Erstellt am " + new Date().toLocaleDateString("de-DE")));
     wrap.append(bl, h("h1", title), h("p", subtitle, "sub"));
 
     const meta = [
@@ -156,7 +156,7 @@
     const sign = h("div", undefined, "sign");
     sign.append(h("div", "Ort, Datum"), h("div", "Unterschrift"));
     frag.append(sign);
-    frag.append(h("p", "Erstellt mit SellCheck (Arbeitstitel), einem unabhängigen Projekt, das mit keiner Plattform und keiner Behörde verbunden ist. Keine Steuer- oder Rechtsberatung. Alle Angaben ohne Gewähr.", "footer-note"));
+    frag.append(h("p", "Erstellt mit SellCheck, einem unabhängigen Projekt, das mit keiner Plattform und keiner Behörde verbunden ist. Keine Steuer- oder Rechtsberatung. Alle Angaben ohne Gewähr.", "footer-note"));
     return frag;
   }
 
@@ -201,7 +201,7 @@
       "Die Daten der Plattformen (Meldung ab 30 Verkäufen oder 2.000 € pro Plattform) ersetzen diese Prüfung nicht.",
     ].forEach((t) => ul.append(h("li", t)));
     frag.append(ul);
-    frag.append(h("p", "Erstellt mit SellCheck (Arbeitstitel), einem unabhängigen Projekt, das mit keiner Plattform und keiner Behörde verbunden ist. Keine Steuer- oder Rechtsberatung. Alle Angaben ohne Gewähr.", "footer-note"));
+    frag.append(h("p", "Erstellt mit SellCheck, einem unabhängigen Projekt, das mit keiner Plattform und keiner Behörde verbunden ist. Keine Steuer- oder Rechtsberatung. Alle Angaben ohne Gewähr.", "footer-note"));
     return frag;
   }
 
