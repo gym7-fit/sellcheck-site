@@ -236,22 +236,25 @@ DATA = [
     },
     {
         "slug": "kleinanzeigen", "name": "Kleinanzeigen", "mono": "K", "kind": "noexport",
-        "teaser": "Kein Verkaufsexport belegt. Wege über Auszahlungen und Datenauskunft.",
+        "teaser": "Verkaufsübersicht in der App. Eine Datei zum Herunterladen ist nicht belegt.",
         "headline": "Kleinanzeigen: So bekommst du deine Verkaufsdaten",
-        "lead": "Einen Export deiner Verkäufe haben wir bei Kleinanzeigen nicht gefunden. Es gibt drei Wege, die in der Praxis funktionieren.",
-        "facts": [("Verkaufsexport", "nicht belegt"), ("Bester Weg", "Auszahlungen im Bankauszug oder bei PayPal"), ("Zusätzlich", "Datenauskunft nach Art. 15 DSGVO")],
-        "search": "Daten und Datenschutz",
+        "lead": "Eine Datei zum Herunterladen haben wir bei Kleinanzeigen nicht gefunden. Dafür zeigt dir die App deine abgeschlossenen Verkäufe über das Bezahlsystem in der „Verkaufsübersicht“.",
+        "facts": [("Verkaufsexport", "nicht belegt"), ("Übersicht", "Verkaufsübersicht in der App"), ("Enthält", "Liste der Transaktionen und Jahreszusammenfassung")],
+        "search": "Verkaufsübersicht",
         "ways": [
-            {"title": "Weg 1: Auszahlungen über Bank oder PayPal importieren", "steps": [
+            {"title": "Weg 1: Verkaufsübersicht in der App", "steps": [
+                S("Profilbereich öffnen", "Öffne die Kleinanzeigen-App und gehe zu „Meins“. Dort steht dein Profil mit deinen Anzeigen.", ["App", "Meins", "Profil"]),
+                S("Verkaufsübersicht antippen", "Tippe auf die Kachel „Verkaufsübersicht“ („Deine Einnahmen über unser Bezahlsystem“).", ["Profil", "Verkaufsübersicht"]),
+                S("Liste und Jahreszusammenfassung ansehen", "Du siehst die Liste deiner Transaktionen und die jährliche Zusammenfassung deiner erfolgreichen Verkäufe. Für die Meldegrenze zählt die Zahl und die Summe pro Kalenderjahr."),
+                S("In SellCheck übernehmen", "Trage die Verkäufe in SellCheck im Schritt 3 unter „Von Hand eintragen“ ein. Für die Meldegrenze kannst du Anzahl und Summe in Schritt 5 bei Kleinanzeigen direkt eintragen."),
+            ]},
+            {"title": "Weg 2: Auszahlungen über Bank oder PayPal importieren", "steps": [
                 S("Auszahlungen finden", "Bei „Sicher bezahlen“ wird das Geld nach Abschluss der Transaktion in der Regel innerhalb von 1 bis 3 Werktagen auf dein hinterlegtes Konto überwiesen. Du findest diese Buchungen im Kontoauszug. Wer PayPal nutzt, findet sie im PayPal-Bericht."),
                 S("Export besorgen", "Lade den Kontoauszug oder den PayPal-Bericht als CSV herunter. Die Anleitungen dafür:", items=[
                     "Online-Banking: Anleitung öffnen (bank.html)",
                     "PayPal: Anleitung öffnen (paypal.html)",
                 ]),
                 S("Mit Stichwort importieren", "Setze beim Import das Stichwort „Kleinanzeigen“. Den Einkaufspreis ergänzt du danach im Schritt „Angaben vervollständigen“."),
-            ]},
-            {"title": "Weg 2: Von Hand eintragen", "steps": [
-                S("Verkäufe selbst eintragen", "Bar bezahlte Verkäufe und Abholungen stehen in keiner Datei. Trage sie in SellCheck im Schritt 3 unter „Von Hand eintragen“ ein."),
             ]},
             {"title": "Weg 3: Datenauskunft anfordern", "steps": [
                 S("Hilfe-Center öffnen", "Melde dich bei Kleinanzeigen an und öffne das Hilfe-Center. Gehe zu „Daten und Datenschutz“.", ["Hilfe-Center", "Nutzerkonto", "Daten und Datenschutz"]),
@@ -260,13 +263,15 @@ DATA = [
             ]},
         ],
         "good": [
-            "Kleinanzeigen meldet nur Verkäufe über das Bezahlsystem an das Finanzamt (PStTG/DAC7). Bar bezahlte Verkäufe zählen für die Meldung nicht, für deine eigene Steuererklärung aber schon.",
-            "Ob die Datenauskunft deine Verkäufe mit Beträgen als Tabelle enthält, haben wir nicht geprüft.",
+            "Die Verkaufsübersicht gibt es laut Kleinanzeigen in den Apps im Profilbereich, am Computer nicht. Im Web-Konto zeigt „Transaktionen“ die letzten 50 Vorgänge, getrennt nach Einkäufen und Verkäufen.",
+            "Gezählt werden nur erfolgreiche Transaktionen über das Bezahlsystem seit dem 1. Januar 2023, je Kalenderjahr. Das sind dieselben Zahlen, die Kleinanzeigen für die Meldung an das Finanzamt (PStTG/DAC7) nutzt.",
+            "Bar bezahlte Verkäufe und Abholungen stehen dort nicht. Trage sie in SellCheck von Hand ein. Für deine eigene Steuererklärung zählen sie trotzdem.",
+            "Ob die Übersicht einen Export (Teilen, Download) anbietet, haben wir nicht geprüft. Siehst du eine solche Funktion, nutze sie und importiere die Datei.",
         ],
         "alt": "",
         "sources": [
+            ("Kleinanzeigen-Hilfe: Informationen zum PStTG (DAC7) mit Hinweis zur Verkaufsübersicht", "https://hilfe.kleinanzeigen.de/hc/de/articles/17167379828252-Informationen-zum-Plattformen-Steuertransparenzgesetz-PStTG-DAC7"),
             ("Kleinanzeigen-Hilfe: Wie erhalte ich als Verkäufer bei „Sicher bezahlen“ mein Geld?", "https://hilfe.kleinanzeigen.de/hc/de/articles/17229725122460-Wie-erhalte-ich-als-Verk%C3%A4ufer-bei-Sicher-bezahlen-mein-Geld"),
-            ("Kleinanzeigen-Hilfe: Informationen zum PStTG (DAC7)", "https://hilfe.kleinanzeigen.de/hc/de/articles/17167379828252-Informationen-zum-Plattformen-Steuertransparenzgesetz-PStTG-DAC7"),
             ("Kleinanzeigen-Hilfe: Daten und Datenschutz", "https://hilfe.kleinanzeigen.de/hc/de/sections/17023680193820-Daten-und-Datenschutz"),
         ],
     },
@@ -430,7 +435,7 @@ def hub_page():
     <h2>Welche Datei ist die richtige?</h2>
     <ul>
       <li><b>Ich verkaufe auf eBay, Etsy oder Amazon:</b> nimm den Export der Plattform. Er enthält Preise und Gebühren.</li>
-      <li><b>Ich verkaufe auf Vinted oder Kleinanzeigen:</b> nimm den PayPal-Bericht oder deine Kontoumsätze und setze das Stichwort.</li>
+      <li><b>Ich verkaufe auf Vinted oder Kleinanzeigen:</b> nimm den PayPal-Bericht oder deine Kontoumsätze und setze das Stichwort. Bei Kleinanzeigen zeigt zusätzlich die „Verkaufsübersicht“ in der App deine Verkäufe über das Bezahlsystem.</li>
       <li><b>Ich führe schon eine Tabelle:</b> speichere sie als CSV.</li>
       <li><b>Nur wenige Verkäufe oder Barverkäufe:</b> trage sie in SellCheck von Hand ein.</li>
     </ul>
