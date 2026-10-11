@@ -25,7 +25,15 @@ from multiprocessing import Pool
 from PIL import Image, ImageDraw, ImageFont
 
 W, H, FPS, S = 1080, 1920, 30, 2          # S = Supersampling-Faktor
-DUR = 18.5
+# Dauer je Szene = Basiszeit der Animation x Streckung (langsamer = besser lesbar)
+BASE = {1: 2.6, 2: 3.2, 3: 7.4, 4: 2.8, 5: 3.1}
+SLOW = {1: 1.35, 2: 1.5, 3: 1.25, 4: 1.25, 5: 1.2}
+START = {}
+_t = 0.0
+for _k in (1, 2, 3, 4, 5):
+    START[_k] = _t
+    _t += BASE[_k] * SLOW[_k]
+DUR = round(_t, 2)
 NF = int(round(DUR * FPS))
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "out")
@@ -49,8 +57,13 @@ FONT = "/System/Library/Fonts/Avenir Next.ttc"
 WEIGHT = {"bold": 0, "demi": 2, "medium": 5, "regular": 7, "heavy": 8}
 
 # Szenen (Sekunden)
-T_S1, T_S2, T_S3, T_S4, T_S5 = 0.0, 2.6, 5.6, 12.6, 15.4
-S3_B = 4.0  # Beat b (Report) beginnt 4,0 s nach Szenenstart
+T_S1, T_S2, T_S3, T_S4, T_S5 = (START[k] for k in (1, 2, 3, 4, 5))
+S3_B = 4.4  # Beat b (Report) beginnt in Basiszeit 4,4 s nach Szenenstart (Szene 3)
+
+
+def at(scene, base_t):
+    """Absolute Zeit eines Ereignisses, das in der Szene bei Basiszeit base_t passiert."""
+    return START[scene] + base_t * SLOW[scene]
 
 
 # ------------------------------------------------------------------ Helfer
@@ -352,10 +365,10 @@ def scene_cta(L, t):
 
 
 SCENES = {
-    "A": [(T_S1, T_S2, scene_hook_a), (T_S2, T_S3, scene_problem_a)],
-    "B": [(T_S1, T_S2, scene_hook_b), (T_S2, T_S3, scene_problem_b)],
+    "A": [(1, scene_hook_a), (2, scene_problem_a)],
+    "B": [(1, scene_hook_b), (2, scene_problem_b)],
 }
-COMMON = [(T_S3, T_S4, scene_demo), (T_S4, T_S5, scene_benefits), (T_S5, DUR + 1, scene_cta)]
+COMMON = [(3, scene_demo), (4, scene_benefits), (5, scene_cta)]
 
 
 # ------------------------------------------------------------------ Hintergrund & Frame
@@ -384,12 +397,14 @@ def render_frame(args):
     brand(L0, t)
     im.paste(L0.im, (0, 0), L0.im)
     scenes = SCENES[variant] + COMMON
-    for start, end, fn in scenes:
+    for k, fn in scenes:
+        start = START[k]
+        end = start + BASE[k] * SLOW[k] if k < 5 else DUR + 1
         if start <= t < end:
             L = Layer()
-            lt = t - start
+            lt = (t - start) / SLOW[k]
             fn(L, lt)
-            f = min(clamp(lt / 0.08), clamp((end - t) / 0.08))
+            f = min(clamp((t - start) / 0.08), clamp((end - t) / 0.08))
             if f < 1:
                 a = L.im.getchannel("A").point(lambda v: int(v * f))
                 L.im.putalpha(a)
@@ -403,21 +418,48 @@ def render_frame(args):
 
 # ------------------------------------------------------------------ Ton (reine Synthese)
 SR = 44100
+VOICE = os.environ.get("AD_VOICE", "Anna")          # macOS-Systemstimme (say -v '?' zeigt die Liste)
+VO_RATE = os.environ.get("AD_VOICE_RATE", "165")    # Wörter pro Minute
+
+# Sprechertext je Variante: (absolute Startzeit, Text, spätestes Ende)
+def vo_lines(variant):
+    if variant != "A":
+        return []
+    return [
+        (at(1, 0.15), "Vinted meldet dich ab dreißig Verkäufen.", START[2]),
+        (at(2, 0.10), "Aber du verkaufst nicht nur dort. Und jede Plattform zählt einzeln.", START[3]),
+        (at(3, 1.15), "Lade deine Verkäufe hoch, sieh die Ampel pro Plattform, und druck den Report aus.", START[4] - 0.2),
+        (at(4, 0.10), "Alle Plattformen. Ein Überblick.", START[5]),
+        (at(5, 0.0), "SellCheck. Gratis testen. Link unten antippen.", DUR - 0.25),
+    ]
 
 
-def build_audio(variant, path):
+def tts(text, name):
+    aiff = os.path.join(FRAMES, f"vo_{name}.aiff")
+    wav = os.path.join(FRAMES, f"vo_{name}.wav")
+    subprocess.run(["say", "-v", VOICE, "-r", VO_RATE, "-o", aiff, text], check=True)
+    subprocess.run(["afconvert", "-f", "WAVE", "-d", "LEI16@44100", "-c", "1", aiff, wav], check=True)
+    with wave.open(wav) as w:
+        raw = w.readframes(w.getnframes())
+    vals = struct.unpack("<" + "h" * (len(raw) // 2), raw)
+    pk = max(abs(v) for v in vals) or 1
+    return [v / pk * 0.9 for v in vals]
+
+
+def build_audio(variant, path, with_voice=False):
     n = int(SR * DUR)
-    mix = [0.0] * n
+    music = [0.0] * n
+    sfx = [0.0] * n
     rnd = random.Random(3)
 
-    def add(t0, samples, gain=1.0):
+    def add(buf, t0, samples, gain=1.0):
         s0 = int(t0 * SR)
         for k, v in enumerate(samples):
             j = s0 + k
             if 0 <= j < n:
-                mix[j] += v * gain
+                buf[j] += v * gain
 
-    def tone(freq, dur, kind="sine", decay=6.0, freq_end=None):
+    def tone(freq, dur, kind="sine", decay=6.0, freq_end=None, attack=60.0):
         out = []
         ph = 0.0
         m = int(dur * SR)
@@ -425,40 +467,21 @@ def build_audio(variant, path):
             x = k / m
             f = freq if freq_end is None else freq + (freq_end - freq) * x
             ph += 2 * math.pi * f / SR
-            if kind == "sine":
-                v = math.sin(ph)
-            elif kind == "saw":
-                v = 2 * ((ph / (2 * math.pi)) % 1) - 1
-            else:
-                v = 1.0 if math.sin(ph) > 0 else -1.0
-            out.append(v * math.exp(-decay * x) * min(1.0, k / 60.0))
+            v = math.sin(ph) if kind == "sine" else (2 * ((ph / (2 * math.pi)) % 1) - 1)
+            out.append(v * math.exp(-decay * x) * min(1.0, k / attack))
         return out
 
-    def noise(dur, decay=8.0, hp=0.0):
+    def hat(dur=0.03):
         out = []
         prev = 0.0
         for k in range(int(dur * SR)):
             x = k / (dur * SR)
             v = rnd.uniform(-1, 1)
-            if hp:
-                v, prev = v - prev * hp, v
-            out.append(v * math.exp(-decay * x))
-        return out
-
-    def whoosh(dur=0.35):
-        out = []
-        lp = 0.0
-        m = int(dur * SR)
-        for k in range(m):
-            x = k / m
-            c = 0.02 + 0.5 * x
-            lp += c * (rnd.uniform(-1, 1) - lp)
-            env = math.sin(math.pi * x) ** 1.5
-            out.append(lp * env * 2.2)
+            v, prev = v - prev * 0.9, v
+            out.append(v * math.exp(-12 * x))
         return out
 
     beat = 0.5  # 120 bpm
-    # Musikbett
     bass_notes = [55.0, 55.0, 43.65, 49.0]
     t = 0.0
     bar = 0
@@ -467,66 +490,81 @@ def build_audio(variant, path):
             tb = t + b * beat
             if tb >= DUR:
                 break
-            vol = 0.55 if tb < T_S2 else 0.8
-            add(tb, tone(120, 0.22, "sine", 9.0, 45), 0.9 * vol)       # Kick
-            add(tb + beat / 2, noise(0.05, 14.0, 0.9), 0.22 * vol)    # Hi-Hat
-            if tb >= T_S3:
-                add(tb + beat / 2, tone(bass_notes[bar % 4] * 2, 0.2, "sine", 6.0), 0.18)
-        # Bass je Takt
-        add(t, tone(bass_notes[bar % 4], 1.9, "sine", 2.2), 0.5)
-        if t >= T_S3:  # Arpeggio ab der Demo
+            vol = 0.5 if tb < START[2] else 0.7
+            add(music, tb, tone(120, 0.22, "sine", 9.0, 45), 0.8 * vol)   # Kick
+            add(music, tb + beat / 2, hat(), 0.10 * vol)                  # Hi-Hat, sehr leise
+            if tb >= START[3]:
+                add(music, tb + beat / 2, tone(bass_notes[bar % 4] * 2, 0.2, "sine", 6.0), 0.14)
+        add(music, t, tone(bass_notes[bar % 4], 1.9, "sine", 2.2), 0.45)
+        if t >= START[3]:
             arp = [220.0, 261.63, 329.63, 392.0] if bar % 2 == 0 else [196.0, 246.94, 293.66, 392.0]
             for q in range(8):
-                add(t + q * beat / 2, tone(arp[q % 4] * 2, 0.22, "sine", 7.0), 0.07)
+                add(music, t + q * beat / 2, tone(arp[q % 4] * 2, 0.22, "sine", 7.0), 0.06)
         t += 4 * beat
         bar += 1
 
+    # Effekte: nur weiche Töne, kein Rauschen
     def tick(t0, f=1500):
-        add(t0, tone(f, 0.05, "sine", 10.0), 0.35)
+        add(sfx, t0, tone(f, 0.05, "sine", 10.0), 0.28)
 
     def pop(t0, f=520):
-        add(t0, tone(f, 0.11, "sine", 7.0, f * 1.6), 0.45)
+        add(sfx, t0, tone(f, 0.11, "sine", 7.0, f * 1.5), 0.32)
 
     def ding(t0, f):
-        add(t0, tone(f, 0.5, "sine", 4.0), 0.4)
-        add(t0, tone(f * 2, 0.35, "sine", 6.0), 0.12)
+        add(sfx, t0, tone(f, 0.5, "sine", 4.0), 0.3)
+        add(sfx, t0, tone(f * 2, 0.35, "sine", 6.0), 0.08)
 
-    def alarm(t0):
-        add(t0, tone(95, 0.28, "saw", 5.0), 0.5)
+    def blip_down(t0):
+        add(sfx, t0, tone(440, 0.14, "sine", 5.0, 360), 0.3)
+        add(sfx, t0 + 0.13, tone(330, 0.2, "sine", 5.0, 250), 0.3)
 
-    # Übergänge
-    for ts in (T_S2, T_S3, T_S4, T_S5):
-        add(ts - 0.15, whoosh(0.3), 0.5)
-    add(T_S3 + S3_B - 0.1, whoosh(0.35), 0.5)
+    def swipe(t0):
+        add(sfx, t0, tone(260, 0.28, "sine", 3.5, 520, attack=2000.0), 0.12)
+
+    for k in (2, 3, 4, 5):
+        swipe(START[k] - 0.12)
+    swipe(at(3, S3_B) - 0.1)
 
     if variant == "A":
-        add(0.0, whoosh(0.25), 0.5)
-        for tt in (0.9, 1.25, 1.6):
-            tick(T_S1 + tt)
-        alarm(T_S1 + 1.65)
+        for base in (0.9, 1.25, 1.6):
+            tick(at(1, base))
+        blip_down(at(1, 1.65))
         for i in range(4):
-            pop(T_S2 + 0.55 + i * 0.2, 480 + i * 60)
+            pop(at(2, 0.55 + i * 0.2), 480 + i * 60)
     else:
-        add(0.0, whoosh(0.25), 0.5)
         for i in range(4):
-            pop(T_S1 + 0.9 + i * 0.22, 480 + i * 60)
-        pop(T_S2 + 0.0, 640)
-        pop(T_S2 + 0.18, 720)
+            pop(at(1, 0.9 + i * 0.22), 480 + i * 60)
+        pop(at(2, 0.0), 640)
+        pop(at(2, 0.18), 720)
 
-    add(T_S3 + 0.3, tone(180, 0.18, "sine", 8.0, 60), 0.7)         # Datei landet
+    add(sfx, at(3, 0.3), tone(180, 0.18, "sine", 8.0, 60), 0.5)    # Datei landet
     for i in range(4):
-        tick(T_S3 + 0.9 + i * 0.28 + 0.15, 1100 + i * 120)
-    alarm(T_S3 + 3.05)
+        tick(at(3, 0.9 + i * 0.28 + 0.15), 1100 + i * 120)
+    blip_down(at(3, 3.05))
+    ding(at(3, S3_B + 1.6), 659.25)                                 # Summe ist oben angekommen
     for i, f in enumerate((523.25, 659.25, 783.99)):
-        ding(T_S4 + 0.35 + i * 0.4, f)
-    add(T_S3 + S3_B + 0.7, whoosh(0.9), 0.35)
-    ding(T_S5 + 0.9, 523.25)
-    ding(T_S5 + 1.0, 659.25)
-    ding(T_S5 + 1.1, 783.99)
-    ding(T_S5 + 1.2, 1046.5)
+        ding(at(4, 0.35 + i * 0.4), f)
+    for j, f in enumerate((523.25, 659.25, 783.99, 1046.5)):
+        ding(at(5, 0.9) + j * 0.1, f)
 
+    # Sprecher (optional) und Absenkung der Musik darunter
+    duck = [1.0] * n
+    vo = [0.0] * n
+    if with_voice:
+        for idx, (t0, text, limit) in enumerate(vo_lines(variant)):
+            samples = tts(text, f"{variant}{idx}")
+            end = t0 + len(samples) / SR
+            flag = "" if end <= limit else "  <-- ZU LANG"
+            print(f"  Sprecher {idx + 1}: {t0:5.2f}s bis {end:5.2f}s (Fenster bis {limit:5.2f}s){flag}", flush=True)
+            add(vo, t0, samples, 1.0)
+            a, b = int((t0 - 0.15) * SR), int((end + 0.3) * SR)
+            for j in range(max(0, a), min(n, b)):
+                ramp = min(1.0, (j - a) / (0.15 * SR), (b - j) / (0.3 * SR))
+                duck[j] = min(duck[j], 1.0 - 0.6 * max(0.0, ramp))
+
+    mix = [music[k] * duck[k] + sfx[k] * (0.7 if with_voice else 1.0) + vo[k] * 1.0 for k in range(n)]
     peak = max(abs(v) for v in mix) or 1.0
-    scale = 0.8 / peak
+    scale = 0.85 / peak
     fade = int(0.35 * SR)
     with wave.open(path, "wb") as w:
         w.setnchannels(2)
@@ -536,12 +574,20 @@ def build_audio(variant, path):
         for k, v in enumerate(mix):
             if k > n - fade:
                 v *= (n - k) / fade
-            s = int(max(-1.0, min(1.0, v * scale)) * 32767)
-            buf += struct.pack("<hh", s, s)
+            sv = int(max(-1.0, min(1.0, v * scale)) * 32767)
+            buf += struct.pack("<hh", sv, sv)
         w.writeframes(bytes(buf))
 
 
 # ------------------------------------------------------------------ Main
+def encode(variant, wav, mp4):
+    enc = os.path.join(FRAMES, "encode")
+    if not os.path.exists(enc) or os.path.getmtime(enc) < os.path.getmtime(os.path.join(HERE, "encode.swift")):
+        print("Swift-Encoder bauen …", flush=True)
+        subprocess.run(["swiftc", "-O", "-swift-version", "5", "-suppress-warnings", os.path.join(HERE, "encode.swift"), "-o", enc], check=True)
+    subprocess.run([enc, os.path.join(FRAMES, variant), str(FPS), str(NF), wav, mp4], check=True)
+
+
 def main():
     variant = (sys.argv[1] if len(sys.argv) > 1 else "A").upper()
     only = sys.argv[2] if len(sys.argv) > 2 else ""
@@ -555,22 +601,21 @@ def main():
             render_frame((int(sec * FPS), variant))
         print("Testframes gerendert")
         return
-    print(f"Variante {variant}: rendere {NF} Frames …", flush=True)
-    with Pool() as pool:
-        for k, _ in enumerate(pool.imap_unordered(render_frame, [(i, variant) for i in range(NF)], chunksize=8)):
-            if k % 100 == 0:
-                print(f"  {k}/{NF}", flush=True)
-    wav = os.path.join(FRAMES, f"audio_{variant}.wav")
-    print("Ton …", flush=True)
-    build_audio(variant, wav)
-    mp4 = os.path.join(OUT, f"sellcheck_tiktok_ad_{variant}.mp4")
-    enc = os.path.join(FRAMES, "encode")
-    if not os.path.exists(enc) or os.path.getmtime(enc) < os.path.getmtime(os.path.join(HERE, "encode.swift")):
-        print("Swift-Encoder bauen …", flush=True)
-        subprocess.run(["swiftc", "-O", "-swift-version", "5", "-suppress-warnings", os.path.join(HERE, "encode.swift"), "-o", enc], check=True)
-    print("Encoding …", flush=True)
-    subprocess.run([enc, os.path.join(FRAMES, variant), str(FPS), str(NF), wav, mp4], check=True)
-    print("Fertig:", mp4)
+    if only != "audio":
+        print(f"Variante {variant}: rendere {NF} Frames ({DUR} s) …", flush=True)
+        with Pool() as pool:
+            for k, _ in enumerate(pool.imap_unordered(render_frame, [(i, variant) for i in range(NF)], chunksize=8)):
+                if k % 150 == 0:
+                    print(f"  {k}/{NF}", flush=True)
+    for with_voice in ([False, True] if variant == "A" else [False]):
+        tag = "mit_Sprecher" if with_voice else "ohne_Sprecher"
+        print(f"Ton ({tag}) …", flush=True)
+        wav = os.path.join(FRAMES, f"audio_{variant}_{tag}.wav")
+        build_audio(variant, wav, with_voice)
+        mp4 = os.path.join(OUT, f"sellcheck_tiktok_ad_{variant}_{tag}.mp4")
+        print("Encoding …", flush=True)
+        encode(variant, wav, mp4)
+        print("Fertig:", mp4, flush=True)
 
 
 if __name__ == "__main__":

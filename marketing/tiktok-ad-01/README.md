@@ -1,14 +1,20 @@
-# TikTok-Ad 01: „Meldegrenze“ (Stand 11.10.2026)
+# TikTok-Ad 01: „Meldegrenze“ (Stand 11.10.2026, Version 2)
 
-Zwei Hook-Varianten desselben Videos, 18,5 s, 1080×1920, 30 fps, H.264 + AAC.
+Version 2 nach Feedback: Texte stehen länger (Szenen gestreckt), keine Rausch-Effekte mehr, zusätzlich eine Fassung mit Sprecher.
 
-| Datei | Hook | Idee |
-| --- | --- | --- |
-| `out/sellcheck_tiktok_ad_A.mp4` | „Vinted meldet dich ab 30 Verkäufen.“ + tickender Zähler 27 → 30 | Fakt, Neugier, kleine Dramaturgie |
-| `out/sellcheck_tiktok_ad_B.mp4` | „POV: Du verkaufst auf 4 Plattformen und hast keine Ahnung, wo du stehst.“ | Wiedererkennung, Problem zuerst |
+| Datei | Inhalt |
+| --- | --- |
+| `out/sellcheck_tiktok_ad_A_mit_Sprecher.mp4` | Hook A, Systemstimme (macOS „Anna“), Musik leiser darunter |
+| `out/sellcheck_tiktok_ad_A_ohne_Sprecher.mp4` | Hook A, nur Musikbett und weiche Effekte (zum Einsprechen oder für TikTok-Musik) |
+| `out/sellcheck_tiktok_ad_B_ohne_Sprecher.mp4` | Hook B („POV: 4 Plattformen …“) zum Testen gegen A |
 
-Beide laufen danach identisch: Demo (Datei rein → Ampel an → Report raus), drei Nutzen, Handlung.
-Die Videos entstehen mit `python3 marketing/tiktok-ad-01/build_ad.py A` (oder `B`). Texte und Zeiten stehen im Skript.
+Länge 24,8 s, 1080×1920, 30 fps, H.264 + AAC. Hook A: „Vinted meldet dich ab 30 Verkäufen.“ mit tickendem Zähler.
+Die Videos entstehen mit `python3 marketing/tiktok-ad-01/build_ad.py A` (oder `B`). Texte, Zeiten und Sprechertext stehen im Skript.
+Andere Stimme: `AD_VOICE=Flo python3 …` (verfügbar auf diesem Mac: Anna, Flo, Sandy, Shelley, Eddy, Reed, Rocko). Tempo: `AD_VOICE_RATE=150`.
+
+Zeitplan: Hook 0–3,5 s · Problem 3,5–8,3 s · Demo 8,3–17,6 s · Nutzen 17,6–21,1 s · Handlung 21,1–24,8 s.
+Jeder Inhalt steht nach dem Einblenden mindestens etwa 1,2 s, die letzten Zeilen jeder Szene 1,5 s und mehr.
+Wer auf 15 s kürzen will: Szene „Nutzen“ streichen und die Demo straffen (Streckungsfaktoren `SLOW` im Skript).
 
 ## Was die Recherche ergeben hat (und wie es umgesetzt ist)
 
@@ -20,24 +26,24 @@ Quellen sind überwiegend Agentur- und Tool-Blogs, nicht TikTok selbst. Richtwer
 | Aufbau Hook → Problem → Lösung → konkrete Handlung. | Szenen 1 bis 5 genau in dieser Reihenfolge. |
 | Ein Nutzen pro Anzeige, Demo statt Behauptung. | Nutzen: Überblick über alle Plattformen. Die Demo zeigt die Ampel. |
 | Marke früh zeigen (laut TikTok bei vielen Top-Ads in den ersten 3 s). | Logo und Name von Sekunde 0 oben. |
-| 9–15 s laufen im Schnitt am besten, bis 60 s möglich. | 18,5 s, bewusst knapp über dem Richtwert wegen der Demo. Für 15 s kann Szene 4 gekürzt werden. |
-| Für Ton gestalten, aber Untertitel mitdenken (viele schauen stumm). | Alle Aussagen stehen als große Schrift im Bild. Musik und Effekte unterstützen. |
+| 9–15 s laufen im Schnitt am besten, bis 60 s möglich. | 24,8 s: bewusst länger, damit man alles lesen kann. Lesbarkeit war dir wichtiger. |
+| Für Ton gestalten, aber Untertitel mitdenken (viele schauen stumm). | Alle Aussagen stehen als große Schrift im Bild. Sprecher, Musik und Effekte unterstützen. |
 | Safe Zone: oben ~160 px, unten ~340–440 px und rechts frei, dort sitzen Konto, Beschreibung, Button. | Text liegt zwischen y = 220 und y = 1420, rechts mindestens 140 px Rand. |
 | CTA konkret und in den letzten ~5 s. | „Gratis testen. Link unten antippen.“ ab Sekunde 15,4. |
 | Mehrere Hooks testen, Hook ist die wichtigste Variable. | Zwei Varianten A/B. |
 
 Technik (TikTok In-Feed, laut Hilfe-Center, Stand Juni 2026): MP4 oder MOV, 9:16, mindestens 540×960, höchstens 500 MB, mindestens 516 kbit/s.
-Unsere Dateien: 1080×1920, 4 MB, H.264. Das passt.
+Unsere Dateien: 1080×1920, etwa 6 MB, H.264. Das passt.
 
-## Skript (Bild und Sprecher-Text, falls du es einsprechen willst)
+## Skript (Bild und Sprecher-Text, so wie er in der Fassung mit Sprecher gesprochen wird)
 
 | Zeit | Bild | Sprecher |
 | --- | --- | --- |
-| 0,0–2,6 | „Vinted meldet dich ab 30 Verkäufen.“ Zähler 27, 28, 29, 30, rot: „Meldegrenze erreicht“ | „Vinted meldet dich ab dreißig Verkäufen.“ |
-| 2,6–5,6 | „Aber du verkaufst nicht nur dort.“ Vinted, Kleinanzeigen, eBay, Etsy mit „?“. „Jede zählt einzeln.“ | „Aber du verkaufst ja nicht nur dort. Und jede Plattform zählt einzeln.“ |
-| 5,6–12,6 | „Datei rein. Ampel an. Report raus.“ Ampel mit vier Plattformen, danach Report mit Gewinn | „Lade deine Verkäufe hoch, sieh die Ampel pro Plattform und druck den Report aus.“ |
-| 12,6–15,4 | Drei Haken: Alle Plattformen, Meldegrenzen als Ampel, Steuer-Report zum Drucken | „Alle Plattformen. Ein Überblick.“ |
-| 15,4–18,5 | Logo, „Gratis testen.“, „Link unten antippen“ | „SellCheck. Gratis testen. Link unten.“ |
+| 0,0–3,5 | „Vinted meldet dich ab 30 Verkäufen.“ Zähler 27, 28, 29, 30, rot: „Meldegrenze erreicht“ | „Vinted meldet dich ab dreißig Verkäufen.“ |
+| 3,5–8,3 | „Aber du verkaufst nicht nur dort.“ Vinted, Kleinanzeigen, eBay, Etsy mit „?“. „Jede zählt einzeln.“ | „Aber du verkaufst nicht nur dort. Und jede Plattform zählt einzeln.“ |
+| 8,3–17,6 | „Datei rein. Ampel an. Report raus.“ Ampel mit vier Plattformen, danach Report mit Gewinn | „Lade deine Verkäufe hoch, sieh die Ampel pro Plattform, und druck den Report aus.“ |
+| 17,6–21,1 | Drei Haken: Alle Plattformen, Meldegrenzen als Ampel, Steuer-Report zum Drucken | „Alle Plattformen. Ein Überblick.“ |
+| 21,1–24,8 | Logo, „Gratis testen.“, „Link unten antippen“ | „SellCheck. Gratis testen. Link unten antippen.“ |
 
 Variante B ersetzt die ersten sechs Sekunden: „POV: Du verkaufst auf 4 Plattformen und hast keine Ahnung, wo du stehst.“, dann „Ab 30 Verkäufen oder 2.000 € im Jahr meldet dich die Plattform an die Steuerbehörde. Jede Plattform zählt einzeln. Meldung heißt nicht automatisch: Steuern zahlen.“
 
@@ -53,7 +59,7 @@ Deutschland, 18–44 Jahre, Interessen Secondhand, Mode, Online-Shopping, Resell
 
 ## Wichtig vor dem Schalten
 
-1. **Ton:** Die Musik und Effekte im Video sind selbst erzeugte Platzhalter (kein fremdes Material, keine Lizenzfragen). Für die echte Anzeige besser in TikTok einen Titel aus der Commercial Music Library wählen oder einen Sprecher einsprechen.
+1. **Ton:** Musik und Effekte sind selbst erzeugt (kein fremdes Material, keine Lizenzfragen), die Stimme ist eine Computerstimme von macOS. Das klingt hörbar synthetisch. Für die echte Anzeige besser selbst einsprechen (Text unten) oder in TikTok eine Stimme bzw. einen Titel aus der Commercial Music Library wählen.
 2. **Aussagen:** „Vinted meldet ab 30 Verkäufen“ stützt sich auf Vinteds eigene DAC7-Seite (30 Verkäufe oder über 2.000 € je Jahr). Die Demo-Zahlen sind Beispiele und im Bild als „Beispieldaten“ gekennzeichnet. Die Anzeige verspricht keine Steuerersparnis.
 3. **Zielseite:** Impressum und Datenschutz auf der Seite sind noch Entwürfe mit Platzhaltern. Ohne vollständiges Impressum und Datenschutz darf man in Deutschland nicht werben. Außerdem verlangt die Seite zuerst eine Registrierung, das kostet Klicks. Und die Adresse `gym7-fit.github.io/sellcheck-site` ist keine Marken-Adresse.
 4. **Mail-Versand:** Registrierungs-Mails laufen über ein Gmail-Konto (etwa 500 Mails pro Tag, 30 pro Stunde eingestellt). Bei echtem Anzeigenverkehr reicht das nicht.
