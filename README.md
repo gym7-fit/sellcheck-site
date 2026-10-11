@@ -56,7 +56,7 @@ Siehe [docs/LIVEGANG.md](docs/LIVEGANG.md). Kurzfassung: Marke und Domain prüfe
 
 ## Datenschutz im Repository
 
-Das Repository enthält **keine** Geschäftsunterlagen und keine personenbezogenen Daten. Beispieldaten in den Tests und in der Oberfläche sind frei erfunden. Es gibt keine Abhängigkeiten von Fremdservern (keine CDNs, keine Schriften, kein Tracking).
+Das Repository enthält **keine** Geschäftsunterlagen und keine personenbezogenen Daten. Beispieldaten in den Tests (`SCParse.SAMPLES` in `site/parse-lib.js`) sind frei erfunden und in der Oberfläche nicht sichtbar. Es gibt keine Abhängigkeiten von Fremdservern (keine CDNs, keine Schriften, kein Tracking).
 
 ## Lizenz
 

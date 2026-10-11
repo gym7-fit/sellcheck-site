@@ -164,24 +164,12 @@
       <input id="i-file" type="file" accept=".csv,.txt,.tsv,text/csv,text/plain,text/tab-separated-values">
     </label>
     <details class="more-fields more-ways" style="margin-top:14px">
-      <summary>Weitere Wege: Tabelle einfügen oder mit Beispieldaten ausprobieren</summary>
+      <summary>Oder Tabelle aus der Zwischenablage einfügen</summary>
       <div class="more-ways-body">
         <div>
-          <label for="i-paste">Tabelle aus der Zwischenablage einfügen</label>
-          <textarea id="i-paste" rows="5" placeholder="Zeilen aus Excel, Google Sheets oder einer Webseite einfügen (mit Kopfzeile)"></textarea>
+          <label for="i-paste">Zeilen aus Excel, Google Sheets oder einer Webseite (mit Kopfzeile)</label>
+          <textarea id="i-paste" rows="5"></textarea>
           <div class="toolbar"><button class="btn secondary small" id="i-paste-go" type="button">Einlesen</button></div>
-        </div>
-        <div>
-          <label for="i-sample">Beispieldaten laden (frei erfunden, nur zum Ansehen)</label>
-          <select id="i-sample">
-            <option value="">Beispiel wählen…</option>
-            <option value="ebay">eBay-ähnlich</option>
-            <option value="etsy">Etsy-ähnlich</option>
-            <option value="amazon">Amazon-ähnlich</option>
-            <option value="paypal">PayPal-ähnlich</option>
-            <option value="bank">Bank-Umsätze</option>
-          </select>
-          <div class="small muted">Die Beispieldaten landen nach dem Import in deiner Liste. Du kannst den Import mit „Rückgängig“ wieder entfernen.</div>
         </div>
       </div>
     </details>

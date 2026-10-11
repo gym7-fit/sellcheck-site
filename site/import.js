@@ -282,12 +282,6 @@
   $("i-keyword").addEventListener("input", slowPreview);
   ["i-dateorder", "i-platform", "i-positive"].forEach((id) => $(id).addEventListener("input", renderPreview));
 
-  $("i-sample").addEventListener("change", (e) => {
-    const s = P.SAMPLES[e.target.value];
-    if (s) load(s.text, s.platform, s.keyword);
-    e.target.value = "";
-  });
-
   /* ---------- Kachel-Auswahl (Datenquellen, Abgabewege) ---------- */
   document.documentElement.classList.add("js");
   document.querySelectorAll("[data-tabs]").forEach((root) => {

@@ -63,7 +63,7 @@ npm test
 ## 7. Bekannte Grenzen
 
 - Kein offizieller Verkaufsexport für Vinted und Kleinanzeigen belegt: Import dort über Bank-/PayPal-Auszüge oder manuell.
-- Spaltennamen der Anbieter ändern sich; der Import rät und lässt korrigieren. Die mitgelieferten Beispieldateien sind frei erfunden, keine Originalexporte. Gegen echte Exporte testen, sobald welche vorliegen.
+- Spaltennamen der Anbieter ändern sich; der Import rät und lässt korrigieren. Die Beispieldaten in `parse-lib.js` (nur für Tests, nicht in der Oberfläche) sind frei erfunden, keine Originalexporte. Gegen echte Exporte testen, sobald welche vorliegen.
 - Keine Währungsumrechnung (Fremdwährungen werden gewarnt, nicht umgerechnet).
 - Daten liegen nur im Browser. Regelmäßig als CSV exportieren.
 - Keine Nutzungsmessung eingebaut (bewusst, Datenschutz). Entscheidung dazu offen.
