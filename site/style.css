@@ -389,7 +389,7 @@ dialog.edit-dialog::backdrop { background: rgba(8, 10, 14, .6); }
 .src-group-label { display: flex; align-items: center; gap: 8px; font-size: .78rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
 .src-group-label .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--green); }
 .src-group-label .dot.no { background: var(--yellow); }
-.src-tiles { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(172px, 1fr)); }
+.src-tiles { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
 .src-tile {
   display: flex; align-items: center; gap: 12px; text-align: left; cursor: pointer;
   padding: 12px 14px; min-height: 64px; border-radius: var(--radius-sm);
@@ -400,7 +400,7 @@ dialog.edit-dialog::backdrop { background: rgba(8, 10, 14, .6); }
 .src-tile[aria-selected="true"] { border-color: var(--text); background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--text); }
 .src-tile .mono { flex: none; width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: var(--lime); color: var(--ink); font-weight: 800; font-size: 1.05rem; }
 .src-group:nth-of-type(2) .src-tile .mono { background: var(--yellow-soft); color: var(--yellow); }
-.src-name { line-height: 1.2; font-size: .95rem; overflow-wrap: normal; hyphens: auto; -webkit-hyphens: auto; }
+.src-name { line-height: 1.25; font-size: .98rem; overflow-wrap: normal; word-break: normal; hyphens: manual; -webkit-hyphens: manual; text-wrap: balance; }
 .src-panels { border: 1.5px solid var(--line); border-radius: var(--radius); background: var(--bg); padding: 22px 24px; }
 .src-panel header { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px; margin-bottom: 14px; }
 .src-panel h4 { margin: 0; font-size: 1.25rem; letter-spacing: -.02em; }
@@ -423,7 +423,7 @@ dialog.edit-dialog::backdrop { background: rgba(8, 10, 14, .6); }
 .src-help .q { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; background: var(--lime); color: var(--ink); font-size: .74rem; font-weight: 800; }
 
 @media (max-width: 600px) {
-  .src-tiles { grid-template-columns: repeat(2, 1fr); }
+  .src-tiles { grid-template-columns: 1fr; }
   .src-facts > div { grid-template-columns: 1fr; gap: 4px; }
   .src-panels { padding: 18px; }
 }
@@ -476,3 +476,9 @@ details.more-ways { margin-top: 14px; }
 .ask { display: grid; gap: 6px; margin: 12px 0; padding: 14px 16px; border: 1.5px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); }
 .ask label { font-weight: 700; }
 .ask select, .ask input { max-width: 420px; }
+
+/* Abgabeweg-Kacheln und Infofeld: ruhiger Zeilenabstand, keine Silbentrennung */
+.src-tile { white-space: normal; }
+.src-panel h4 { line-height: 1.3; }
+.src-panel .tag { white-space: nowrap; }
+.src-facts dd { line-height: 1.55; overflow-wrap: break-word; }

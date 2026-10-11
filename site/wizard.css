@@ -174,3 +174,7 @@ button.linklike { font-size: .9rem; }
   :root:not([data-theme="light"]) .step.is-locked { opacity: .5; }
   :root:not([data-theme="light"]) .stepper-bar { box-shadow: 0 6px 18px rgba(0,0,0,.4); }
 }
+
+/* Die Warteliste auf der Prüfen-Seite ist eine dunkle Karte (wie auf der Startseite), sonst ist der helle Text unlesbar */
+.review-card.cta-card { background: var(--ink); color: var(--paper); border-color: var(--ink); --muted: #a2a8b3; }
+.review-card.cta-card h3 { color: var(--paper); }
