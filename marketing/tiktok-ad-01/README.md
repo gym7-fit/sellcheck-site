@@ -24,7 +24,7 @@ Belegt ist: Plattformen melden das Vorjahr bis 31. Januar (PStTG/DAC7, seit 2023
 
 Einstieg „Du verkaufst viel auf Vinted und Co?“, dann Frist (Plattformen melden bis Ende Januar), Demo, Handlungsaufruf. Ohne Beruhigungs-Szene, Ziel sind Klicks.
 Sprechertext mit Betonung (Großbuchstaben = betonte Wörter, `[curious]`/`[warmly]`/`[short pause]` = ElevenLabs-v4-Tags) steht in `vo_lines("V3")` in `build_ad.py`; Clips in `voice_v3/1.mp3 … 4.mp3`.
-Erzeugen: `python3 marketing/tiktok-ad-01/build_ad.py V3` und danach `… V3 voice`. Ausgabe: `out/sellcheck_tiktok_ad_V3_mit_Stimme.mp4` (ca. 25 s).
+Erzeugen: `python3 marketing/tiktok-ad-01/build_ad.py V3` und danach `… V3 voice`. Ausgabe: `out/sellcheck_tiktok_ad_V3_mit_Stimme.mp4` (ca. 23 s).
 Die Zeiten (`TARGET`, `FRIST_T`, `CAP2_T`, `S3_B`) sind auf die gemessenen Clip-Längen abgestimmt; bei neuen Clips das Skript neu messen.
 
 ## Mit ElevenLabs-Stimme „Pauli“ (Version A)

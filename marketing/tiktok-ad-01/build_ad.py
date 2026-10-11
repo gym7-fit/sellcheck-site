@@ -41,7 +41,7 @@ if VAR == "V2":
 elif VAR == "V3":
     KEYS = (1, 2, 3, 4)
     BASE = {1: 2.4, 2: 4.0, 3: 7.9, 4: 3.4}
-    TARGET = {1: 2.75, 2: 10.7, 3: 7.6, 4: 4.2}  # nach Messung der Sprechzeiten (Clips 2,5 / 10,5 / 7,3 / 3,9 s)
+    TARGET = {1: 2.6, 2: 8.2, 3: 8.1, 4: 4.1}  # nach Messung der Sprechzeiten (Clips 2,4 / 8,0 / 8,0 / 3,9 s)
     SLOW = {k: TARGET[k] / BASE[k] for k in KEYS}
 else:
     KEYS = (1, 2, 3, 4, 5)
@@ -82,7 +82,8 @@ S3_B = 5.4  # Beat b (Report) beginnt in Basiszeit 5,4 s nach Szenenstart (Szene
 CAP2_T = 1.5  # Basiszeit, ab der in der Demo die zweite Überschrift steht
 FRIST_T = (2.1, 2.6, 3.1, 3.2)  # Einblendzeiten (Basiszeit) in der Fristszene: Zeile 1, Zeile 2, Hinweis 1, Hinweis 2
 if VAR == "V3":
-    S3_B, CAP2_T, FRIST_T = 5.8, 1.9, (2.46, 3.0, 2.0, 2.1)  # Schwellen beim Sprechen von "Ab dreißig" / "zweitausend", Hinweis bei "Steuerbehörde"
+    S3_B, CAP2_T, FRIST_T = 5.95, 2.95, (1.95, 2.6, 1.3, 1.4)  # Schwellen beim Sprechen von "ab dreißig" / "zweitausend", Hinweis schon bei "melden dich"
+DEMO_SHIFT = 1.4 if VAR == "V3" else 0.0  # Karte/Ampel erst, wenn "und siehst pro Plattform" gesprochen wird
 
 
 def at(scene, base_t):
@@ -276,7 +277,7 @@ def scene_demo(L, t):
         pop_text(L, 540, 400, caps[2], sz[2], "heavy", PAPER, t, S3_B)
 
     # Beat a1: Ablagefläche, Datei landet darin (nichts überlagert anderen Inhalt)
-    zone_a = 1.0 - ease_out(prog(t, 1.45, 0.25))
+    zone_a = 1.0 - ease_out(prog(t, 1.45 + DEMO_SHIFT, 0.25))
     if zone_a > 0:
         a = 255 * zone_a
         landed = t >= 0.85
@@ -301,12 +302,12 @@ def scene_demo(L, t):
 
     # Beat a2: Karte mit Ampel
     slide_out = ease_out(prog(t, S3_B - 0.05, 0.45))
-    card_p = ease_out(prog(t, 1.55, 0.55))
+    card_p = ease_out(prog(t, 1.55 + DEMO_SHIFT, 0.55))
     if slide_out < 1.0 and card_p > 0:
         ox = -1100 * slide_out
         oy = (1 - card_p) * 700
         x0, y0, x1, y1 = 80 + ox, 500 + oy, 940 + ox, 1420 + oy
-        red_t = 4.15
+        red_t = 4.15 + DEMO_SHIFT
         flash = t >= red_t and t < red_t + 0.8 and (t % 0.5) < 0.3
         L.rrect(x0, y0, x1, y1, 44, fill=col(PAPER), outline=col(RED) if flash else None, width=6)
         L.text(x0 + 50, y0 + 62, "Meldegrenzen 2026", 46, "heavy", col(INK), "lm")
@@ -314,7 +315,7 @@ def scene_demo(L, t):
         L.text(x1 - 130, y0 + 62, "Übersicht" if V2LIKE else "Ampel", 28, "heavy", col(INK), "mm")
         L.text(x1 - 50, y1 - 34, "Beispieldaten", 24, "medium", col(DARKMUTED), "rm")
         for i, (name, v, lim, label, money_mode) in enumerate(ROWS):
-            st = 2.0 + i * 0.28
+            st = 2.0 + DEMO_SHIFT + i * 0.28
             rp = prog(t, st, 0.35)
             if rp <= 0:
                 continue
@@ -421,7 +422,7 @@ def scene_cta(L, t):
 def scene_v3_hook(L, t):
     """Du verkaufst viel auf Vinted und Co? mit hochlaufendem Zähler (Beispieldaten)."""
     pop_text(L, 540, 480, "Du verkaufst", 100, "heavy", PAPER, t, 0.0)
-    pop_text(L, 540, 600, "VIEL auf Vinted", 100, "heavy", LIME, t, 0.14)
+    pop_text(L, 540, 600, "viel auf Vinted", 100, "heavy", LIME, t, 0.14)
     pop_text(L, 540, 720, "und Co?", 100, "heavy", PAPER, t, 0.28)
     p = prog(t, 0.6, 0.4)
     if p > 0:
@@ -527,9 +528,9 @@ VO_RATE = os.environ.get("AD_VOICE_RATE", "165")    # Wörter pro Minute
 def vo_lines(variant):
     if variant == "V3":
         return [
-            (at(1, 0.05), "[curious] Du verkaufst VIEL auf Vinted und Co?", START[2]),
-            (at(2, 0.05), "Dann solltest du wissen: Plattformen melden bis Ende JANUAR die Verkäufe des Vorjahres an die Steuerbehörde. Ab DREIßIG Verkäufen oder ZWEItausend Euro, pro Plattform.", START[3]),
-            (at(3, 0.05), "Lade deine Verkäufe HOCH. SellCheck zeigt dir pro Plattform, wie NAH du an der Grenze bist. Und was dir WIRKLICH bleibt.", START[4]),
+            (at(1, 0.05), "[curious] Du verkaufst viel auf Vinted und Co?", START[2]),
+            (at(2, 0.05), "Dann solltest du wissen: Plattformen melden dich bis Ende JANUAR, ab DREIßIG Verkäufen oder ZWEItausend Euro, an die Steuerbehörde.", START[3]),
+            (at(3, 0.05), "Mit SellCheck lädst du einfach deine Verkäufe hoch und siehst pro Plattform, wie NAH du an der Grenze bist. Und was dir WIRKLICH bleibt.", START[4]),
             (at(4, -0.10), "SellCheck. Jetzt GRATIS testen. Einfach unten antippen.", DUR - 0.05),
         ]
     if variant == "V2":
@@ -755,8 +756,8 @@ def build_audio(variant, path, with_voice=False, voice_files=None):
     add(sfx, at(3, 0.8), tone(180, 0.18, "sine", 8.0, 60), 0.5)    # Datei landet
     ding(at(3, 0.95), 784.0)                                           # "Datei gelesen"
     for i in range(4):
-        tick(at(3, 2.0 + i * 0.28 + 0.15), 1100 + i * 120)
-    blip_down(at(3, 4.15))
+        tick(at(3, 2.0 + DEMO_SHIFT + i * 0.28 + 0.15), 1100 + i * 120)
+    blip_down(at(3, 4.15 + DEMO_SHIFT))
     ding(at(3, S3_B + 1.6), 659.25)                                 # Summe ist oben angekommen
     if variant not in ("V2", "V3"):
         for i, f in enumerate((523.25, 659.25, 783.99)):
