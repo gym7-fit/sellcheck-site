@@ -21,7 +21,7 @@
   /* ---------- Plattform-Auswahl ---------- */
   (function () {
     const sel = $("i-platform");
-    const auto = el("option", "Automatisch erkennen (Spalte oder Text)");
+    const auto = el("option", "Bitte wählen …");
     auto.value = "";
     sel.replaceChildren(auto, ...SC.PLATFORMS.map((p) => { const o = el("option", p.name); o.value = p.name; return o; }));
   })();
@@ -30,6 +30,15 @@
   /* ---------- Zustand ---------- */
   const state = { headers: [], rows: [], map: null, own: false, typeChecked: new Map() };
   let current = { entries: [], stats: null };
+
+  // Spaltennamen, die für Kontoauszüge typisch sind (PayPal- und Plattform-Exporte enthalten sie nicht)
+  const BANKISH = /verwendungszweck|buchungstext|wertstellung|valuta|\biban\b|auftraggeber|beguenstigter|begünstigter|zahlungspflichtiger|zahlungsempfänger/i;
+  function chosenPlatforms() {
+    try {
+      const w = JSON.parse(localStorage.getItem("sellcheck.wizard.v1") || "{}");
+      return (Array.isArray(w.platforms) ? w.platforms : []).filter((p) => platformNames.includes(p));
+    } catch { return []; }
+  }
 
   /* ---------- Einlesen ---------- */
   function load(text, presetPlatform, keyword) {
@@ -59,18 +68,26 @@
     $("i-dateorder").value = g.order;
     $("i-datewarn").hidden = !g.ambiguous;
     if (g.ambiguous) {
-      $("i-datewarn").textContent = `Das Datumsformat ist aus den Daten nicht eindeutig (alle Tage ≤ 12). Ich habe „${g.order === "mdy" ? "Monat/Tag/Jahr" : "Tag.Monat.Jahr"}“ angenommen. Bitte prüfe in der Vorschau, ob die Daten stimmen.`;
+      $("i-datewarn-text").textContent = `Das Datumsformat ist aus den Daten nicht eindeutig (alle Tage ≤ 12). Ich habe „${g.order === "mdy" ? "Monat/Tag/Jahr" : "Tag.Monat.Jahr"}“ angenommen. Stimmt das nicht, wähle hier das richtige Format. Prüfe danach die Vorschau.`;
     }
     const cur = P.detectCurrencies(state.headers, state.rows);
     $("i-curwarn").hidden = cur.length === 0;
     if (cur.length) $("i-curwarn").textContent = `Die Datei enthält andere Währungen (${cur.join(", ")}). SellCheck rechnet nicht um, alle Beträge würden als Euro gezählt. Importiere nur die Euro-Zeilen oder rechne vorher um.`;
 
-    $("i-platform").value = presetPlatform || "";
-    $("i-keyword").value = keyword || "";
+    const chosen = chosenPlatforms();
+    const single = chosen.length === 1 ? chosen[0] : "";
+    $("i-platform").value = presetPlatform || (state.map.plat < 0 ? single : "");
+    state.bankLike = !state.own && state.headers.some((h) => BANKISH.test(h));
+    const kwPlatforms = chosen.filter((p) => !/^(flohmarkt|sonstige)/i.test(p));
+    $("i-keyword").value = keyword || (state.bankLike ? (kwPlatforms.length ? kwPlatforms : ["Vinted", "Kleinanzeigen"]).join("|") : "");
+    $("i-ask-keyword").hidden = !state.bankLike && !keyword;
     $("i-positive").checked = !state.own;
     state.typeChecked = new Map();
     if ($("i-adv")) $("i-adv").open = false;
+    $("i-ask-platform").hidden = true;
     buildMapping();
+    // Plattform nur erfragen, wenn sie weder in der Datei steht noch aus Schritt 2 klar ist
+    $("i-ask-platform").hidden = !(!$("i-platform").value && current.entries.some((e) => e.platform === "Sonstige"));
     $("i-panel").hidden = false;
     $("i-panel").scrollIntoView({ behavior: "smooth", block: "start" });
     msg.textContent = `${state.rows.length} Zeilen erkannt (Trennzeichen: ${d === "\t" ? "Tab" : d}). Prüfe unten die Vorschau.`;
@@ -92,7 +109,8 @@
   function buildMapping() {
     const box = $("i-map");
     box.replaceChildren();
-    FIELDS.forEach((f) => {
+    const extra = el("div", undefined, "map-grid");
+    FIELDS.forEach((f, idx) => {
       const wrap = el("div");
       const lab = el("label", f.label);
       lab.htmlFor = "i-col-" + f.key;
@@ -119,8 +137,13 @@
         refreshAll();
       });
       wrap.append(lab, sel, el("div", f.hint, "small muted"));
-      box.append(wrap);
+      (idx < 4 ? box : extra).append(wrap);
     });
+    const more = document.createElement("details");
+    more.className = "more-fields";
+    more.style.gridColumn = "1 / -1";
+    more.append(el("summary", "Weitere Spalten (Versand, Einkaufspreis, Bestellnummer, Typ …)"), extra);
+    box.append(more);
     refreshAll();
   }
 
@@ -197,7 +220,7 @@
     if (feeCols.length) seen.push(`Gebühren = ${feeCols.join(", ")}`);
     $("i-recognized").textContent = seen.length ? "Spalten: " + seen.join(" · ") : "";
     // Ist nichts importierbar, die Anpassungen gleich aufklappen
-    if (s.ok === 0 && $("i-adv")) $("i-adv").open = true;
+    if (s.ok === 0 && s.keyword < s.total && $("i-adv")) $("i-adv").open = true;
     $("i-go").disabled = s.ok === 0;
     $("i-prev").replaceChildren(
       ...res.entries.slice(0, 8).map((e) => {

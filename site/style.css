@@ -471,3 +471,8 @@ details.more-ways { margin-top: 14px; }
 .src-line { color: var(--muted); font-size: .9rem; line-height: 1.4; }
 .src-card .src-help { margin-top: 4px; }
 @media (max-width: 600px) { .src-cards { grid-template-columns: 1fr; } }
+
+/* Gezielte Rückfragen im Import: erscheinen nur, wenn sie für die Datei nötig sind */
+.ask { display: grid; gap: 6px; margin: 12px 0; padding: 14px 16px; border: 1.5px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); }
+.ask label { font-weight: 700; }
+.ask select, .ask input { max-width: 420px; }

@@ -173,13 +173,28 @@
         </div>
       </div>
     </details>
-    <p id="i-datewarn" class="notice" hidden></p>
     <p id="i-curwarn" class="notice" hidden style="margin-top:8px"></p>
     <p id="i-msg" class="small" role="status" aria-live="polite" style="min-height:1.4em"></p>
 
     <div id="i-panel" hidden>
       <h3>Das haben wir erkannt</h3>
       <p id="i-recognized" class="small muted"></p>
+
+      <div class="ask" id="i-ask-platform" hidden>
+        <label for="i-platform">Von welcher Plattform stammen diese Verkäufe?</label>
+        <select id="i-platform"></select>
+      </div>
+      <div class="ask" id="i-ask-keyword" hidden>
+        <label for="i-keyword">Das sieht nach einem Kontoauszug aus. Woran erkennen wir deine Verkäufe?</label>
+        <input id="i-keyword" placeholder="z. B. Vinted|Kleinanzeigen">
+        <div class="small muted">Es werden nur Zeilen übernommen, in denen eines dieser Wörter vorkommt. Mehrere Wörter trennst du mit |.</div>
+      </div>
+      <div class="ask" id="i-datewarn" hidden>
+        <span id="i-datewarn-text"></span>
+        <label for="i-dateorder">Datumsformat</label>
+        <select id="i-dateorder"><option value="dmy">Tag.Monat.Jahr (deutsch)</option><option value="mdy">Monat/Tag/Jahr (US)</option></select>
+      </div>
+
       <p id="i-summary" class="small" role="status" aria-live="polite"></p>
       <div class="table-scroll" id="i-prevwrap" hidden>
         <table><thead><tr><th>Datum</th><th>Artikel</th><th>Plattform</th><th class="num">Verkauf</th><th class="num">Kosten</th></tr></thead><tbody id="i-prev"></tbody></table>
@@ -190,19 +205,11 @@
       </div>
 
       <details class="more-fields" id="i-adv" style="margin-top:18px">
-        <summary>Stimmt etwas nicht? Spalten und Einstellungen anpassen</summary>
-        <p class="small muted">Meist ist hier nichts zu tun. Ändere nur etwas, wenn in der Vorschau Datum oder Beträge falsch aussehen.</p>
+        <summary>Vorschau sieht falsch aus? Spalten selbst zuordnen</summary>
+        <p id="i-adv-hint" class="small muted">Meist ist hier nichts zu tun. Wähle nur dann andere Spalten, wenn Datum oder Beträge in der Vorschau nicht stimmen.</p>
         <div class="map-grid" id="i-map"></div>
         <div id="i-types" class="types" hidden></div>
-        <div class="field-row" style="margin-top:14px">
-          <div><label for="i-platform">Plattform</label><select id="i-platform"></select></div>
-          <div>
-            <label for="i-dateorder">Datumsformat</label>
-            <select id="i-dateorder"><option value="dmy">Tag.Monat.Jahr (deutsch)</option><option value="mdy">Monat/Tag/Jahr (US)</option></select>
-          </div>
-          <div><label for="i-keyword">Nur Zeilen mit Stichwort</label><input id="i-keyword" placeholder="z. B. Vinted|Kleinanzeigen"></div>
-        </div>
-        <label class="check-inline"><input id="i-positive" type="checkbox" checked> Nur Beträge über 0 importieren (ohne Erstattungen und Abbuchungen)</label>
+        <label class="check-inline" style="margin-top:12px"><input id="i-positive" type="checkbox" checked> Nur Beträge über 0 importieren (ohne Erstattungen und Abbuchungen)</label>
       </details>
     </div>
     <div class="toolbar"><button class="btn secondary small" id="i-undo" type="button" hidden>Letzten Import rückgängig machen</button></div>
