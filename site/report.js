@@ -21,16 +21,27 @@
     });
     return tr;
   };
-  const table = (headers, rows, numCols) => {
-    const t = h("table");
+  // Weiche Trennstellen in langen Spaltenköpfen (Veräußerungs|preis), damit nichts über den Rand läuft
+  const shy = (x) => String(x).replace(/ungs(?=[a-zß]{4,})/g, "ungs\u00AD").replace(/Waren(?=einkauf)/g, "Waren\u00AD");
+  // widths: Spaltenbreiten in Prozent (Summe 100). Mit Breiten ist das Layout fest und die Tabelle bleibt im Blatt.
+  const table = (headers, rows, numCols, widths) => {
+    const t = h("table", undefined, headers.length >= 6 ? "wide" : "");
+    if (widths && widths.length === headers.length) {
+      const cg = h("colgroup");
+      widths.forEach((w) => { const c = h("col"); c.style.width = w + "%"; cg.append(c); });
+      t.append(cg);
+      t.classList.add("fixed");
+    }
     const thead = h("thead");
     const hr = h("tr");
-    headers.forEach((x, i) => hr.append(h("th", x, numCols && numCols.includes(i) ? "num" : "")));
+    headers.forEach((x, i) => hr.append(h("th", shy(x), numCols && numCols.includes(i) ? "num" : "")));
     thead.append(hr);
     const tb = h("tbody");
     rows.forEach((r) => tb.append(r));
     t.append(thead, tb);
-    return t;
+    const wrap = h("div", undefined, "tablewrap");
+    wrap.append(t);
+    return wrap;
   };
   const note = (text, cls) => h("p", text, "note" + (cls ? " " + cls : ""));
 
@@ -117,7 +128,7 @@
     const prow = r.byPlatform.map((p) =>
       row([p.platform, { text: String(p.count), cls: "num" }, { text: money(p.revenue), cls: "num" }, { text: money(p.goods), cls: "num" }, { text: money(p.other), cls: "num" },
         { text: money(p.profit), cls: "num" + (p.profit < 0 ? " neg" : "") }, p.reported ? (p.meldegrenze ? "Grenze erreicht" : "darunter") : "keine Meldung"]));
-    frag.append(table(["Plattform", "Verkäufe", "Einnahmen", "Wareneinkauf", "Sonstige Ausgaben", "Ergebnis", "Meldegrenze"], prow, [1, 2, 3, 4, 5]));
+    frag.append(table(["Plattform", "Verkäufe", "Einnahmen", "Wareneinkauf", "Sonstige Ausgaben", "Ergebnis", "Meldegrenze"], prow, [1, 2, 3, 4, 5], [16, 9, 14, 15, 17, 14, 15]));
     frag.append(h("p", `Meldegrenze: ${T.MELDE_COUNT} Verkäufe oder ${T.MELDE_SUM.toLocaleString("de-DE")} € pro Plattform und Jahr (§ 4 Abs. 5 PStTG). Eine Meldung ist keine Steuerforderung.`, "small"));
 
     // 4. Monate
@@ -138,7 +149,7 @@
     });
     const jh = ["Nr.", "Datum", "Beleg", "Plattform", "Beschreibung", "Art", "Kategorie", "Betrag"];
     if (regular) jh.push("USt");
-    j.append(jrows.length ? table(jh, jrows, regular ? [0, 7, 8] : [0, 7]) : h("p", "Keine Buchungen in diesem Jahr."));
+    j.append(jrows.length ? table(jh, jrows, regular ? [0, 7, 8] : [0, 7], regular ? [5, 10, 11, 13, 20, 8, 15, 9, 9] : [5, 11, 12, 13, 25, 9, 17, 8]) : h("p", "Keine Buchungen in diesem Jahr."));
     j.append(h("p", "Einnahmen zählen im Jahr des Zuflusses, Ausgaben im Jahr der Zahlung (§ 11 EStG). Als Einnahmedatum wird das Verkaufsdatum verwendet. Weicht der Zahlungseingang auf dein Konto in ein anderes Jahr ab, bitte prüfen.", "small"));
     frag.append(j);
 
@@ -190,7 +201,7 @@
       { text: money(i.sell), cls: "num" }, { text: money(i.buy), cls: "num" }, { text: money(i.cost), cls: "num" },
       { text: money(i.profit), cls: "num" + (i.profit < 0 ? " neg" : "") }, label[i.status],
     ]));
-    frag.append(p.items.length ? table(["Nr.", "Bezeichnung", "Anschaffung", "Veräußerung", "Veräußerungspreis", "Anschaffungskosten", "Werbungskosten", "Gewinn", "Einordnung"], rows, [0, 4, 5, 6, 7]) : h("p", "Keine Verkäufe in diesem Jahr."));
+    frag.append(p.items.length ? table(["Nr.", "Bezeichnung", "Anschaffung", "Veräußerung", "Veräußerungspreis", "Anschaffungskosten", "Werbungskosten", "Gewinn", "Einordnung"], rows, [0, 4, 5, 6, 7], [5, 18.5, 10.5, 10.5, 11.5, 11.5, 10, 8.5, 13.5]) : h("p", "Keine Verkäufe in diesem Jahr."));
 
     frag.append(h("h2", "3. Hinweise"));
     const ul = h("ul", undefined, "plain");

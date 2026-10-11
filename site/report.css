@@ -16,9 +16,17 @@ p { margin: 0 0 8px; }
 .brandline small { font-weight: 500; color: var(--muted); letter-spacing: 0; }
 table { width: 100%; border-collapse: collapse; font-size: 9.5pt; }
 th, td { text-align: left; padding: 5px 7px; border-bottom: 1px solid var(--line); vertical-align: top; }
-th { background: var(--soft); font-size: 8.5pt; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+th { background: var(--soft); font-size: 8.5pt; font-weight: 700; color: var(--muted); hyphens: manual; -webkit-hyphens: manual; overflow-wrap: normal; }
 td.num, th.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
 tr { break-inside: avoid; }
+/* Breite Tabellen bleiben im Blatt: kompakter gesetzt, auf kleinen Bildschirmen innen scrollbar */
+.tablewrap { max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table.wide { font-size: 8pt; }
+table.wide th, table.wide td { padding: 4px 4px; }
+table.wide th { font-size: 7.5pt; line-height: 1.25; }
+table.wide td { overflow-wrap: break-word; }
+table.fixed { table-layout: fixed; }
+th.num { white-space: normal; }
 thead { display: table-header-group; }
 .meta td { border-bottom: 1px solid var(--line); }
 .meta td:first-child { width: 38%; color: var(--muted); }
@@ -39,6 +47,7 @@ ul.plain li { margin-bottom: 3px; }
 
 @page { size: A4; margin: 14mm 12mm; }
 @media print {
+  .tablewrap { overflow: visible; }
   body { background: #fff; }
   .toolbar-screen { display: none; }
   .sheet { margin: 0; padding: 0; box-shadow: none; max-width: none; }
@@ -47,4 +56,6 @@ ul.plain li { margin-bottom: 3px; }
 @media (max-width: 700px) {
   .sheet { padding: 12px; }
   table { font-size: 8.5pt; }
+  table.wide { min-width: 560px; }
+  table.wide.fixed { min-width: 760px; }
 }
