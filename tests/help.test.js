@@ -12,11 +12,12 @@ const read = (p) => fs.readFileSync(p, "utf8");
 const tools = read(path.join(SITE, "tools.html"));
 const pages = fs.readdirSync(HILFE).filter((f) => f.endsWith(".html"));
 
-test("Jede Datenquellen-Kachel in Schritt 3 hat einen Hilfe-Button in neuem Tab", () => {
-  const tiles = [...tools.matchAll(/id="tab-(ebay|etsy|amazon|paypal|bank|own|vinted|kleinanzeigen)"/g)].map((m) => m[1]);
-  assert.equal(tiles.length, 8);
+test("Jede Datenquelle in Schritt 3 ist eine Karte mit Anleitungs-Link in neuem Tab (keine Auswahl-Reiter)", () => {
+  const cards = tools.match(/<li class="src-card">/g) || [];
+  assert.equal(cards.length, 8);
+  assert.ok(!/id="tab-(ebay|etsy|amazon|paypal|bank|own|vinted|kleinanzeigen)"/.test(tools), "alte Reiter-Kacheln sind weg");
   const links = [...tools.matchAll(/<a class="src-help" href="(hilfe\/[a-z]+\.html)" target="_blank" rel="noopener"/g)].map((m) => m[1]);
-  assert.equal(links.length, 8, "pro Kachel genau ein Hilfe-Link mit target=_blank und rel=noopener");
+  assert.equal(links.length, 8, "pro Karte genau ein Link mit target=_blank und rel=noopener");
   assert.equal(new Set(links).size, 8, "keine doppelten Ziele");
   for (const l of links) assert.ok(fs.existsSync(path.join(SITE, l)), `${l} fehlt`);
 });

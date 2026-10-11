@@ -144,96 +144,15 @@
             <div class="tab-panel" role="tabpanel" id="m-import" aria-labelledby="m-import-tab">
               <p class="muted">Lade Verkaufsdaten aus deinen Plattformen, von PayPal oder aus dem Online-Banking als CSV-Datei. Die Datei wird <strong>nur in deinem Browser</strong> gelesen. Du prüfst die Zuordnung der Spalten, bevor etwas gespeichert wird.</p>
 <h3>Datei besorgen</h3>
-    <p class="small muted">Unter jeder Kachel führt „Hilfe“ zu einer Anleitung, wo du die Exportdatei findest (öffnet in einem neuen Tab). Welche Exporte es gibt, haben wir aus den Hilfeseiten der Anbieter zusammengetragen (Stand Oktober 2026). Spaltennamen ändern sich bei Anbietern öfter, deshalb erkennt SellCheck sie über Begriffe und lässt dich alles korrigieren.</p>
-    <div class="src-groups" id="src-groups" data-tabs>
+    <p class="small muted">Du weißt nicht, wo du die Datei findest? Öffne bei deiner Plattform die Anleitung, sie geht in einem neuen Tab auf. Spaltennamen ändern sich bei Anbietern öfter, deshalb erkennt SellCheck sie über Begriffe und lässt dich alles korrigieren.</p>
+    <div class="src-groups" id="src-groups">
       <div class="src-group">
-        <div class="src-group-label"><span class="dot ok"></span>Export vorhanden</div>
-        <div class="src-tiles" role="tablist" aria-label="Datenquelle wählen (mit Export)">
-          <div class="src-item" role="presentation"><button type="button" class="src-tile" role="tab" id="tab-ebay" aria-controls="src-ebay" aria-selected="true"><span class="mono">e</span><span class="src-name">eBay</span></button><a class="src-help" href="hilfe/ebay.html" target="_blank" rel="noopener" aria-label="Hilfe zu eBay: Wo finde ich die Exportdatei? (öffnet in neuem Tab)"><span class="q" aria-hidden="true">?</span>Hilfe</a></div>
-          <div class="src-item" role="presentation"><button type="button" class="src-tile" role="tab" id="tab-etsy" aria-controls="src-etsy" aria-selected="false" tabindex="-1"><span class="mono">E</span><span class="src-name">Etsy</span></button><a class="src-help" href="hilfe/etsy.html" target="_blank" rel="noopener" aria-label="Hilfe zu Etsy: Wo finde ich die Exportdatei? (öffnet in neuem Tab)"><span class="q" aria-hidden="true">?</span>Hilfe</a></div>
-          <div class="src-item" role="presentation"><button type="button" class="src-tile" role="tab" id="tab-amazon" aria-controls="src-amazon" aria-selected="false" tabindex="-1"><span class="mono">a</span><span class="src-name">Amazon</span></button><a class="src-help" href="hilfe/amazon.html" target="_blank" rel="noopener" aria-label="Hilfe zu Amazon: Wo finde ich die Exportdatei? (öffnet in neuem Tab)"><span class="q" aria-hidden="true">?</span>Hilfe</a></div>
-          <div class="src-item" role="presentation"><button type="button" class="src-tile" role="tab" id="tab-paypal" aria-controls="src-paypal" aria-selected="false" tabindex="-1"><span class="mono">P</span><span class="src-name">PayPal</span></button><a class="src-help" href="hilfe/paypal.html" target="_blank" rel="noopener" aria-label="Hilfe zu PayPal: Wo finde ich die Exportdatei? (öffnet in neuem Tab)"><span class="q" aria-hidden="true">?</span>Hilfe</a></div>
-          <div class="src-item" role="presentation"><button type="button" class="src-tile" role="tab" id="tab-bank" aria-controls="src-bank" aria-selected="false" tabindex="-1"><span class="mono">€</span><span class="src-name">Online-Banking</span></button><a class="src-help" href="hilfe/bank.html" target="_blank" rel="noopener" aria-label="Hilfe zu Online-Banking: Wo finde ich die Exportdatei? (öffnet in neuem Tab)"><span class="q" aria-hidden="true">?</span>Hilfe</a></div>
-          <div class="src-item" role="presentation"><button type="button" class="src-tile" role="tab" id="tab-own" aria-controls="src-own" aria-selected="false" tabindex="-1"><span class="mono">⊞</span><span class="src-name">Eigene Tabelle</span></button><a class="src-help" href="hilfe/tabelle.html" target="_blank" rel="noopener" aria-label="Hilfe zu Eigene Tabelle: Wo finde ich die Exportdatei? (öffnet in neuem Tab)"><span class="q" aria-hidden="true">?</span>Hilfe</a></div>
-        </div>
+        <div class="src-group-label"><span class="dot ok"></span>Mit Exportdatei</div>
+        <ul class="src-cards"><li class="src-card"><span class="src-card-head"><span class="mono" aria-hidden="true">e</span><span class="src-name">eBay</span></span><span class="src-line">Transaktionsbericht als CSV aus dem Verkäufer-Cockpit Pro.</span><a class="src-help" href="hilfe/ebay.html" target="_blank" rel="noopener" aria-label="Anleitung zu eBay: Wo finde ich die Exportdatei? (öffnet in neuem Tab)"><span class="q" aria-hidden="true">?</span>Anleitung öffnen</a></li><li class="src-card"><span class="src-card-head"><span class="mono" aria-hidden="true">E</span><span class="src-name">Etsy</span></span><span class="src-line">CSV „Daten herunterladen“ im Shop-Manager, nach Monat oder Jahr.</span><a class="src-help" href="hilfe/etsy.html" target="_blank" rel="noopener" aria-label="Anleitung zu Etsy: Wo finde ich die Exportdatei? (öffnet in neuem Tab)"><span class="q" aria-hidden="true">?</span>Anleitung öffnen</a></li><li class="src-card"><span class="src-card-head"><span class="mono" aria-hidden="true">a</span><span class="src-name">Amazon</span></span><span class="src-line">Bestellbericht oder Zahlungsbericht aus Seller Central.</span><a class="src-help" href="hilfe/amazon.html" target="_blank" rel="noopener" aria-label="Anleitung zu Amazon: Wo finde ich die Exportdatei? (öffnet in neuem Tab)"><span class="q" aria-hidden="true">?</span>Anleitung öffnen</a></li><li class="src-card"><span class="src-card-head"><span class="mono" aria-hidden="true">P</span><span class="src-name">PayPal</span></span><span class="src-line">Aktivitätsbericht als CSV, bis zu 12 Monate je Anfrage.</span><a class="src-help" href="hilfe/paypal.html" target="_blank" rel="noopener" aria-label="Anleitung zu PayPal: Wo finde ich die Exportdatei? (öffnet in neuem Tab)"><span class="q" aria-hidden="true">?</span>Anleitung öffnen</a></li><li class="src-card"><span class="src-card-head"><span class="mono" aria-hidden="true">€</span><span class="src-name">Online-Banking</span></span><span class="src-line">Kontoumsätze als CSV, gefiltert nach deinem Stichwort.</span><a class="src-help" href="hilfe/bank.html" target="_blank" rel="noopener" aria-label="Anleitung zu Online-Banking: Wo finde ich die Exportdatei? (öffnet in neuem Tab)"><span class="q" aria-hidden="true">?</span>Anleitung öffnen</a></li><li class="src-card"><span class="src-card-head"><span class="mono" aria-hidden="true">⊞</span><span class="src-name">Eigene Tabelle</span></span><span class="src-line">Excel, Google Sheets oder Numbers als CSV speichern.</span><a class="src-help" href="hilfe/tabelle.html" target="_blank" rel="noopener" aria-label="Anleitung zu Eigene Tabelle: Wo finde ich die Exportdatei? (öffnet in neuem Tab)"><span class="q" aria-hidden="true">?</span>Anleitung öffnen</a></li></ul>
       </div>
       <div class="src-group">
-        <div class="src-group-label"><span class="dot no"></span>Kein Verkaufsexport belegt</div>
-        <div class="src-tiles" role="tablist" aria-label="Datenquelle wählen (ohne Export)">
-          <div class="src-item" role="presentation"><button type="button" class="src-tile" role="tab" id="tab-vinted" aria-controls="src-vinted" aria-selected="false" tabindex="-1"><span class="mono">V</span><span class="src-name">Vinted</span></button><a class="src-help" href="hilfe/vinted.html" target="_blank" rel="noopener" aria-label="Hilfe zu Vinted: Wo finde ich die Exportdatei? (öffnet in neuem Tab)"><span class="q" aria-hidden="true">?</span>Hilfe</a></div>
-          <div class="src-item" role="presentation"><button type="button" class="src-tile" role="tab" id="tab-kleinanzeigen" aria-controls="src-kleinanzeigen" aria-selected="false" tabindex="-1"><span class="mono">K</span><span class="src-name">Kleinanzeigen</span></button><a class="src-help" href="hilfe/kleinanzeigen.html" target="_blank" rel="noopener" aria-label="Hilfe zu Kleinanzeigen: Wo finde ich die Exportdatei? (öffnet in neuem Tab)"><span class="q" aria-hidden="true">?</span>Hilfe</a></div>
-        </div>
-      </div>
-
-      <div class="src-panels">
-        <article class="src-panel" role="tabpanel" id="src-ebay" aria-labelledby="tab-ebay">
-          <header><h4>eBay</h4><span class="tag ok">Export vorhanden</span></header>
-          <dl class="src-facts">
-            <div><dt>Wo</dt><dd>Verkäufer-Cockpit Pro → Zahlungen → Berichte bzw. Transaktionen</dd></div>
-            <div><dt>Format</dt><dd>CSV mit Bestellnummer, Beträgen und Gebühren</dd></div>
-            <div><dt>Gut zu wissen</dt><dd>Zusatzzeilen vor der Kopfzeile sind kein Problem. Ältere Daten sind nur begrenzt abrufbar, lade regelmäßig herunter.</dd></div>
-          </dl>
-          <a class="src-link" href="https://www.ebay.de/help/selling/fees-credits-invoices/reconciling-ebay-sales-transactions?id=4847" rel="noopener noreferrer" target="_blank">eBay-Hilfe öffnen</a>
-        </article>
-        <article class="src-panel" role="tabpanel" id="src-etsy" aria-labelledby="tab-etsy">
-          <header><h4>Etsy</h4><span class="tag ok">Export vorhanden</span></header>
-          <dl class="src-facts">
-            <div><dt>Wo</dt><dd>Shop-Manager → Einstellungen → Optionen → Daten herunterladen → Bestellungen</dd></div>
-            <div><dt>Format</dt><dd>CSV, Typ und Zeitraum wählbar</dd></div>
-            <div><dt>Gut zu wissen</dt><dd>Beträge sind oft englisch formatiert (1,240.00). SellCheck erkennt das.</dd></div>
-          </dl>
-          <a class="src-link" href="https://help.etsy.com/hc/de/articles/360000343328-Arbeitsblatt-mit-einer-Liste-deiner-Verk%C3%A4ufe-herunterladen" rel="noopener noreferrer" target="_blank">Etsy-Hilfe öffnen</a>
-        </article>
-        <article class="src-panel" role="tabpanel" id="src-amazon" aria-labelledby="tab-amazon">
-          <header><h4>Amazon</h4><span class="tag ok">Export vorhanden</span></header>
-          <dl class="src-facts">
-            <div><dt>Wo</dt><dd>Seller Central → Berichte: Bestellbericht oder Abrechnungsbericht</dd></div>
-            <div><dt>Format</dt><dd>Textdatei mit Tabulatoren, direkt hier hineinziehbar</dd></div>
-            <div><dt>Gut zu wissen</dt><dd>Der Bestellbericht lässt sich manuell nur für die letzten 30 Tage erzeugen. Bei FBA nutzt du „Alle Bestellungen“.</dd></div>
-          </dl>
-          <a class="src-link" href="https://developer-docs.amazon.com/sp-api/docs/report-type-values-settlement" rel="noopener noreferrer" target="_blank">Amazon-Dokumentation öffnen</a>
-        </article>
-        <article class="src-panel" role="tabpanel" id="src-paypal" aria-labelledby="tab-paypal">
-          <header><h4>PayPal</h4><span class="tag ok">Export vorhanden</span></header>
-          <dl class="src-facts">
-            <div><dt>Wo</dt><dd>Aktivitäten → Download, Zeitraum wählen</dd></div>
-            <div><dt>Format</dt><dd>CSV mit Brutto, Gebühr und Netto (bis zu 12 Monate je Anfrage)</dd></div>
-            <div><dt>Gut zu wissen</dt><dd>Viele Käufe über Vinted und Kleinanzeigen laufen über PayPal. Nutze dafür das Stichwortfeld beim Import.</dd></div>
-          </dl>
-          <a class="src-link" href="https://www.paypal.com/ch/cshelp/article/wie-kann-ich-kontoausz%C3%BCge-und-berichte-anzeigen-und-herunterladen-help145" rel="noopener noreferrer" target="_blank">PayPal-Hilfe öffnen</a>
-        </article>
-        <article class="src-panel" role="tabpanel" id="src-bank" aria-labelledby="tab-bank">
-          <header><h4>Online-Banking</h4><span class="tag ok">CSV bei fast allen Banken</span></header>
-          <dl class="src-facts">
-            <div><dt>Wo</dt><dd>Umsatzübersicht → Export als CSV</dd></div>
-            <div><dt>Format</dt><dd>CSV mit Buchungstag, Verwendungszweck und Betrag</dd></div>
-            <div><dt>Gut zu wissen</dt><dd>Importiert werden nur Zeilen mit deinem Stichwort, zum Beispiel „Vinted|Kleinanzeigen“. Der Einkaufspreis fehlt in allen Bankdaten und wird im Tracker nachgetragen.</dd></div>
-          </dl>
-        </article>
-        <article class="src-panel" role="tabpanel" id="src-own" aria-labelledby="tab-own">
-          <header><h4>Eigene Tabelle</h4><span class="tag ok">Funktioniert</span></header>
-          <dl class="src-facts">
-            <div><dt>Wo</dt><dd>Excel oder Google Sheets → als CSV speichern</dd></div>
-            <div><dt>Format</dt><dd>CSV mit Kopfzeile. Auch aus der Zwischenablage einfügbar.</dd></div>
-            <div><dt>Gut zu wissen</dt><dd>Der CSV-Export aus dem Tracker lässt sich wieder importieren, auch als Sicherung oder für ein anderes Gerät.</dd></div>
-          </dl>
-        </article>
-        <article class="src-panel" role="tabpanel" id="src-vinted" aria-labelledby="tab-vinted">
-          <header><h4>Vinted</h4><span class="tag no">Kein Verkaufsexport belegt</span></header>
-          <dl class="src-facts">
-            <div><dt>Wo</dt><dd>Vinted-Geldbeutel → Verlauf → Jahr wählen. Dort stehen deine Auszahlungen, keine einzelnen Verkäufe.</dd></div>
-            <div><dt>Möglichkeiten</dt><dd>Verkäufe von Hand eintragen, oder Bank- bzw. PayPal-Auszug mit dem Stichwort „Vinted“ importieren.</dd></div>
-            <div><dt>Gut zu wissen</dt><dd>Ab 30 Verkäufen oder mehr als 2.000 € im Jahr meldet Vinted an die Steuerbehörden (DAC7). Eine Datenkopie nach Art. 15 DSGVO ist möglich, enthält aber keine Tabelle.</dd></div>
-          </dl>
-        </article>
-        <article class="src-panel" role="tabpanel" id="src-kleinanzeigen" aria-labelledby="tab-kleinanzeigen">
-          <header><h4>Kleinanzeigen</h4><span class="tag no">Kein Verkaufsexport belegt</span></header>
-          <dl class="src-facts">
-            <div><dt>Wo</dt><dd>App → Meins → Verkaufsübersicht. Dort stehen deine abgeschlossenen Verkäufe über das Bezahlsystem mit Jahreszusammenfassung.</dd></div>
-            <div><dt>Möglichkeiten</dt><dd>Verkäufe aus der Übersicht von Hand eintragen, oder Bank- bzw. PayPal-Auszug mit dem Stichwort „Kleinanzeigen“ importieren.</dd></div>
-            <div><dt>Gut zu wissen</dt><dd>Die Übersicht gibt es nur in der App, nicht am Computer. Bar bezahlte Verkäufe stehen dort nicht, die trägst du selbst ein.</dd></div>
-          </dl>
-        </article>
+        <div class="src-group-label"><span class="dot no"></span>Ohne fertige Exportdatei (andere Wege)</div>
+        <ul class="src-cards"><li class="src-card"><span class="src-card-head"><span class="mono" aria-hidden="true">V</span><span class="src-name">Vinted</span></span><span class="src-line">Kein Verkaufsexport belegt. Auszahlungsverlauf im Geldbeutel und weitere Wege.</span><a class="src-help" href="hilfe/vinted.html" target="_blank" rel="noopener" aria-label="Anleitung zu Vinted: Wo finde ich die Exportdatei? (öffnet in neuem Tab)"><span class="q" aria-hidden="true">?</span>Anleitung öffnen</a></li><li class="src-card"><span class="src-card-head"><span class="mono" aria-hidden="true">K</span><span class="src-name">Kleinanzeigen</span></span><span class="src-line">Verkaufsübersicht in der App. Eine Datei zum Herunterladen ist nicht belegt.</span><a class="src-help" href="hilfe/kleinanzeigen.html" target="_blank" rel="noopener" aria-label="Anleitung zu Kleinanzeigen: Wo finde ich die Exportdatei? (öffnet in neuem Tab)"><span class="q" aria-hidden="true">?</span>Anleitung öffnen</a></li></ul>
       </div>
     </div>
 
