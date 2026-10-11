@@ -12,6 +12,12 @@ Länge 25,6 s, 1080×1920, 30 fps, H.264 + AAC. Erzeugen: `python3 marketing/tik
 Die Systemstimme lässt sich mit `AD_VO=1` weiterhin erzeugen (`…_mit_Sprecher.mp4`), klingt aber künstlich und ist nicht empfohlen.
 Das Logo kommt aus `marketing/logo-final/sellcheck_logo.py`.
 
+## Mit ElevenLabs-Stimme „Pauli“ (aktuell)
+
+`out/sellcheck_tiktok_ad_A_mit_Stimme.mp4` nutzt die deutsche Stimme „Pauli“ (ElevenLabs, jung, warm, natürlich).
+Die sieben Clips liegen als `voice/1.mp3 … 7.mp3` (nicht eingecheckt), gemischt mit `build_ad.py A voice`.
+Länge 25,97 s. Hinweis zur Lizenz: Für Werbung braucht es bei ElevenLabs in der Regel einen bezahlten Tarif (kommerzielle Nutzung prüfen).
+
 ## Mit lokaler Stimme (Piper, „Thorsten“)
 
 `out/sellcheck_tiktok_ad_A_mit_Stimme.mp4` nutzt die freie deutsche Stimme Thorsten (CC0) über Piper.

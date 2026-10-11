@@ -29,7 +29,7 @@ import sellcheck_logo as LOGO  # echtes SellCheck-Logo (Variante 6B)
 
 W, H, FPS, S = 1080, 1920, 30, 2          # S = Supersampling-Faktor
 # Dauer je Szene = Basiszeit der Animation x Streckung (langsamer = besser lesbar)
-BASE = {1: 2.6, 2: 3.2, 3: 8.4, 4: 2.8, 5: 3.1}
+BASE = {1: 2.6, 2: 3.2, 3: 8.4, 4: 2.8, 5: 3.4}
 SLOW = {1: 1.35, 2: 1.5, 3: 1.2, 4: 1.25, 5: 1.2}
 START = {}
 _t = 0.0
