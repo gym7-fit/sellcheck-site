@@ -45,7 +45,7 @@ elif VAR == "V3":
     SLOW = {k: TARGET[k] / BASE[k] for k in KEYS}
 elif VAR == "V9":
     KEYS = (1, 2, 3, 4)
-    BASE = {1: 18.0, 2: 11.0, 3: 10.9, 4: 5.8}  # Chat 1, Webseite, Chat 2, Endkarte (Sekunden, SLOW = 1; Zeiten nach geschätzter Sprechdauer)
+    BASE = {1: 17.3, 2: 10.2, 3: 10.4, 4: 5.8}  # Chat 1, Webseite, Chat 2, Endkarte (Sekunden, SLOW = 1; Zeiten nach geschätzter Sprechdauer)
     TARGET = dict(BASE)
     SLOW = {k: 1.0 for k in KEYS}
 elif VAR == "V8":
@@ -169,6 +169,9 @@ class Layer:
 
     def width(self, s, size, weight):
         return self.d.textlength(s, font=font(size, weight)) / S
+
+    def poly(self, pts, fill):
+        self.d.polygon([(px(a_), px(b_)) for a_, b_ in pts], fill=fill)
 
     def line(self, pts, fill, width):
         self.d.line([(px(x), px(y)) for x, y in pts], fill=fill, width=px(width), joint="curve")
@@ -1002,46 +1005,52 @@ def hn_text(L, x, y, s, size, fill, bold=False, anchor="la"):
     L.d.text((int(x * S), int(y * S)), s, font=hn(size, bold), fill=fill, anchor=anchor)
 
 
-CH_BG = (236, 229, 221)
+CH_BG = (239, 234, 226)       # Hintergrund des Chats (helles Beige)
+CH_DOODLE = (222, 214, 203)   # Muster im Hintergrund
 CH_IN = (255, 255, 255)
 CH_OUT = (217, 253, 211)
 CH_INK = (17, 27, 33)
 CH_GREY = (102, 119, 129)
-CH_HEAD = (31, 44, 52)
-V9_LAYOUT = {"top": 250, "bottom": 1360, "gap": 24}
+CH_HEAD = (247, 247, 247)
+CH_GREEN = (0, 168, 132)
+CH_TICK = (83, 189, 235)
+V9_LAYOUT = {"top": 470, "bottom": 1340, "gap": 10}
 
 # Nachrichten: (Absender, Text, Erscheinen, Typ). Zeiten je Szene, werden nach den Sprachclips angepasst.
 V9_CHAT1 = [
-    ("tim", "Hey Anna, wusstest du, dass Plattformen deine Verkäufe ab einer Grenze an die Steuerbehörde melden?", 1.3, "text"),
-    ("anna", "Warte, was? Aber woher weiß ich, ob ich über der Grenze bin, bei all den Plattformen?", 9.1, "text"),
-    ("tim", "Mit SellCheck:", 15.6, "link"),
+    ("tim", "Hey Anna, wusstest du, dass Plattformen deine Verkäufe ab einer Grenze an die Steuerbehörde melden?", 0.9, "text"),
+    ("anna", "Warte, was? Aber woher weiß ich, ob ich über der Grenze bin, bei all den Plattformen?", 8.4, "text"),
+    ("tim", "Mit SellCheck:", 14.7, "link"),
 ]
 V9_CHAT2_PREV = [m[:3] + ("text",) for m in V9_CHAT1[:2]] + [V9_CHAT1[2][:3] + ("link",)]
 V9_CHAT2 = [
-    ("anna", "Ahh cool, so eine praktische Website kannte ich gar nicht.", 0.9, "text"),
-    ("tim", "Jap! Und das Beste: kostenlos, mit Konto, und deine Daten bleiben im Browser.", 5.5, "text"),
+    ("anna", "Ahh cool, so eine praktische Website kannte ich gar nicht.", 0.8, "text"),
+    ("tim", "Jap! Und das Beste: kostenlos, mit Konto, und deine Daten bleiben im Browser.", 5.2, "text"),
 ]
-V9_T = {"tim_type0": 0.3, "anna_type0": 8.3, "tim_type1": 15.0, "tap_link": 17.6,
-        "c2_anna_type0": 0.2, "c2_tim_type": 5.0,
-        "up_tap": 1.4, "banner_in": 2.0, "banner_out": 8.5, "go_scroll": 3.0, "go_tap": 5.0, "res_switch": 5.5,
-        "res_scroll1": 6.5, "res_scroll2": 8.6, "res_hl": 10.0}
+V9_T = {"tim_type0": 0.2, "anna_type0": 7.7, "tim_type1": 14.2, "tap_link": 16.6, "link_y": 1160,
+        "c2_anna_type0": 0.1, "c2_tim_type": 4.7,
+        "up_tap": 1.0, "banner_in": 1.6, "banner_out": 8.0, "go_scroll": 2.4, "go_tap": 4.2, "res_switch": 4.7,
+        "res_scroll1": 5.5, "res_scroll2": 7.5, "res_hl": 8.8}
 V9_BANNER = "Du lädst einfach deine Verkäufe als CSV hoch, und SellCheck zeigt dir pro Plattform, wo du stehst."
 
 
 def v9_bubble_layout(L, msgs):
     """Berechnet Position und Größe aller Blasen (unabhängig von der Zeit)."""
-    out, y = [], V9_LAYOUT["top"]
+    out, y, prev = [], V9_LAYOUT["top"], None
     for who, text, t0, kind in msgs:
         maxw = 700
-        lines = hn_wrap(L, text, 42, maxw)
-        w = max(L.d.textlength(l, font=hn(42)) / S for l in lines) + 56
-        h = len(lines) * 56 + 38 + 34
+        lines = hn_wrap(L, text, 44, maxw)
+        w = max(L.d.textlength(l, font=hn(44)) / S for l in lines) + 60
+        h = len(lines) * 58 + 32 + 40
         if kind == "link":
             w = max(w, 700)
             h += 250
-        x0 = 48 if who == "tim" else 1032 - w
-        out.append(dict(who=who, text=text, lines=lines, t0=t0, kind=kind, x0=x0, y0=y, w=w, h=h))
-        y += h + V9_LAYOUT["gap"]
+        x0 = 30 if who == "tim" else 1050 - w
+        gap = V9_LAYOUT["gap"] if prev == who else 26
+        y += gap if out else 0
+        out.append(dict(who=who, text=text, lines=lines, t0=t0, kind=kind, x0=x0, y0=y, w=w, h=h, tail=(prev != who)))
+        y += h
+        prev = who
     return out
 
 
@@ -1059,57 +1068,125 @@ def v9_draw_link_card(L, x, y, w):
     hn_text(L, x + 236, y + 190, "gym7-fit.github.io", 26, (47, 111, 142))
 
 
+def v9_doodles(L):
+    """Dezentes Muster wie das Standard-Hintergrundbild eines Messengers (Kreise, Sterne, Wellen, Herzen)."""
+    rnd = random.Random(21)
+    for gy in range(240, 1900, 150):
+        for gx in range(30, 1080, 150):
+            x, y = gx + rnd.randint(-30, 30), gy + rnd.randint(-30, 30)
+            kind = rnd.randint(0, 4)
+            c = CH_DOODLE + (255,)
+            if kind == 0:
+                L.d.ellipse([(x - 14) * S, (y - 14) * S, (x + 14) * S, (y + 14) * S], outline=c, width=int(3 * S))
+            elif kind == 1:
+                L.line([(x - 16, y), (x + 16, y)], c, 3)
+                L.line([(x, y - 16), (x, y + 16)], c, 3)
+            elif kind == 2:
+                pts = [(x - 20 + i * 8, y + (8 if i % 2 else -8)) for i in range(6)]
+                L.line(pts, c, 3)
+            elif kind == 3:
+                L.d.polygon([((x) * S, (y - 16) * S), ((x + 16) * S, y * S), (x * S, (y + 16) * S), ((x - 16) * S, y * S)], outline=c, width=int(3 * S))
+            else:
+                L.d.arc([(x - 14) * S, (y - 14) * S, (x + 14) * S, (y + 14) * S], 200, 340, fill=c, width=int(3 * S))
+
+
+def v9_keyboard(L):
+    L.d.rectangle([0, 1510 * S, W * S, H * S], fill=(209, 212, 217, 255))
+    rows = ["QWERTZUIOP", "ASDFGHJKL", "YXCVBNM"]
+    kw, kh, gx = 92, 84, 10
+    for r_, letters in enumerate(rows):
+        n = len(letters)
+        total = n * kw + (n - 1) * gx
+        x0 = (W - total) / 2
+        yk = 1526 + r_ * (kh + 16)
+        for c_, ch in enumerate(letters):
+            L.rrect(x0 + c_ * (kw + gx), yk, x0 + c_ * (kw + gx) + kw, yk + kh, 14, fill=(255, 255, 255, 255))
+            hn_text(L, x0 + c_ * (kw + gx) + kw / 2, yk + kh / 2, ch, 44, (30, 30, 30), anchor="mm")
+        if r_ == 2:
+            L.rrect(x0 - 124, yk, x0 - 124 + 108, yk + kh, 14, fill=(172, 178, 187, 255))
+            L.rrect(x0 + total + 16, yk, x0 + total + 124, yk + kh, 14, fill=(172, 178, 187, 255))
+    yb = 1526 + 3 * (kh + 16)
+    L.rrect(24, yb, 24 + 150, yb + kh, 14, fill=(172, 178, 187, 255))
+    hn_text(L, 24 + 75, yb + kh / 2, "123", 42, (30, 30, 30), anchor="mm")
+    L.rrect(190, yb, 190 + 100, yb + kh, 14, fill=(172, 178, 187, 255))
+    L.rrect(306, yb, 306 + 470, yb + kh, 14, fill=(255, 255, 255, 255))
+    hn_text(L, 306 + 235, yb + kh / 2, "Leerzeichen", 38, (30, 30, 30), anchor="mm")
+    L.rrect(792, yb, 1056, yb + kh, 14, fill=(172, 178, 187, 255))
+    hn_text(L, 792 + 132, yb + kh / 2, "Senden", 40, (30, 30, 30), anchor="mm")
+
+
+def v9_header(L, status):
+    L.d.rectangle([0, 0, W * S, 360 * S], fill=CH_HEAD + (255,))
+    L.d.rectangle([0, 359 * S, W * S, 361 * S], fill=(218, 218, 218, 255))
+    hn_text(L, 90, 70, "9:41", 40, (0, 0, 0), True, anchor="lm")
+    L.rrect(930, 52, 1010, 88, 10, outline=(0, 0, 0, 255), width=3)
+    L.rrect(936, 58, 990, 82, 5, fill=(0, 0, 0, 255))
+    L.line([(900, 84), (900, 66)], (0, 0, 0, 255), 6)
+    L.line([(880, 84), (880, 72)], (0, 0, 0, 255), 6)
+    L.line([(860, 84), (860, 78)], (0, 0, 0, 255), 6)
+    # Navigationsleiste
+    L.line([(62, 215), (36, 245), (62, 275)], CH_GREEN + (255,), 8)
+    L.circle(150, 245, 52, col((176, 190, 197)))
+    L.circle(150, 228, 20, col((246, 248, 249)))
+    L.d.pieslice([(150 - 36) * S, (250) * S, (150 + 36) * S, (300) * S], 180, 360, fill=(246, 248, 249, 255))
+    hn_text(L, 230, 222, "Tim", 48, (0, 0, 0), True, anchor="lm")
+    green = status == "schreibt …"
+    hn_text(L, 230, 272, status, 33, CH_GREEN if green else CH_GREY, anchor="lm")
+    # Symbole rechts: Video und Anruf
+    L.rrect(842, 225, 900, 265, 8, outline=CH_GREEN + (255,), width=5)
+    L.poly([(900, 238), (922, 226), (922, 264), (900, 252)], CH_GREEN + (255,))
+    L.d.arc([(962) * S, (222) * S, (1018) * S, (278) * S], 20, 160, fill=CH_GREEN + (255,), width=int(7 * S))
+
+
 def v9_draw_chat(L, t, msgs, prev_msgs=(), typing=None, anna_typing=None, tap=None, status_typing=None):
-    """Zeichnet den Chatbildschirm. typing=(t0,t1) Tims Schreibanzeige, anna_typing=(t0,t1,text,t_send)."""
+    """Chatbildschirm im Messenger-Look. typing: Liste von Zeitfenstern, in denen Tim 'schreibt …' (nur in der Kopfzeile)."""
     L.d.rectangle([0, 0, W * S, H * S], fill=CH_BG + (255,))
+    v9_doodles(L)
     allm = list(prev_msgs) + list(msgs)
     lay = v9_bubble_layout(L, allm)
     npv = len(prev_msgs)
     shown = [b for i, b in enumerate(lay) if i < npv or t >= b["t0"]]
     bottom = max((b["y0"] + b["h"] for b in shown), default=0)
-    tw_active = next((w for w in (typing or []) if w[0] <= t < w[1]), None)
-    if tw_active:
-        bottom += 96 + V9_LAYOUT["gap"] * (1 if shown else 0)
     off = max(0, bottom - V9_LAYOUT["bottom"])
+    # Datum und Hinweis zu Beginn des Chats
+    if off < 260:
+        dy = 380 - off
+        pw = hn(30).getlength("HEUTE") / S + 56
+        L.rrect(540 - pw / 2, dy, 540 + pw / 2, dy + 52, 14, fill=(255, 255, 255, 235))
+        hn_text(L, 540, dy + 27, "HEUTE", 28, CH_GREY, anchor="mm")
     for i, b in enumerate(lay):
         if i >= npv and t < b["t0"]:
             continue
-        p = 1.0 if i < npv else ease_out(prog(t, b["t0"], 0.25))
-        yy = b["y0"] - off + (1 - p) * 30
-        if yy + b["h"] < 200 or yy > 1400:
+        p = 1.0 if i < npv else ease_out(prog(t, b["t0"], 0.18))
+        yy = b["y0"] - off + (1 - p) * 24
+        if yy + b["h"] < 380 or yy > 1390:
             continue
-        fill = CH_IN if b["who"] == "tim" else CH_OUT
-        L.rrect(b["x0"], yy, b["x0"] + b["w"], yy + b["h"], 30, fill=fill + (255,))
-        ty = yy + 20
+        fill = (CH_IN if b["who"] == "tim" else CH_OUT) + (255,)
+        L.rrect(b["x0"], yy, b["x0"] + b["w"], yy + b["h"], 30, fill=fill)
+        if b["tail"]:
+            if b["who"] == "tim":
+                L.poly([(b["x0"] - 14, yy), (b["x0"] + 30, yy), (b["x0"] + 30, yy + 36)], fill)
+            else:
+                L.poly([(b["x0"] + b["w"] + 14, yy), (b["x0"] + b["w"] - 30, yy), (b["x0"] + b["w"] - 30, yy + 36)], fill)
+        ty = yy + 18
         for ln in b["lines"]:
-            hn_text(L, b["x0"] + 28, ty, ln, 42, CH_INK)
-            ty += 56
+            hn_text(L, b["x0"] + 30, ty, ln, 44, CH_INK)
+            ty += 58
         if b["kind"] == "link":
-            v9_draw_link_card(L, b["x0"] + 0, ty + 4, b["w"])
-        hn_text(L, b["x0"] + b["w"] - 24, yy + b["h"] - 18, "9:41", 24, CH_GREY, anchor="rb")
+            v9_draw_link_card(L, b["x0"], ty + 4, b["w"])
+        hn_text(L, b["x0"] + b["w"] - (66 if b["who"] == "anna" else 22), yy + b["h"] - 14, "9:41", 28, CH_GREY, anchor="rb")
         if b["who"] == "anna":
-            cx0, cy0 = b["x0"] + b["w"] - 118, yy + b["h"] - 30
-            for dx in (0, 14):
-                L.line([(cx0 + dx - 8, cy0), (cx0 + dx - 2, cy0 + 8), (cx0 + dx + 10, cy0 - 8)], (53, 156, 211, 255), 3)
-    # Schreibanzeige von Tim
-    if tw_active:
-        last_bottom = max((b["y0"] + b["h"] for b in shown), default=None)
-        yy = (last_bottom - off + V9_LAYOUT["gap"]) if last_bottom is not None else V9_LAYOUT["top"]
-        L.rrect(48, yy, 48 + 150, yy + 72, 36, fill=CH_IN + (255,))
-        for k in range(3):
-            bob = math.sin((t - tw_active[0]) * 9 + k * 0.9) * 6
-            L.circle(48 + 42 + k * 34, yy + 36 + bob, 9, col((150, 160, 168)))
+            cx0, cy0 = b["x0"] + b["w"] - 40, yy + b["h"] - 30
+            for dx in (0, 12):
+                L.line([(cx0 + dx - 10, cy0), (cx0 + dx - 3, cy0 + 9), (cx0 + dx + 11, cy0 - 9)], CH_TICK + (255,), 3)
     # Kopfzeile
-    L.d.rectangle([0, 0, W * S, 200 * S], fill=CH_HEAD + (255,))
-    hn_text(L, 60, 40, "9:41", 30, (255, 255, 255), True)
-    L.rrect(940, 44, 1000, 74, 8, fill=(255, 255, 255, 255))
-    L.circle(100, 130, 42, col((120, 144, 156)))
-    hn_text(L, 100, 132, "T", 44, (255, 255, 255), True, anchor="mm")
-    hn_text(L, 170, 98, "Tim", 44, (255, 255, 255), True)
-    is_typing = bool(tw_active or status_typing)
-    hn_text(L, 170, 150, "schreibt …" if is_typing else "online", 30, (120, 220, 150) if is_typing else (180, 195, 203))
+    tw_active = next((w for w in (typing or []) if w[0] <= t < w[1]), None)
+    v9_header(L, "schreibt …" if (tw_active or status_typing) else "online")
     # Eingabeleiste
-    L.rrect(24, 1385, 1056, 1485, 50, fill=(255, 255, 255, 255))
+    L.d.rectangle([0, 1380 * S, W * S, 1510 * S], fill=(247, 247, 247, 255))
+    L.line([(54, 1445), (90, 1445)], CH_GREEN + (255,), 6)
+    L.line([(72, 1427), (72, 1463)], CH_GREEN + (255,), 6)
+    L.rrect(120, 1397, 880, 1493, 48, fill=(255, 255, 255, 255), outline=(218, 218, 218, 255), width=2)
     txt = ""
     if anna_typing:
         a0, a1, full, tsend = anna_typing
@@ -1117,19 +1194,14 @@ def v9_draw_chat(L, t, msgs, prev_msgs=(), typing=None, anna_typing=None, tap=No
             k = int(len(full) * clamp((t - a0) / max(0.1, a1 - a0)))
             txt = full[:k]
     if txt:
-        shown_txt = txt if L.d.textlength(txt, font=hn(40)) / S < 880 else "…" + txt[-34:]
-        hn_text(L, 60, 1435, shown_txt, 40, CH_INK, anchor="lm")
+        shown_txt = txt if L.d.textlength(txt, font=hn(42)) / S < 700 else "…" + txt[-28:]
+        hn_text(L, 150, 1445, shown_txt, 42, CH_INK, anchor="lm")
     else:
-        hn_text(L, 60, 1435, "Nachricht", 40, (150, 160, 168), anchor="lm")
-    L.circle(1010, 1435, 40, col((37, 160, 106)))
-    # Tastatur-Andeutung
-    L.d.rectangle([0, 1510 * S, W * S, H * S], fill=(210, 213, 219, 255))
-    for r_, n in enumerate((10, 9, 7)):
-        kw = 86
-        x_start = (W - n * (kw + 10)) / 2 + 5
-        for c_ in range(n):
-            L.rrect(x_start + c_ * (kw + 10), 1540 + r_ * 118, x_start + c_ * (kw + 10) + kw, 1540 + r_ * 118 + 100, 14, fill=(255, 255, 255, 255))
-    L.rrect(120, 1900 - 130 + 10, 960, 1900 - 130 + 100, 14, fill=(255, 255, 255, 255))
+        hn_text(L, 150, 1445, "Nachricht", 42, (150, 160, 168), anchor="lm")
+    L.rrect(930, 1425, 986, 1465, 8, outline=(110, 120, 128, 255), width=4)
+    L.circle(958, 1445, 12, col((110, 120, 128)))
+    L.rrect(1000, 1424, 1052, 1466, 10, outline=(110, 120, 128, 255), width=4)
+    v9_keyboard(L)
     if tap:
         v8_tap(L, t, tap[0], tap[1], tap[2])
 
@@ -1139,7 +1211,7 @@ def scene_v9_chat1(L, t):
     v9_draw_chat(L, t, V9_CHAT1,
                  typing=[(V9_T["tim_type0"], V9_CHAT1[0][2]), (V9_T["tim_type1"], V9_CHAT1[2][2])],
                  anna_typing=(V9_T["anna_type0"], V9_CHAT1[1][2] - 0.1, anna_txt, V9_CHAT1[1][2]))
-    v8_tap(L, t, V9_T["tap_link"], 420, 1030)  # Tap auf die Link-Vorschau
+    v8_tap(L, t, V9_T["tap_link"], 420, V9_T["link_y"])  # Tap auf die Link-Vorschau
 
 
 def scene_v9_site(L, t):
@@ -1523,8 +1595,10 @@ def build_audio(variant, path, with_voice=False, voice_files=None):
 
     if variant == "V9":
         def ping(t0):
-            ding(t0, 1174.66)
-            ding(t0 + 0.12, 1568.0)
+            # heller Glockenton, ähnlich dem iPhone-Hinweiston: Grundton plus unharmonische Obertöne
+            add(sfx, t0, tone(1318.5, 0.9, "sine", 5.0), 0.34)
+            add(sfx, t0, tone(1318.5 * 2.76, 0.5, "sine", 9.0), 0.13)
+            add(sfx, t0, tone(1318.5 * 5.4, 0.3, "sine", 14.0), 0.05)
         ping(at(1, V9_CHAT1[0][2]))
         pop(at(1, V9_CHAT1[1][2]), 480)
         ping(at(1, V9_CHAT1[2][2]))
