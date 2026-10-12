@@ -113,3 +113,9 @@ Zeiten: `TARGET`, `P7_T`, `CAP2_T`, `S3_B` sind auf die gemessenen Clip-Längen 
 Dunkles Design. Hook „Drei Fragen an alle, die auf Vinted, eBay oder Kleinanzeigen verkaufen“, drei Frage-Kacheln, Antwort-Kacheln (47 Verkäufe, Vinted/eBay, Gewinn 842,50 €), CTA. Stimme: ElevenLabs „Mats“, Clips in `voice_v6/1.mp3 … 4.mp3` (Clip 4 = Clip 4 von V7).
 Erzeugen: `python3 marketing/tiktok-ad-01/build_ad.py V6` und danach `… V6 voice`. Ausgabe: `out/sellcheck_tiktok_ad_V6_mit_Stimme.mp4` (ca. 23 s).
 Ein helles Alternativdesign (Futura, Marker-Gelb) liegt in `build_ad_v6.py` (nur Bild, ohne Ton).
+
+## Version 8 (UGC-Stil ohne Gesicht, V8)
+
+Bildschirmaufnahme im TikTok-Look: Finger-Taps, Wort-für-Wort-Untertitel (Wortzeiten aus den Clips, `v8_words.json` wird beim Bauen erzeugt), lockere Erklärstimme (ElevenLabs „Jan“, Clips in `voice_v8/1.mp3 … 4.mp3`). Bewusst **keine erfundene Erfahrung** („ich habe …“), sondern Erklärung („ich zeig dir kurz was“).
+Erzeugen: `python3 marketing/tiktok-ad-01/build_ad.py V8` und danach `… V8 voice`. Ausgabe: `out/sellcheck_tiktok_ad_V8_mit_Stimme.mp4` (ca. 22,7 s).
+Hinweis: Die Stimme ist synthetisch, in TikTok als KI-generierte Inhalte kennzeichnen.

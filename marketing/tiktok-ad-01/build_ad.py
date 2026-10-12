@@ -29,10 +29,10 @@ import sellcheck_logo as LOGO  # echtes SellCheck-Logo (Variante 6B)
 
 W, H, FPS, S = 1080, 1920, 30, 2          # S = Supersampling-Faktor
 # Variante: A und B (Hook-Tests der ersten Ad), V2 = "Frist"-Version (Überblick, Ende Januar, Nutzen, Handlung)
-VAR = sys.argv[1].upper() if len(sys.argv) > 1 and sys.argv[1].upper() in ("A", "B", "V2", "V3", "V6", "V7") else os.environ.get("AD_VARIANT", "A")
+VAR = sys.argv[1].upper() if len(sys.argv) > 1 and sys.argv[1].upper() in ("A", "B", "V2", "V3", "V6", "V7", "V8") else os.environ.get("AD_VARIANT", "A")
 os.environ["AD_VARIANT"] = VAR  # damit Worker-Prozesse dieselbe Variante nutzen
 # Dauer je Szene = Basiszeit der Animation x Streckung
-V2LIKE = VAR in ("V2", "V3", "V6", "V7")
+V2LIKE = VAR in ("V2", "V3", "V6", "V7", "V8")
 if VAR == "V2":
     KEYS = (1, 2, 3, 4)
     BASE = {1: 2.4, 2: 4.0, 3: 7.9, 4: 5.1}
@@ -43,6 +43,11 @@ elif VAR == "V3":
     BASE = {1: 2.4, 2: 4.0, 3: 7.9, 4: 5.1}
     TARGET = {1: 2.6, 2: 8.2, 3: 8.1, 4: 5.1}  # nach Messung der Sprechzeiten (Clips 2,4 / 8,0 / 8,0 / 3,9 s)
     SLOW = {k: TARGET[k] / BASE[k] for k in KEYS}
+elif VAR == "V8":
+    KEYS = (1, 2, 3, 4)
+    BASE = {1: 5.0, 2: 4.2, 3: 9.0, 4: 4.7}  # Hook, Upload, Karte und Gewinn, Endkarte (Sekunden, SLOW = 1; Clips 4,9 / 4,1 / 8,7 / 4,2 s)
+    TARGET = dict(BASE)
+    SLOW = {k: 1.0 for k in KEYS}
 elif VAR == "V6":
     KEYS = (1, 2, 3, 4)
     BASE = {1: 4.75, 2: 9.1, 3: 5.0, 4: 5.1}
@@ -96,8 +101,11 @@ if VAR == "V3":
 P7_T = (0.5, 2.07, 0.79, 1.07, 2.71, 3.04)  # Reseller-Gewinnszene (Basiszeit): Überschrift 1, Überschrift 2, Karte, Verkauf, Einkauf, Gewinn
 if VAR == "V7":
     S3_B, CAP2_T = 5.5, 1.55
-CTA_T = (0.75, 2.6)  # Claim erscheint, "Für mehr Infos" und Klick-Hinweis (Sekunden ab Szenenstart)
-DEMO_SHIFT = 1.4 if VAR == "V3" else 0.0  # Karte/Ampel erst, wenn "und siehst pro Plattform" gesprochen wird
+CTA_T = (0.75, 2.6)
+V8_T = {"tap_up": 1.0, "landed": 1.9, "tap_vinted": 3.35, "tap_gewinn": 7.1}  # V8 (UGC-Stil): Ereigniszeiten je Szene
+if VAR == "V8":
+    S3_B, CAP2_T = 5.7, 0.0  # Claim erscheint, "Für mehr Infos" und Klick-Hinweis (Sekunden ab Szenenstart)
+DEMO_SHIFT = 1.4 if VAR == "V3" else (-1.4 if VAR == "V8" else 0.0)  # Karte/Ampel erst, wenn "und siehst pro Plattform" gesprochen wird
 
 
 def at(scene, base_t):
@@ -283,7 +291,9 @@ def scene_demo(L, t):
     # Titelzeile je nach Beat (Basiszeit)
     caps = ("Datei rein.", "Grenzen im Blick.", "Das bleibt dir.") if V2LIKE else ("Datei rein.", "Ampel an.", "Report raus.")
     sz = [88] * 3 if V2LIKE else [100 if len(c) <= 12 else 80 for c in caps]
-    if t < CAP2_T:
+    if VAR == "V8":
+        pass
+    elif t < CAP2_T:
         pop_text(L, 540, 400, caps[0], sz[0], "heavy", PAPER, t, 0.0)
     elif t < S3_B:
         pop_text(L, 540, 400, caps[1], sz[1], "heavy", LIME, t, CAP2_T)
@@ -297,6 +307,8 @@ def scene_demo(L, t):
 
     # Beat a1: Ablagefläche, Datei landet darin (nichts überlagert anderen Inhalt)
     zone_a = 1.0 - ease_out(prog(t, 1.45 + DEMO_SHIFT, 0.25))
+    if VAR == "V8":
+        zone_a = 0.0
     if zone_a > 0:
         a = 255 * zone_a
         landed = t >= 0.85
@@ -387,6 +399,11 @@ def scene_demo(L, t):
         L.rrect(x0 + 40, y0 + 640, x1 - 40, y0 + 810, 26, fill=col((228, 246, 214)))
         L.text(x0 + 76, y0 + 696, "Gewinn nach Einkauf", 32, "medium", col(DEEPGREEN), "lm")
         L.text(x0 + 76, y0 + 764, f"{842.5 * ease_out(gp):,.2f} €".replace(",", "X").replace(".", ",").replace("X", "."), 64, "heavy", col(DEEPGREEN), "lm")
+
+
+    if VAR == "V8":
+        draw_tap(L, t, V8_T["tap_vinted"], 800, 705)
+        draw_tap(L, t, V8_T["tap_gewinn"], 540, 1225)
 
 
 def scene_benefits(L, t):
@@ -702,7 +719,115 @@ def scene_v6_answers(L, t):
         pop_text(L, 540, 1490, "Beispieldaten", 26, "medium", MUTED, t, V6_FLIP[2] + 0.5, dur=0.25)
 
 
+# ---- V8 "UGC-Stil": Bildschirmaufnahme mit Finger-Taps und Wort-für-Wort-Untertiteln
+def draw_tap(L, t, start, x, y):
+    p = prog(t, start, 0.6)
+    if p <= 0 or p >= 1:
+        return
+    r = 28 + 56 * ease_out(p)
+    a = int(220 * (1 - p))
+    L.d.ellipse([(x - r) * S, (y - r) * S, (x + r) * S, (y + r) * S], outline=(255, 255, 255, a), width=int(7 * S))
+    pd = clamp(1 - prog(t, start, 0.3))
+    L.circle(x, y, 30 * (0.6 + 0.4 * pd), col((255, 255, 255), 200 * pd))
+
+
+def scene_v8_hook(L, t):
+    """UGC-Hook: 'Stopp.' plus die drei Plattformen, passend zum Sprechertext."""
+    p = prog(t, 0.0, 0.3)
+    if p > 0:
+        sc = 0.7 + 0.3 * ease_back(p)
+        a = 255 * clamp(p * 3)
+        w, h = 330 * sc, 120 * sc
+        pill(L, 540, 620, w, h, col(RED, a))
+        L.text(540, 622, "STOPP", 76 * sc, "heavy", col(WHITE, a), "mm")
+    names = (("Vinted", DOT["Vinted"], 1.05), ("eBay", DOT["eBay"], 1.7), ("Kleinanzeigen", DOT["Kleinanzeigen"], 2.3))
+    for k, (name, dot, st) in enumerate(names):
+        pp = prog(t, st, 0.3)
+        if pp <= 0:
+            continue
+        sc = 0.8 + 0.2 * ease_back(pp)
+        a = 255 * clamp(pp * 3)
+        cy = 860 + k * 135
+        wd = 640 * sc
+        pill(L, 540, cy, wd, 110 * sc, col(INK2, a), col((60, 68, 80), a))
+        L.circle(540 - wd / 2 + 56 * sc, cy, 18 * sc, col(dot, a))
+        L.text(540 - wd / 2 + 96 * sc, cy, name, 54 * sc, "bold", col(PAPER, a), "lm")
+
+
+def scene_v8_upload(L, t):
+    """Bildschirmaufnahme: Verkaufsdatei hochladen, Finger tippt auf die Ablagefläche."""
+    x0, y0, x1, y1 = 100, 520, 980, 1260
+    L.rrect(x0, y0, x1, y1, 44, fill=col(INK2), outline=col((60, 68, 80)), width=4)
+    L.rrect(x0 + 40, y0 + 36, x1 - 40, y0 + 104, 34, fill=col((38, 44, 54)))
+    L.text(540, y0 + 70, "sellcheck.app / tools", 30, "medium", col(MUTED), "mm")
+    L.text(540, y0 + 190, "Verkaufsdatei hochladen", 46, "heavy", col(PAPER), "mm")
+    landed = t >= V8_T["landed"]
+    zx0, zy0, zx1, zy1 = x0 + 60, y0 + 250, x1 - 60, y1 - 70
+    L.rrect(zx0, zy0, zx1, zy1, 36, fill=col((24, 28, 36)), outline=col(LIME if landed else (74, 82, 94)), width=4)
+    L.line([(540, zy0 + 150), (540, zy0 + 100)], col(MUTED), 8)
+    L.line([(516, zy0 + 122), (540, zy0 + 98), (564, zy0 + 122)], col(MUTED), 8)
+    L.text(540, zy0 + 210, "CSV hier ablegen", 40, "medium", col(MUTED), "mm")
+    fp = prog(t, V8_T["tap_up"] + 0.2, 0.7)
+    if fp > 0:
+        fy = y0 - 30 + ease_out(fp) * ((zy0 + zy1) / 2 + 40 - (y0 - 30))
+        sc = 1.0 + (0.06 * math.sin(clamp((t - V8_T["landed"]) / 0.25) * math.pi) if landed else 0.0)
+        pill(L, 540, fy, 600 * sc, 100 * sc, col(PAPER))
+        L.rrect(540 - 270 * sc, fy - 25 * sc, 540 - 234 * sc, fy + 25 * sc, 6, fill=col(INK))
+        L.text(540 - 214 * sc, fy, "eBay_Transaktionen.csv", 32 * sc, "bold", col(INK), "lm")
+    if landed:
+        lp = prog(t, V8_T["landed"], 0.3)
+        check_circle(L, 540 - 130, zy1 - 70, 24 * (0.6 + 0.4 * ease_back(lp)))
+        L.text(540 - 90, zy1 - 70, "Datei gelesen", 40, "heavy", col(PAPER, 255 * clamp(lp * 3)), "lm")
+    draw_tap(L, t, V8_T["tap_up"], 700, (zy0 + zy1) / 2 + 110)
+
+
+def v8_words():
+    """Wörter mit Zeitmarken (Sekunden) aus der Datei v8_words.json, wird beim Bauen aus den Sprachclips erzeugt."""
+    global _V8_WORDS
+    if _V8_WORDS is None:
+        import json
+        path = os.path.join(FRAMES, "v8_words.json")
+        _V8_WORDS = json.load(open(path)) if os.path.exists(path) else []
+    return _V8_WORDS
+
+
+_V8_WORDS = None
+
+
+def draw_captions_v8(L, t):
+    """TikTok-Untertitel: bis zu 3 Wörter gleichzeitig, das gesprochene Wort in Lime."""
+    words = v8_words()
+    if not words:
+        return
+    cur = None
+    for k, (w, a, b) in enumerate(words):
+        if a - 0.05 <= t < b + 0.12:
+            cur = k
+            break
+    if cur is None:
+        return
+    # Chunk: Wörter derselben Dreiergruppe (ohne Satzgrenze)
+    g0 = cur - (cur % 3)
+    chunk = words[g0:g0 + 3]
+    for j in range(len(chunk) - 1):
+        if chunk[j][0].endswith((".", "?", "!")):
+            chunk = chunk[:j + 1]
+            break
+    size = 76
+    texts = [c[0] for c in chunk]
+    while sum(L.width(x + " ", size, "heavy") for x in texts) > 940 and size > 40:
+        size -= 2
+    total = sum(L.width(x + " ", size, "heavy") for x in texts)
+    x = 540 - total / 2
+    for j, (w, a, b) in enumerate(chunk):
+        active = g0 + j == cur
+        L.d.text((px(x), px(400)), w, font=font(size, "heavy"), fill=col(LIME if active else PAPER), anchor="lm",
+                 stroke_width=px(5), stroke_fill=col(INK))
+        x += L.width(w + " ", size, "heavy")
+
+
 SCENES = {
+    "V8": [(1, scene_v8_hook), (2, scene_v8_upload)],
     "V6": [(1, scene_v6_hook), (2, scene_v6_questions), (3, scene_v6_answers)],
     "A": [(1, scene_hook_a), (2, scene_problem_a)],
     "B": [(1, scene_hook_b), (2, scene_problem_b)],
@@ -752,6 +877,10 @@ def render_frame(args):
                 L.im.putalpha(a)
             im.paste(L.im, (0, 0), L.im)
             break
+    if variant == "V8" and t < START[4]:
+        Lc = Layer()
+        draw_captions_v8(Lc, t)
+        im.paste(Lc.im, (0, 0), Lc.im)
     im = im.reduce(S)
     path = os.path.join(FRAMES, variant, f"f_{i:05d}.jpg")
     im.save(path, quality=95, subsampling=0)
@@ -765,6 +894,13 @@ VO_RATE = os.environ.get("AD_VOICE_RATE", "165")    # Wörter pro Minute
 
 # Sprechertext je Variante: (absolute Startzeit, Text, spätestes Ende)
 def vo_lines(variant):
+    if variant == "V8":
+        return [
+            (at(1, 0.05), "Stopp. Wenn du auf Vinted, eBay oder Kleinanzeigen verkaufst, zeig ich dir kurz was.", START[2]),
+            (at(2, 0.05), "Du lädst einfach deine Verkaufsdatei hoch. Die bekommst du direkt bei der Plattform.", START[3]),
+            (at(3, 0.05), "Dann siehst du sofort, wie viele Verkäufe du pro Plattform hast. Dieser hier ist schon fast an der Meldegrenze. Und hier unten: was dir nach dem Einkauf WIRKLICH bleibt.", START[4]),
+            (at(4, -0.10), "SellCheck. Check, was wirklich bleibt. Für mehr Infos unten klicken.", DUR - 0.05),
+        ]
     if variant == "V6":
         return [
             (at(1, 0.05), "Drei Fragen an alle, die auf Vinted, eBay oder Kleinanzeigen verkaufen.", START[2]),
@@ -1016,7 +1152,18 @@ def build_audio(variant, path, with_voice=False, voice_files=None):
         pop(at(2, 0.0), 640)
         pop(at(2, 0.18), 720)
 
-    if variant == "V6":
+    if variant == "V8":
+        pop(at(1, 0.0), 420)
+        for st in (1.05, 1.7, 2.3):
+            pop(at(1, st), 560)
+        tick(at(2, V8_T["tap_up"]), 1500)
+        ding(at(2, V8_T["landed"] + 0.15), 784.0)
+        for i in range(4):
+            tick(at(3, 0.6 - 1.4 + 1.4 + i * 0.28), 1100 + i * 120)
+        tick(at(3, V8_T["tap_vinted"]), 1500)
+        tick(at(3, V8_T["tap_gewinn"]), 1500)
+        ding(at(3, V8_T["tap_gewinn"] + 0.5), 659.25)
+    elif variant == "V6":
         for i, qs in enumerate(V6_QSTART):
             pop(at(2, qs + 0.05), 480 + i * 90)
         for i, ft in enumerate(V6_FLIP):
@@ -1028,10 +1175,10 @@ def build_audio(variant, path, with_voice=False, voice_files=None):
             tick(at(3, 2.0 + DEMO_SHIFT + i * 0.28 + 0.15), 1100 + i * 120)
         blip_down(at(3, 4.15 + DEMO_SHIFT))
         ding(at(3, S3_B + 1.6), 659.25)                                 # Summe ist oben angekommen
-    if variant not in ("V2", "V3", "V6", "V7"):
+    if variant not in ("V2", "V3", "V6", "V7", "V8"):
         for i, f in enumerate((523.25, 659.25, 783.99)):
             ding(at(4, 0.35 + i * 0.4), f)
-    cta = 4 if variant in ("V2", "V3", "V6", "V7") else 5
+    cta = 4 if variant in ("V2", "V3", "V6", "V7", "V8") else 5
     for j, f in enumerate((523.25, 659.25, 783.99, 1046.5)):
         ding(at(cta, 0.9) + j * 0.1, f)
 
@@ -1084,8 +1231,34 @@ def encode(variant, wav, mp4):
     subprocess.run([enc, os.path.join(FRAMES, variant), str(FPS), str(NF), wav, mp4], check=True)
 
 
+def build_v8_words():
+    """Wortzeiten für die Untertitel von V8 aus den gemessenen Sprachclips (Verteilung nach Wortlänge)."""
+    import json
+    files = find_voice_files(os.path.join(HERE, "voice_v8"))
+    if not all(files):
+        return
+    words, prev_end = [], 0.0
+    for (t0, text, limit), f in zip(vo_lines("V8"), files):
+        t0 = max(t0, prev_end + 0.04)
+        dur = len(load_clip(f, "v8w")) / SR
+        prev_end = t0 + dur
+        toks = text.split()
+        weights = [len(w.strip(".,?!:")) + 1.5 for w in toks]
+        tot, tcur = sum(weights), t0
+        for w, wt in zip(toks, weights):
+            d = dur * wt / tot
+            core = w.strip(".,?!:")
+            shown = w.replace(core, core.lower()) if core.isupper() and len(core) > 3 else w
+            words.append([shown, tcur, tcur + d])
+            tcur += d
+    os.makedirs(FRAMES, exist_ok=True)
+    json.dump(words, open(os.path.join(FRAMES, "v8_words.json"), "w"))
+
+
 def main():
     variant = (sys.argv[1] if len(sys.argv) > 1 else "A").upper()
+    if variant == "V8":
+        build_v8_words()
     only = sys.argv[2] if len(sys.argv) > 2 else ""
     if variant not in SCENES:
         raise SystemExit("Variante A oder B")
@@ -1098,7 +1271,7 @@ def main():
         print("Testframes gerendert")
         return
     if only == "voice":
-        folder = sys.argv[3] if len(sys.argv) > 3 else os.environ.get("AD_VOICE_DIR", os.path.join(HERE, {"V2": "voice_v2", "V3": "voice_v3", "V6": "voice_v6", "V7": "voice_v7"}.get(variant, "voice")))
+        folder = sys.argv[3] if len(sys.argv) > 3 else os.environ.get("AD_VOICE_DIR", os.path.join(HERE, {"V2": "voice_v2", "V3": "voice_v3", "V6": "voice_v6", "V7": "voice_v7", "V8": "voice_v8"}.get(variant, "voice")))
         files = find_voice_files(folder)
         missing = [i + 1 for i, f in enumerate(files) if not f]
         if len(missing) == len(files):
