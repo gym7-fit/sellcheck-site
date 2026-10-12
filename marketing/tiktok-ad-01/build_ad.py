@@ -45,7 +45,7 @@ elif VAR == "V3":
     SLOW = {k: TARGET[k] / BASE[k] for k in KEYS}
 elif VAR == "V9":
     KEYS = (1, 2, 3, 4)
-    BASE = {1: 17.3, 2: 10.2, 3: 10.4, 4: 5.8}  # Chat 1, Webseite, Chat 2, Endkarte (Sekunden, SLOW = 1; Zeiten nach geschätzter Sprechdauer)
+    BASE = {1: 5.3, 2: 10.2, 3: 10.4, 4: 5.8}  # Chat 1, Webseite, Chat 2, Endkarte (Sekunden, SLOW = 1; Zeiten nach geschätzter Sprechdauer)
     TARGET = dict(BASE)
     SLOW = {k: 1.0 for k in KEYS}
 elif VAR == "V8":
@@ -1018,16 +1018,16 @@ V9_LAYOUT = {"top": 470, "bottom": 1340, "gap": 10}
 
 # Nachrichten: (Absender, Text, Erscheinen, Typ). Zeiten je Szene, werden nach den Sprachclips angepasst.
 V9_CHAT1 = [
-    ("tim", "Hey Anna, wusstest du, dass Plattformen deine Verkäufe ab einer Grenze an die Steuerbehörde melden?", 0.9, "text"),
-    ("anna", "Warte, was? Aber woher weiß ich, ob ich über der Grenze bin, bei all den Plattformen?", 8.4, "text"),
-    ("tim", "Mit SellCheck:", 14.7, "link"),
+    ("tim", "Hey Anna, wusstest du, dass Plattformen deine Verkäufe ab einer Grenze an die Steuerbehörde melden?", 0.6, "text"),
+    ("anna", "Warte, was? Aber woher weiß ich, ob ich über der Grenze bin, bei all den Plattformen?", 2.5, "text"),
+    ("tim", "Mit SellCheck:", 3.5, "link"),
 ]
 V9_CHAT2_PREV = [m[:3] + ("text",) for m in V9_CHAT1[:2]] + [V9_CHAT1[2][:3] + ("link",)]
 V9_CHAT2 = [
     ("anna", "Ahh cool, so eine praktische Website kannte ich gar nicht.", 0.8, "text"),
     ("tim", "Jap! Und das Beste: kostenlos, mit Konto, und deine Daten bleiben im Browser.", 5.2, "text"),
 ]
-V9_T = {"tim_type0": 0.2, "anna_type0": 7.7, "tim_type1": 14.2, "tap_link": 16.6, "link_y": 1160,
+V9_T = {"tim_type0": 0.1, "anna_type0": 1.5, "tim_type1": 3.0, "tap_link": 4.7, "link_y": 1160,
         "c2_anna_type0": 0.1, "c2_tim_type": 4.7,
         "up_tap": 1.0, "banner_in": 1.6, "banner_out": 8.0, "go_scroll": 2.4, "go_tap": 4.2, "res_switch": 4.7,
         "res_scroll1": 5.5, "res_scroll2": 7.5, "res_hl": 8.8}
@@ -1115,6 +1115,38 @@ def v9_keyboard(L):
     hn_text(L, 792 + 132, yb + kh / 2, "Senden", 40, (30, 30, 30), anchor="mm")
 
 
+def v9_memoji(L, cx, cy, r):
+    """Gezeichnetes Profilbild im Stil eines Memojis (kein echtes Apple-Memoji): Kopf, Haare, Gesicht auf buntem Kreis."""
+    n = int(2 * r * S)
+    patch = Image.new("RGBA", (n, n), (0, 0, 0, 0))
+    d = ImageDraw.Draw(patch)
+    u = r * S  # Einheit
+    c = n / 2
+    def el(x, y, rx, ry, fill=None, outline=None, width=0):
+        d.ellipse([c + (x - rx) * u, c + (y - ry) * u, c + (x + rx) * u, c + (y + ry) * u], fill=fill, outline=outline, width=width)
+    el(0, 0, 1.0, 1.0, fill=(255, 211, 116, 255))                       # Hintergrund
+    el(0, 1.02, 0.78, 0.45, fill=(70, 118, 205, 255))                   # Schultern
+    d.rectangle([c - 0.17 * u, c + 0.42 * u, c + 0.17 * u, c + 0.7 * u], fill=(236, 184, 140, 255))  # Hals
+    el(-0.56, 0.0, 0.1, 0.15, fill=(236, 184, 140, 255))                # Ohren
+    el(0.56, 0.0, 0.1, 0.15, fill=(236, 184, 140, 255))
+    el(0, -0.28, 0.64, 0.58, fill=(76, 52, 38, 255))                    # Haare hinten
+    el(0, 0.02, 0.53, 0.62, fill=(246, 200, 158, 255))                  # Gesicht
+    el(0, -0.5, 0.58, 0.3, fill=(76, 52, 38, 255))                      # Haare oben
+    el(-0.3, -0.38, 0.3, 0.2, fill=(76, 52, 38, 255))                   # Stirnfransen
+    el(0.28, -0.4, 0.28, 0.17, fill=(76, 52, 38, 255))
+    for sx in (-1, 1):
+        el(sx * 0.2, -0.02, 0.07, 0.095, fill=(35, 28, 28, 255))        # Augen
+        el(sx * 0.18, -0.05, 0.022, 0.03, fill=(255, 255, 255, 255))
+        d.line([c + (sx * 0.31) * u, c - 0.17 * u, c + (sx * 0.1) * u, c - 0.19 * u], fill=(76, 52, 38, 255), width=max(2, int(0.045 * u)))
+        el(sx * 0.33, 0.17, 0.09, 0.055, fill=(244, 160, 150, 150))     # Wangen
+    d.arc([c - 0.2 * u, c + 0.08 * u, c + 0.2 * u, c + 0.38 * u], 20, 160, fill=(170, 68, 68, 255), width=max(3, int(0.055 * u)))  # Lächeln
+    d.line([c, c + 0.0 * u, c - 0.03 * u, c + 0.12 * u], fill=(214, 156, 120, 255), width=max(2, int(0.035 * u)))  # Nase
+    mask = Image.new("L", (n, n), 0)
+    ImageDraw.Draw(mask).ellipse([0, 0, n - 1, n - 1], fill=255)
+    patch.putalpha(Image.composite(patch.getchannel("A"), Image.new("L", (n, n), 0), mask))
+    v8_blend(L, patch, cx * S - c, cy * S - c)
+
+
 def v9_header(L, status):
     L.d.rectangle([0, 0, W * S, 360 * S], fill=CH_HEAD + (255,))
     L.d.rectangle([0, 359 * S, W * S, 361 * S], fill=(218, 218, 218, 255))
@@ -1126,9 +1158,7 @@ def v9_header(L, status):
     L.line([(860, 84), (860, 78)], (0, 0, 0, 255), 6)
     # Navigationsleiste
     L.line([(62, 215), (36, 245), (62, 275)], CH_GREEN + (255,), 8)
-    L.circle(150, 245, 52, col((176, 190, 197)))
-    L.circle(150, 228, 20, col((246, 248, 249)))
-    L.d.pieslice([(150 - 36) * S, (250) * S, (150 + 36) * S, (300) * S], 180, 360, fill=(246, 248, 249, 255))
+    v9_memoji(L, 150, 245, 54)
     hn_text(L, 230, 222, "Tim", 48, (0, 0, 0), True, anchor="lm")
     green = status == "schreibt …"
     hn_text(L, 230, 272, status, 33, CH_GREEN if green else CH_GREY, anchor="lm")
@@ -1236,21 +1266,24 @@ def scene_v9_site(L, t):
     p = ease_out(prog(t, 0.0, 0.45))
     L.d.rectangle([0, 0, W * S, H * S], fill=CH_BG + (255,))
     L.im.paste(tmp.im, (0, int((1 - p) * H * S)))
-    # Banner von Tim
+    # Mitteilungsbanner wie auf dem iPhone: heller, abgerundeter Streifen mit Profilbild, Name, Text und "jetzt"
     b0, b1 = tw["banner_in"], tw["banner_out"]
-    if b0 <= t < b1 + 0.4:
-        bp = ease_out(prog(t, b0, 0.35)) * (1 - ease_out(prog(t, b1, 0.35)))
-        by = -330 + 330 * bp + 30
-        lines = hn_wrap(L, V9_BANNER, 36, 800)
-        h = 120 + len(lines) * 46
-        v8_blend(L, Image.new("RGBA", (int(1000 * S), int(h * S)), (247, 247, 249, 240)), 40 * S, by * S)
-        L.rrect(40, by, 1040, by + h, 36, outline=(205, 208, 214, 255), width=2)
-        L.rrect(66, by + 24, 126, by + 84, 14, fill=(37, 160, 106, 255))
-        hn_text(L, 146, by + 30, "Tim", 36, CH_INK, True)
-        hn_text(L, 1010, by + 32, "jetzt", 28, CH_GREY, anchor="ra")
-        ty = by + 96
+    if b0 <= t < b1 + 0.5:
+        lines = hn_wrap(L, V9_BANNER, 36, 700)[:3]
+        h = 56 + 54 + len(lines) * 46 + 14
+        pin = ease_back(prog(t, b0, 0.5))
+        pout = ease_out(prog(t, b1, 0.35))
+        by = 28 + (-h - 60) * (1 - pin) + (-h - 60) * pout
+        v8_blend(L, Image.new("RGBA", (int(1032 * S), int(h * S)), (248, 248, 250, 242)), 24 * S, by * S)
+        L.rrect(24, by, 1056, by + h, 52, outline=(214, 216, 222, 255), width=2)
+        v9_memoji(L, 100, by + 84, 46)
+        L.circle(136, by + 120, 20, col((255, 255, 255)))
+        L.circle(136, by + 120, 16, col((37, 160, 106)))
+        hn_text(L, 176, by + 40, "Tim", 40, (0, 0, 0), True)
+        hn_text(L, 1030, by + 44, "jetzt", 30, (140, 140, 147), anchor="ra")
+        ty = by + 92
         for ln in lines:
-            hn_text(L, 66, ty, ln, 36, CH_INK)
+            hn_text(L, 176, ty, ln, 36, (28, 28, 30))
             ty += 46
 
 
