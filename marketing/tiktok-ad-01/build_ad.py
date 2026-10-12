@@ -45,7 +45,7 @@ elif VAR == "V3":
     SLOW = {k: TARGET[k] / BASE[k] for k in KEYS}
 elif VAR == "V8":
     KEYS = (1, 2, 3, 4)
-    BASE = {1: 5.0, 2: 4.2, 3: 9.0, 4: 4.7}  # Hook, Upload, Karte und Gewinn, Endkarte (Sekunden, SLOW = 1; Clips 4,9 / 4,1 / 8,7 / 4,2 s)
+    BASE = {1: 9.3, 2: 5.6, 3: 10.3, 4: 4.7}  # Aufnahme Meldegrenze, Upload, Ergebnis, Endkarte (Sekunden, SLOW = 1; Clips 9,2 / 5,4 / 10,0 / 4,2 s)
     TARGET = dict(BASE)
     SLOW = {k: 1.0 for k in KEYS}
 elif VAR == "V6":
@@ -102,7 +102,8 @@ P7_T = (0.5, 2.07, 0.79, 1.07, 2.71, 3.04)  # Reseller-Gewinnszene (Basiszeit): 
 if VAR == "V7":
     S3_B, CAP2_T = 5.5, 1.55
 CTA_T = (0.75, 2.6)
-V8_T = {"tap_up": 1.0, "landed": 1.9, "tap_vinted": 3.35, "tap_gewinn": 7.1}  # V8 (UGC-Stil): Ereigniszeiten je Szene
+V8_T = {"s1_end": 9.0, "hl": 4.0, "tap_up": 2.3, "go_scroll": 3.9, "tap_go": 5.0,
+        "r_scroll1": 0.4, "tap_gelb": 3.4, "r_scroll2": 4.4, "tap_rot": 6.9, "hl_gewinn": 8.9}  # V8 (UGC-Stil): Ereigniszeiten je Szene
 if VAR == "V8":
     S3_B, CAP2_T = 5.7, 0.0  # Claim erscheint, "Für mehr Infos" und Klick-Hinweis (Sekunden ab Szenenstart)
 DEMO_SHIFT = 1.4 if VAR == "V3" else (-1.4 if VAR == "V8" else 0.0)  # Karte/Ampel erst, wenn "und siehst pro Plattform" gesprochen wird
@@ -821,13 +822,118 @@ def draw_captions_v8(L, t):
     x = 540 - total / 2
     for j, (w, a, b) in enumerate(chunk):
         active = g0 + j == cur
-        L.d.text((px(x), px(400)), w, font=font(size, "heavy"), fill=col(LIME if active else PAPER), anchor="lm",
-                 stroke_width=px(5), stroke_fill=col(INK))
+        L.d.text((px(x), px(1400)), w, font=font(size, "heavy"), fill=col(LIME if active else PAPER), anchor="lm",
+                 stroke_width=px(6), stroke_fill=col(INK))
         x += L.width(w + " ", size, "heavy")
 
 
+# ---- V8 (UGC-Stil, echte Bildschirmaufnahme der Oberfläche statt Nachbau)
+@lru_cache(maxsize=8)
+def v8_img(name):
+    return Image.open(os.path.join(HERE, "assets", "v8", name)).convert("RGB")
+
+
+def ui_window(L, img_name, header_name, y, alpha=255):
+    """Zeichnet die Aufnahme (Inhalt ab Zeile y) unter der festen Kopfleiste, wie ein Scroll in der Seite."""
+    img = v8_img(img_name)
+    y = int(max(0, min(img.height - 1535, y)))
+    part = img.crop((0, y, 1080, y + 1535)).resize((1080 * S, 1535 * S), Image.BICUBIC)
+    hdr = v8_img(header_name).resize((1080 * S, 350 * S), Image.BICUBIC)
+    L.d.rectangle([0, 0, W * S, H * S], fill=(245, 243, 238, alpha))
+    L.im.paste(part, (0, 350 * S))
+    L.im.paste(hdr, (0, 0))
+
+
+def v8_ease(a, b, t, t0, t1):
+    """Weiches Scrollen von a nach b zwischen t0 und t1."""
+    p = ease_out(prog(t, t0, t1 - t0)) if t1 > t0 else 1.0
+    return a + (b - a) * p
+
+
+def v8_blend(L, patch, X0, Y0):
+    """Legt einen RGBA-Ausschnitt mit echter Transparenz über die Aufnahme (Position in Pixeln der Ebene)."""
+    X0, Y0 = int(X0), int(Y0)
+    X1, Y1 = X0 + patch.width, Y0 + patch.height
+    cx0, cy0, cx1, cy1 = max(0, X0), max(0, Y0), min(L.im.width, X1), min(L.im.height, Y1)
+    if cx1 <= cx0 or cy1 <= cy0:
+        return
+    patch = patch.crop((cx0 - X0, cy0 - Y0, cx1 - X0, cy1 - Y0))
+    reg = L.im.crop((cx0, cy0, cx1, cy1))
+    L.im.paste(Image.alpha_composite(reg, patch), (cx0, cy0))
+
+
+def v8_highlight(L, x0, y0, x1, y1, t, start, dur=0.4):
+    """Marker-Streifen, der über den Text gezogen wird (Text bleibt lesbar)."""
+    p = ease_out(prog(t, start, dur))
+    if p <= 0:
+        return
+    w, h = int((x1 - x0) * p * S), int((y1 - y0) * S)
+    if w > 0 and h > 0:
+        v8_blend(L, Image.new("RGBA", (w, h), (255, 214, 0, 110)), x0 * S, y0 * S)
+
+
+def v8_tap(L, t, start, x, y):
+    """Finger-Tap: dunkler Punkt mit sich öffnendem Ring (auf heller Oberfläche sichtbar)."""
+    p = prog(t, start, 0.6)
+    if p <= 0 or p >= 1:
+        return
+    r = (30 + 60 * ease_out(p)) * S
+    size = int(2 * r + 20)
+    patch = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    d = ImageDraw.Draw(patch)
+    c = size / 2
+    d.ellipse([c - r, c - r, c + r, c + r], outline=(30, 34, 42, int(210 * (1 - p))), width=int(8 * S))
+    pd = clamp(1 - prog(t, start, 0.35))
+    if pd > 0:
+        rr = 34 * (0.6 + 0.4 * pd) * S
+        d.ellipse([c - rr, c - rr, c + rr, c + rr], fill=(30, 34, 42, int(150 * pd)))
+    v8_blend(L, patch, x * S - c, y * S - c)
+
+
+# Zeilen in den Aufnahmen (aus den Messungen der echten Seite)
+V8_S5 = {"para": 323, "hl1": (355, 479, 642, 545), "hl2": (768, 479, 952, 545), "hl3": (112, 556, 372, 622),
+         "tiles": 1082, "vinted": 2185, "klein": 2798, "ebay": 3411, "etsy": 4014}
+V8_S3 = {"drop": 6789, "drop_h": 694, "msg": 7785, "go": 9703}
+
+
+def scene_v8_s1(L, t):
+    """Die Seite 'Meldegrenzen prüfen': Erklärtext mit Marker auf '30 Verkäufe oder 2.000 € Einnahmen'."""
+    y = v8_ease(0, 90, t, 0.0, V8_T["s1_end"])
+    ui_window(L, "v8_step5.jpg", "header_step5.jpg", y)
+    off = 350 - y
+    for key, st in (("hl1", V8_T["hl"]), ("hl2", V8_T["hl"] + 0.25), ("hl3", V8_T["hl"] + 0.4)):
+        x0, y0, x1, y1 = V8_S5[key]
+        v8_highlight(L, x0 - 6, y0 + off, x1 + 6, y1 + off, t, st)
+
+
+def scene_v8_s2(L, t):
+    """Datei hochladen: Tap auf die Ablagefläche, Datei erkannt, 'Jetzt importieren'."""
+    tap_t = V8_T["tap_up"]
+    after = t >= tap_t + 0.35
+    img = "v8_step3_geladen.jpg" if after else "v8_step3_leer.jpg"
+    y = 6700.0
+    y = v8_ease(y, 7650, t, tap_t + 0.5, tap_t + 1.4)
+    y = v8_ease(y, 9330, t, V8_T["go_scroll"], V8_T["go_scroll"] + 1.0)
+    ui_window(L, img, "header_step3.jpg", y)
+    off = 350 - y
+    v8_tap(L, t, tap_t, 540, V8_S3["drop"] + V8_S3["drop_h"] / 2 + (350 - 6700))
+    v8_tap(L, t, V8_T["tap_go"], 310, V8_S3["go"] + 80 + off)
+
+
+def scene_v8_s3(L, t):
+    """Ergebnis: Karten pro Plattform scrollen durch, Tap auf Gelb und Rot, Gewinn markiert."""
+    y = 960.0
+    y = v8_ease(y, V8_S5["vinted"] - 40, t, V8_T["r_scroll1"], V8_T["r_scroll1"] + 1.2)
+    y = v8_ease(y, V8_S5["etsy"] - 120, t, V8_T["r_scroll2"], V8_T["r_scroll2"] + 1.6)
+    ui_window(L, "v8_step5.jpg", "header_step5.jpg", y)
+    off = 350 - y
+    v8_tap(L, t, V8_T["tap_gelb"], 560, V8_S5["vinted"] + 480 + (350 - (V8_S5["vinted"] - 40)))
+    v8_tap(L, t, V8_T["tap_rot"], 540, V8_S5["etsy"] + 500 + off)
+    v8_highlight(L, 150, V8_S5["etsy"] + 335 + off, 400, V8_S5["etsy"] + 405 + off, t, V8_T["hl_gewinn"])
+
+
 SCENES = {
-    "V8": [(1, scene_v8_hook), (2, scene_v8_upload)],
+    "V8": [(1, scene_v8_s1), (2, scene_v8_s2), (3, scene_v8_s3)],
     "V6": [(1, scene_v6_hook), (2, scene_v6_questions), (3, scene_v6_answers)],
     "A": [(1, scene_hook_a), (2, scene_problem_a)],
     "B": [(1, scene_hook_b), (2, scene_problem_b)],
@@ -835,7 +941,7 @@ SCENES = {
     "V3": [(1, scene_v3_hook), (2, scene_v2_deadline)],
     "V7": [(1, scene_v7_hook), (2, scene_v7_profit)],
 }
-COMMON = [(4, scene_cta)] if VAR == "V6" else [(3, scene_demo), (4, scene_cta)] if V2LIKE else [(3, scene_demo), (4, scene_benefits), (5, scene_cta)]
+COMMON = [(4, scene_cta)] if VAR in ("V6", "V8") else [(3, scene_demo), (4, scene_cta)] if V2LIKE else [(3, scene_demo), (4, scene_benefits), (5, scene_cta)]
 
 
 # ------------------------------------------------------------------ Hintergrund & Frame
@@ -861,7 +967,8 @@ def render_frame(args):
     t = i / FPS
     im = background().copy()
     L0 = Layer()
-    brand(L0, t)
+    if not (variant == "V8" and t < START[4]):
+        brand(L0, t)
     im.paste(L0.im, (0, 0), L0.im)
     scenes = SCENES[variant] + COMMON
     for k, fn in scenes:
@@ -896,9 +1003,9 @@ VO_RATE = os.environ.get("AD_VOICE_RATE", "165")    # Wörter pro Minute
 def vo_lines(variant):
     if variant == "V8":
         return [
-            (at(1, 0.05), "Stopp. Wenn du auf Vinted, eBay oder Kleinanzeigen verkaufst, zeig ich dir kurz was.", START[2]),
-            (at(2, 0.05), "Du lädst einfach deine Verkaufsdatei hoch. Die bekommst du direkt bei der Plattform.", START[3]),
-            (at(3, 0.05), "Dann siehst du sofort, wie viele Verkäufe du pro Plattform hast. Dieser hier ist schon fast an der Meldegrenze. Und hier unten: was dir nach dem Einkauf WIRKLICH bleibt.", START[4]),
+            (at(1, 0.05), "Wenn du auf Vinted, eBay oder Kleinanzeigen verkaufst: Ab einer bestimmten Grenze melden die Plattformen deine Verkäufe an die Steuerbehörde. Ich zeig dir kurz, wo du stehst.", START[2]),
+            (at(2, 0.05), "Dafür lädst du einfach die Export-Datei mit deinen Verkäufen hoch. Die kannst du dir bei der Plattform herunterladen.", START[3]),
+            (at(3, 0.05), "Dann siehst du pro Plattform, wie nah du an der Grenze bist. Gelb heißt: fast erreicht. Rot heißt: erreicht, so wie hier bei Etsy. Und in jeder Karte siehst du auch deinen Gewinn.", START[4]),
             (at(4, -0.10), "SellCheck. Check, was wirklich bleibt. Für mehr Infos unten klicken.", DUR - 0.05),
         ]
     if variant == "V6":
@@ -1153,16 +1260,10 @@ def build_audio(variant, path, with_voice=False, voice_files=None):
         pop(at(2, 0.18), 720)
 
     if variant == "V8":
-        pop(at(1, 0.0), 420)
-        for st in (1.05, 1.7, 2.3):
-            pop(at(1, st), 560)
-        tick(at(2, V8_T["tap_up"]), 1500)
-        ding(at(2, V8_T["landed"] + 0.15), 784.0)
-        for i in range(4):
-            tick(at(3, 0.6 - 1.4 + 1.4 + i * 0.28), 1100 + i * 120)
-        tick(at(3, V8_T["tap_vinted"]), 1500)
-        tick(at(3, V8_T["tap_gewinn"]), 1500)
-        ding(at(3, V8_T["tap_gewinn"] + 0.5), 659.25)
+        for key, sc_ in (("tap_up", 2), ("tap_go", 2), ("tap_gelb", 3), ("tap_rot", 3)):
+            tick(at(sc_, V8_T[key]), 1500)
+        ding(at(2, V8_T["tap_up"] + 0.5), 784.0)
+        ding(at(3, V8_T["hl_gewinn"] + 0.2), 659.25)
     elif variant == "V6":
         for i, qs in enumerate(V6_QSTART):
             pop(at(2, qs + 0.05), 480 + i * 90)
@@ -1243,7 +1344,8 @@ def build_v8_words():
         dur = len(load_clip(f, "v8w")) / SR
         prev_end = t0 + dur
         toks = text.split()
-        weights = [len(w.strip(".,?!:")) + 1.5 for w in toks]
+        # Satzzeichen bringen kurze Sprechpausen mit, das verbessert den Gleichlauf der Untertitel
+        weights = [len(w.strip(".,?!:")) + 1.5 + (8.0 if w[-1] in ".?!:" else 3.5 if w.endswith(",") else 0.0) for w in toks]
         tot, tcur = sum(weights), t0
         for w, wt in zip(toks, weights):
             d = dur * wt / tot
