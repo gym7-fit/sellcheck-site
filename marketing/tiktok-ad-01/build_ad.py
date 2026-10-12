@@ -1251,11 +1251,16 @@ def v9_header(L, status):
     """iPhone-SE-Proportionen: Statusleiste 20 pt, Navigationsleiste 44 pt (2,88 px je pt)."""
     L.d.rectangle([0, 0, W * S, 188 * S], fill=CH_HEAD + (255,))
     L.d.rectangle([0, 188 * S, W * S, 190 * S], fill=(218, 218, 218, 255))
-    hn_text(L, 540, 28, "9:41", 38, (0, 0, 0), True, anchor="mm")
-    for i, hgt in enumerate((14, 22, 30, 38)):   # Mobilfunk-Balken links
-        L.rrect(36 + i * 14, 46 - hgt, 36 + i * 14 + 8, 46, 2, fill=(0, 0, 0, 255))
-    L.rrect(960, 12, 1036, 44, 9, outline=(0, 0, 0, 255), width=3)                    # Akku
-    L.rrect(965, 17, 1020, 39, 5, fill=(0, 0, 0, 255))
+    hn_text(L, 44, 30, "9:41", 40, (0, 0, 0), True, anchor="lm")                        # Uhrzeit links
+    for i, hgt in enumerate((14, 22, 30, 38)):                                         # Mobilfunk-Balken
+        L.rrect(768 + i * 14, 46 - hgt, 768 + i * 14 + 8, 46, 2, fill=(0, 0, 0, 255))
+    wx, wy = 880, 42                                                                  # WLAN-Symbol links neben dem Akku
+    L.circle(wx, wy - 2, 4.5, (0, 0, 0, 255))
+    for rr in (13, 22, 31):
+        L.d.arc([(wx - rr) * S, (wy - 2 - rr) * S, (wx + rr) * S, (wy - 2 + rr) * S], 228, 312, fill=(0, 0, 0, 255), width=int(5 * S))
+    L.rrect(930, 12, 1006, 44, 9, outline=(0, 0, 0, 255), width=3)                    # Akku
+    L.rrect(935, 17, 990, 39, 5, fill=(0, 0, 0, 255))
+    L.rrect(1010, 22, 1017, 34, 3, fill=(0, 0, 0, 255))
     # Navigationsleiste
     L.line([(48, 92), (26, 126), (48, 160)], CH_GREEN + (255,), 8)
     v9_memoji(L, 132, 126, 46)
