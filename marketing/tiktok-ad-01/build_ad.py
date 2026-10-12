@@ -108,7 +108,7 @@ elif VAR == "V3":
     SLOW = {k: TARGET[k] / BASE[k] for k in KEYS}
 elif VAR == "V9":
     KEYS = (1, 2, 3, 4)
-    BASE = {1: round(V9S["end1"], 2), 2: 11.8, 3: round(V9S["end3"], 2), 4: 5.0}  # Chat 1, Webseite, Chat 2, Endkarte (Sekunden, SLOW = 1)
+    BASE = {1: round(V9S["end1"], 2), 2: 13.8, 3: round(V9S["end3"], 2), 4: 5.0}  # Chat 1, Webseite, Chat 2, Endkarte (Sekunden, SLOW = 1)
     TARGET = dict(BASE)
     SLOW = {k: 1.0 for k in KEYS}
 elif VAR == "V8":
@@ -1093,8 +1093,8 @@ V9_CHAT2 = [
 V9_T = {"tap_link": V9S["tap_link"], "link_y": 640,
         "scroll0": 0.4, "scroll1": 5.0, "banner_in": 1.3, "banner_out": 4.9,
         "up_tap": 5.2, "sheet_in": 5.55, "file_tap": 6.5, "sheet_out": 6.85,
-        "go_scroll": 7.2, "go_tap": 8.4, "res_switch": 8.8,
-        "res_scroll1": 9.2, "res_scroll2": 10.1, "res_hl": 10.7}
+        "go_scroll": 7.0, "go_dur": 2.0, "go_tap": 9.15, "res_switch": 9.55,
+        "res_scroll1": 9.75, "res_dur": 3.0, "res_hl": 12.9}
 V9_BANNER = V9_TEXTS["tim_long"]
 
 
@@ -1492,16 +1492,15 @@ def scene_v9_site(L, t):
             v9_top_window(tmp, Y)
             v8_tap(tmp, t, tw["up_tap"], 540, V8_S3["drop"] + V8_S3["drop_h"] / 2 + (350 - 6300))
         else:
-            y = v8_ease(6300.0, 9330, t, tw["go_scroll"], tw["go_scroll"] + 1.2)
+            y = v9_smooth(6300.0, 9330, t, tw["go_scroll"], tw["go_scroll"] + tw["go_dur"])
             ui_window(tmp, "v8_step3_geladen.jpg", "header_step3.jpg", y)
             v8_tap(tmp, t, tw["go_tap"], 310, V8_S3["go"] + 80 + (350 - 9330))
         row_y = v9_picker(tmp, t, tw["sheet_in"], tw["sheet_out"], tw["file_tap"])
         if row_y:
             v8_tap(tmp, t, tw["file_tap"], 460, row_y)
     else:
-        y = 960.0
-        y = v8_ease(y, V8_S5["vinted"] - 40, t, tw["res_scroll1"], tw["res_scroll1"] + 1.2)
-        y = v8_ease(y, V8_S5["etsy"] - 120, t, tw["res_scroll2"], tw["res_scroll2"] + 1.4)
+        # ein langer, gleichmäßiger Scroll von den Summen bis zur Etsy-Karte (statt zwei schneller Wischer)
+        y = v9_smooth(1500.0, V8_S5["etsy"] - 120, t, tw["res_scroll1"], tw["res_scroll1"] + tw["res_dur"])
         ui_window(tmp, "v8_step5.jpg", "header_step5.jpg", y)
         off = 350 - y
         v8_highlight(tmp, 150, V8_S5["etsy"] + 470 + off, 705, V8_S5["etsy"] + 535 + off, t, tw["res_hl"])
