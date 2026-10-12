@@ -208,7 +208,7 @@ def platform_list(L, t, y0, start, step=0.2, pitch=122):
         p = prog(t, start + i * step, 0.3)
         if p <= 0:
             continue
-        cx, cy = 510, y0 + i * pitch
+        cx, cy = 540, y0 + i * pitch
         sc = 0.85 + 0.15 * ease_back(p)
         a = 255 * clamp(p * 3)
         pill(L, cx, cy, 700 * sc, 104 * sc, col(INK2, a), col((60, 68, 80), a))
@@ -281,7 +281,7 @@ def money(v):
 def scene_demo(L, t):
     # Titelzeile je nach Beat (Basiszeit)
     caps = ("Datei rein.", "Grenzen im Blick.", "Das bleibt dir.") if V2LIKE else ("Datei rein.", "Ampel an.", "Report raus.")
-    sz = [100 if len(c) <= 12 else 80 for c in caps]
+    sz = [88] * 3 if V2LIKE else [100 if len(c) <= 12 else 80 for c in caps]
     if t < CAP2_T:
         pop_text(L, 540, 400, caps[0], sz[0], "heavy", PAPER, t, 0.0)
     elif t < S3_B:
@@ -299,24 +299,25 @@ def scene_demo(L, t):
     if zone_a > 0:
         a = 255 * zone_a
         landed = t >= 0.85
-        z0, z1 = 110, 910
-        L.rrect(z0, 520, z1, 1080, 44, fill=col(INK2, a), outline=col(LIME if landed else (74, 82, 94), a), width=4)
+        s_ = 45 if V2LIKE else 0  # Ablagefläche höher, Inhalt mittig darin
+        z0, z1 = 130, 950
+        L.rrect(z0, 520, z1, 1080 + 2 * s_, 44, fill=col(INK2, a), outline=col(LIME if landed else (74, 82, 94), a), width=4)
         # Pfeil nach oben und Hinweis
-        L.line([(510, 640), (510, 590)], col(MUTED, a), 8)
-        L.line([(486, 612), (510, 588), (534, 612)], col(MUTED, a), 8)
-        L.text(510, 700, "CSV hier ablegen", 40, "medium", col(MUTED, a), "mm")
+        L.line([(540, 640 + s_), (540, 590 + s_)], col(MUTED, a), 8)
+        L.line([(516, 612 + s_), (540, 588 + s_), (564, 612 + s_)], col(MUTED, a), 8)
+        L.text(540, 700 + s_, "CSV hier ablegen", 40, "medium", col(MUTED, a), "mm")
         fp = prog(t, 0.1, 0.7)
         if fp > 0:
-            fy = 380 + ease_out(fp) * (860 - 380)
+            fy = 380 + ease_out(fp) * (860 + 3 * s_ // 2 - 380)
             sc = 1.0 + (0.06 * math.sin(clamp((t - 0.8) / 0.25) * math.pi) if t >= 0.8 else 0.0)
-            pill(L, 510, fy, 640 * sc, 104 * sc, col(PAPER, a))
+            pill(L, 540, fy, 640 * sc, 104 * sc, col(PAPER, a))
             # kleines Dokument-Symbol
-            L.rrect(510 - 290 * sc, fy - 26 * sc, 510 - 252 * sc, fy + 26 * sc, 6, fill=col(INK, a))
-            L.text(510 - 230 * sc, fy, "eBay_Transaktionen.csv", 34 * sc, "bold", col(INK, a), "lm")
+            L.rrect(540 - 290 * sc, fy - 26 * sc, 540 - 252 * sc, fy + 26 * sc, 6, fill=col(INK, a))
+            L.text(540 - 230 * sc, fy, "eBay_Transaktionen.csv", 34 * sc, "bold", col(INK, a), "lm")
         if landed:
             lp = prog(t, 0.9, 0.3)
-            check_circle(L, 510 - 130, 990, 24 * (0.6 + 0.4 * ease_back(lp)))
-            L.text(510 - 90, 990, "Datei gelesen", 40, "heavy", col(PAPER, a * clamp(lp * 3)), "lm")
+            check_circle(L, 540 - 130, 990 + 2 * s_, 24 * (0.6 + 0.4 * ease_back(lp)))
+            L.text(540 - 90, 990 + 2 * s_, "Datei gelesen", 40, "heavy", col(PAPER, a * clamp(lp * 3)), "lm")
 
     # Beat a2: Karte mit Ampel
     slide_out = ease_out(prog(t, S3_B - 0.05, 0.45))
@@ -324,7 +325,7 @@ def scene_demo(L, t):
     if slide_out < 1.0 and card_p > 0:
         ox = -1100 * slide_out
         oy = (1 - card_p) * 700
-        x0, y0, x1, y1 = 80 + ox, 500 + oy, 940 + ox, 1420 + oy
+        x0, y0, x1, y1 = 130 + ox, 500 + oy, 950 + ox, 1420 + oy
         red_t = 4.15 + DEMO_SHIFT
         flash = t >= red_t and t < red_t + 0.8 and (t % 0.5) < 0.3
         L.rrect(x0, y0, x1, y1, 44, fill=col(PAPER), outline=col(RED) if flash else None, width=6)
@@ -407,7 +408,7 @@ def scene_benefits(L, t):
 def scene_cta(L, t):
     p = prog(t, 0.0, 0.5)
     sc = 0.75 + 0.25 * ease_back(p)
-    h = 170 * sc
+    h = (145 if V2LIKE else 170) * sc
     w, _ = LOGO.lockup_size(h * S)
     # Logo wird mit Alpha eingeblendet: auf eigener Ebene zeichnen und zusammenführen
     tmp = Image.new("RGBA", L.im.size, (0, 0, 0, 0))
