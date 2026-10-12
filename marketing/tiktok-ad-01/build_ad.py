@@ -45,7 +45,7 @@ elif VAR == "V3":
     SLOW = {k: TARGET[k] / BASE[k] for k in KEYS}
 elif VAR == "V8":
     KEYS = (1, 2, 3, 4, 5)
-    BASE = {1: 9.3, 2: 5.6, 3: 10.3, 4: 8.7, 5: 5.8}  # Meldegrenze, Upload, Ergebnis, Steuer-Übersicht, Endkarte (Sekunden, SLOW = 1; Clips 9,2 / 5,4 / 10,0 / 8,6 / 5,3 s)
+    BASE = {1: 9.05, 2: 5.6, 3: 10.3, 4: 8.7, 5: 5.8}  # Meldegrenze, Upload, Ergebnis, Steuer-Übersicht, Endkarte (Sekunden, SLOW = 1; Clips 8,9 / 5,4 / 10,0 / 8,6 / 5,3 s)
     TARGET = dict(BASE)
     SLOW = {k: 1.0 for k in KEYS}
 elif VAR == "V6":
@@ -102,7 +102,7 @@ P7_T = (0.5, 2.07, 0.79, 1.07, 2.71, 3.04)  # Reseller-Gewinnszene (Basiszeit): 
 if VAR == "V7":
     S3_B, CAP2_T = 5.5, 1.55
 CTA_T = (0.75, 1.4) if VAR == "V8" else (0.75, 2.6)
-V8_T = {"s1_end": 9.0, "hl": 4.0, "tap_up": 2.3, "go_scroll": 3.9, "tap_go": 5.0,
+V8_T = {"s1_end": 9.0, "hl": 5.7, "tap_up": 2.3, "go_scroll": 3.9, "tap_go": 5.0,
         "r_scroll1": 0.4, "tap_gelb": 3.4, "r_scroll2": 4.4, "tap_rot": 6.9, "hl_gewinn": 8.9,
         "rep_hl1": 1.6, "rep_scroll": 3.5, "rep_hl2": 4.9}  # V8 (UGC-Stil): Ereigniszeiten je Szene
 if VAR == "V8":
@@ -1045,7 +1045,7 @@ VO_RATE = os.environ.get("AD_VOICE_RATE", "165")    # Wörter pro Minute
 def vo_lines(variant):
     if variant == "V8":
         return [
-            (at(1, 0.05), "Wenn du auf Vinted, eBay oder Kleinanzeigen verkaufst: Ab einer bestimmten Grenze melden die Plattformen deine Verkäufe an die Steuerbehörde. Ich zeig dir kurz, wo du stehst.", START[2]),
+            (at(1, 0.05), "Wusstest du, dass Vinted, eBay und Kleinanzeigen deine Verkäufe an die Steuerbehörde melden, sobald du eine bestimmte Grenze erreichst? Ich zeig dir kurz, wo du stehst.", START[2]),
             (at(2, 0.05), "Dafür lädst du einfach die Export-Datei mit deinen Verkäufen hoch. Die kannst du dir bei der Plattform herunterladen.", START[3]),
             (at(3, 0.05), "Dann siehst du pro Plattform, wie nah du an der Grenze bist. Gelb heißt: fast erreicht. Rot heißt: erreicht, so wie hier bei Etsy. Und in jeder Karte siehst du auch deinen Gewinn.", START[4]),
             (at(4, 0.05), "Und daraus macht SellCheck dir die Übersicht für deine Steuererklärung, oder für deinen Steuerberater. Kostenlos mit Konto, und deine Daten bleiben in deinem Browser.", START[5]),
