@@ -965,7 +965,7 @@ V8_R = {"sub": (612, 742), "gewinn": (3050, 3235)}  # Zeilen in der Report-Aufna
 
 def scene_v8_s4(L, t):
     """Steuer-Report: Ausfüllhilfe für die Anlage EÜR, Marker auf der Überschrift, dann auf dem Gewinn."""
-    y = v8_ease(0, 2250, t, V8_T["rep_scroll"], V8_T["rep_scroll"] + 1.2)
+    y = v8_ease(268, 2250, t, V8_T["rep_scroll"], V8_T["rep_scroll"] + 1.2)  # Aufnahme beginnt selbst mit der Leiste (268 px), daher erst darunter
     ui_window(L, "v8_report.jpg", "header_report.jpg", y, hdr_h=268)
     off = 268 - y
     a0, a1 = V8_R["sub"]
