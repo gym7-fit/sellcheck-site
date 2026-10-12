@@ -1251,20 +1251,26 @@ def v9_glass(L, x0, y0, x1, y1, radius, tint=(250, 250, 252), alpha=150):
     L.im.paste(reg, (cx0, cy0), m)
 
 
+def v9_statusbar(L, ink):
+    """iPhone-Statusleiste: Uhrzeit links, Mobilfunk, WLAN links neben dem Akku."""
+    ink4 = tuple(ink) + (255,)
+    hn_text(L, 44, 30, "9:41", 40, ink, True, anchor="lm")                        # Uhrzeit links
+    for i, hgt in enumerate((14, 22, 30, 38)):                                         # Mobilfunk-Balken
+        L.rrect(768 + i * 14, 46 - hgt, 768 + i * 14 + 8, 46, 2, fill=ink4)
+    wx, wy = 880, 42                                                                  # WLAN-Symbol links neben dem Akku
+    L.circle(wx, wy - 2, 4.5, ink4)
+    for rr in (13, 22, 31):
+        L.d.arc([(wx - rr) * S, (wy - 2 - rr) * S, (wx + rr) * S, (wy - 2 + rr) * S], 228, 312, fill=ink4, width=int(5 * S))
+    L.rrect(930, 12, 1006, 44, 9, outline=ink4, width=3)                    # Akku
+    L.rrect(935, 17, 990, 39, 5, fill=ink4)
+    L.rrect(1010, 22, 1017, 34, 3, fill=ink4)
+
+
 def v9_header(L, status):
     """iPhone-SE-Proportionen: Statusleiste 20 pt, Navigationsleiste 44 pt (2,88 px je pt)."""
     L.d.rectangle([0, 0, W * S, 188 * S], fill=CH_HEAD + (255,))
     L.d.rectangle([0, 188 * S, W * S, 190 * S], fill=(218, 218, 218, 255))
-    hn_text(L, 44, 30, "9:41", 40, (0, 0, 0), True, anchor="lm")                        # Uhrzeit links
-    for i, hgt in enumerate((14, 22, 30, 38)):                                         # Mobilfunk-Balken
-        L.rrect(768 + i * 14, 46 - hgt, 768 + i * 14 + 8, 46, 2, fill=(0, 0, 0, 255))
-    wx, wy = 880, 42                                                                  # WLAN-Symbol links neben dem Akku
-    L.circle(wx, wy - 2, 4.5, (0, 0, 0, 255))
-    for rr in (13, 22, 31):
-        L.d.arc([(wx - rr) * S, (wy - 2 - rr) * S, (wx + rr) * S, (wy - 2 + rr) * S], 228, 312, fill=(0, 0, 0, 255), width=int(5 * S))
-    L.rrect(930, 12, 1006, 44, 9, outline=(0, 0, 0, 255), width=3)                    # Akku
-    L.rrect(935, 17, 990, 39, 5, fill=(0, 0, 0, 255))
-    L.rrect(1010, 22, 1017, 34, 3, fill=(0, 0, 0, 255))
+    v9_statusbar(L, (0, 0, 0))
     # Navigationsleiste
     L.line([(48, 92), (26, 126), (48, 160)], CH_GREEN + (255,), 8)
     v9_memoji(L, 132, 126, 46)
@@ -1409,11 +1415,16 @@ V9_FILES = [
 ]
 
 
+V9_SB = 56  # Höhe des dunklen Statusstreifens über der Seite (px)
+
+
+def v9_sheet_progress(t, pin, pout):
+    return ease_out(prog(t, pin, 0.45)) - ease_out(prog(t, pout, 0.38))
+
+
 def v9_picker(L, t, pin, pout, file_tap):
     """Dateiauswahl des iPhones: Blatt fährt von unten herein, oben dunkles Abblenden der Seite dahinter."""
-    prog_in = ease_out(prog(t, pin, 0.45))
-    prog_out = ease_out(prog(t, pout, 0.38))
-    sp = prog_in - prog_out
+    sp = v9_sheet_progress(t, pin, pout)
     if sp <= 0.001:
         return
     top = 170 + (1 - sp) * (H - 170)
@@ -1441,7 +1452,7 @@ def v9_picker(L, t, pin, pout, file_tap):
         if i < len(V9_FILES) - 1:
             L.d.rectangle([168 * S, (ry + 149) * S, (W - 24) * S, (ry + 151) * S], fill=(220, 220, 226, 255))
     # Tab-Leiste unten (fährt mit dem Blatt)
-    tb = H - 150 + (top - 170)
+    tb = H - V9_SB - 150 + (top - 170)
     L.d.rectangle([0, tb * S, W * S, (tb + 400) * S], fill=(249, 249, 249, 255))
     L.d.rectangle([0, tb * S, W * S, (tb + 2) * S], fill=(200, 200, 205, 255))
     L.d.ellipse([(270 - 26) * S, (tb + 38 - 26) * S, (270 + 26) * S, (tb + 38 + 26) * S], outline=(0, 122, 255, 255), width=int(5 * S))
@@ -1478,8 +1489,20 @@ def scene_v9_site(L, t):
         ui_window(tmp, "v8_step5.jpg", "header_step5.jpg", y)
         off = 350 - y
         v8_highlight(tmp, 150, V8_S5["etsy"] + 470 + off, 705, V8_S5["etsy"] + 535 + off, t, tw["res_hl"])
+    # Statusstreifen (Farbe der Kopfleiste) über der Seite, Seite um V9_SB nach unten geschoben
+    page = Layer()
+    page.d.rectangle([0, 0, W * S, V9_SB * S], fill=(32, 35, 40, 255))
+    page.im.paste(tmp.im, (0, V9_SB * S))
+    sp = v9_sheet_progress(t, tw["sheet_in"], tw["sheet_out"]) if t < tw["res_switch"] else 0.0
+    if sp > 0.001:
+        v8_blend(page, Image.new("RGBA", (int(W * S), int(V9_SB * S)), (0, 0, 0, int(105 * sp))), 0, 0)
+    v9_statusbar(page, (255, 255, 255))
+    tmp = page
     p = ease_out(prog(t, 0.0, 0.45))
-    L.d.rectangle([0, 0, W * S, H * S], fill=CH_BG + (255,))
+    if p < 1:
+        scene_v9_chat1(L, V9S["end1"])   # Chat bleibt beim Einblenden der Seite dahinter sichtbar
+    else:
+        L.d.rectangle([0, 0, W * S, H * S], fill=CH_BG + (255,))
     L.im.paste(tmp.im, (0, int((1 - p) * H * S)))
     # Mitteilungsbanner wie auf dem iPhone (iOS 17): Milchglas, große Rundung, Kontaktfoto mit App-Symbol, Name, Text
     b0, b1 = tw["banner_in"], tw["banner_out"]
