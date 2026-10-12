@@ -29,10 +29,10 @@ import sellcheck_logo as LOGO  # echtes SellCheck-Logo (Variante 6B)
 
 W, H, FPS, S = 1080, 1920, 30, 2          # S = Supersampling-Faktor
 # Variante: A und B (Hook-Tests der ersten Ad), V2 = "Frist"-Version (Überblick, Ende Januar, Nutzen, Handlung)
-VAR = sys.argv[1].upper() if len(sys.argv) > 1 and sys.argv[1].upper() in ("A", "B", "V2", "V3", "V7") else os.environ.get("AD_VARIANT", "A")
+VAR = sys.argv[1].upper() if len(sys.argv) > 1 and sys.argv[1].upper() in ("A", "B", "V2", "V3", "V6", "V7") else os.environ.get("AD_VARIANT", "A")
 os.environ["AD_VARIANT"] = VAR  # damit Worker-Prozesse dieselbe Variante nutzen
 # Dauer je Szene = Basiszeit der Animation x Streckung
-V2LIKE = VAR in ("V2", "V3", "V7")
+V2LIKE = VAR in ("V2", "V3", "V6", "V7")
 if VAR == "V2":
     KEYS = (1, 2, 3, 4)
     BASE = {1: 2.4, 2: 4.0, 3: 7.9, 4: 3.4}
@@ -43,6 +43,11 @@ elif VAR == "V3":
     BASE = {1: 2.4, 2: 4.0, 3: 7.9, 4: 3.4}
     TARGET = {1: 2.6, 2: 8.2, 3: 8.1, 4: 4.1}  # nach Messung der Sprechzeiten (Clips 2,4 / 8,0 / 8,0 / 3,9 s)
     SLOW = {k: TARGET[k] / BASE[k] for k in KEYS}
+elif VAR == "V6":
+    KEYS = (1, 2, 3, 4)
+    BASE = {1: 3.4, 2: 10.0, 3: 6.2, 4: 4.2}
+    TARGET = dict(BASE)  # Szenenzeiten in Sekunden, nach den Sprachclips anzupassen
+    SLOW = {k: 1.0 for k in KEYS}
 elif VAR == "V7":
     KEYS = (1, 2, 3, 4)
     BASE = {1: 2.4, 2: 4.0, 3: 7.9, 4: 3.4}
@@ -425,7 +430,7 @@ def scene_cta(L, t):
         ax, ay = 540 + ax_off, ly
         L.line([(ax, ay - 14), (ax, ay + 16)], col(INK, 255 * clamp(pp * 3)), 8)
         L.line([(ax - 14, ay + 3), (ax, ay + 18), (ax + 14, ay + 3)], col(INK, 255 * clamp(pp * 3)), 8)
-    if VAR in ("V3", "V7"):
+    if VAR in ("V3", "V6", "V7"):
         pop_text(L, 540, 1290, "Unabhängig von den genannten Plattformen.", 28, "medium", MUTED, t, 1.6, dur=0.3)
         pop_text(L, 540, 1330, "Orientierung, keine Steuer- oder Rechtsberatung.", 28, "medium", MUTED, t, 1.7, dur=0.3)
     else:
@@ -522,14 +527,142 @@ def scene_v2_deadline(L, t):
     pop_text(L, 540, 1342, "Steuern zahlen.", 42, "heavy", PAPER, t, FRIST_T[3])
 
 
+# ---- V6 "Drei Fragen" (dunkles Design wie V2/V3/V7)
+V6_TOPS_Q = (430, 770, 1110)
+V6_TOPS_A = (500, 810, 1120)
+V6_QSTART = (0.2, 3.5, 6.8)
+V6_FLIP = (2.6, 3.4, 4.2)
+V6_QUESTIONS = (("Wie viele Verkäufe", "hattest du dieses Jahr?"),
+                ("Wie viel Umsatz davon", "auf welcher Plattform?"),
+                ("Und was davon ist", "wirklich Gewinn?"))
+V6_CHIPS = (("Vinted", (9, 177, 186), 345, 1050), ("eBay", (54, 101, 243), 700, 1050), ("Kleinanzeigen", (134, 184, 23), 540, 1185))
+
+
+def v6_mix(a, b, k):
+    return tuple(int(a[i] + (b[i] - a[i]) * k) for i in range(3))
+
+
+def v6_question_face(L, i, x0, y0, x1, y1, k_active):
+    """k_active 1 = Karte aktiv (Lime), 0 = ruhig (dunkel)."""
+    cy = (y0 + y1) / 2
+    fg = v6_mix(PAPER, INK, k_active)
+    L.circle(x0 + 72, cy, 44, col(v6_mix(LIME, INK, k_active)))
+    L.text(x0 + 72, cy + 2, str(i + 1), 56, "heavy", col(v6_mix(INK, LIME, k_active)), "mm")
+    lines = V6_QUESTIONS[i]
+    size = 58
+    while max(L.width(s, size, "heavy") for s in lines) > 600 and size > 30:
+        size -= 1
+    ty = cy - size * 0.62
+    for j, s in enumerate(lines):
+        L.text(x0 + 140, ty + j * size * 1.22, s, size, "heavy", col(fg), "lt")
+    L.text(x1 - 46, cy + 4, "?", 120, "heavy", col(v6_mix(LIME, INK, k_active)), "mm")
+
+
+def scene_v6_hook(L, t):
+    base = 760
+    p = prog(t, 0.0, 0.45)
+    if p > 0:
+        sc = 0.7 + 0.3 * ease_back(p)
+        a = 255 * clamp(p * 3)
+        w3 = L.width("3", 250 * sc, "heavy") + 26
+        wf = L.width("Fragen", 190 * sc, "heavy")
+        x = 540 - (w3 + wf) / 2
+        L.text(x, base, "3", 250 * sc, "heavy", col(LIME, a), "ls")
+        L.text(x + w3, base, "Fragen", 190 * sc, "heavy", col(PAPER, a), "ls")
+    pop_text(L, 540, 880, "an alle, die auf", 56, "medium", MUTED, t, 0.75)
+    for k, (name, dot, cx, cy) in enumerate(V6_CHIPS):
+        p = prog(t, 1.0 + k * 0.15, 0.3)
+        if p <= 0:
+            continue
+        sc = 0.8 + 0.2 * ease_back(p)
+        a = 255 * clamp(p * 3)
+        w = (L.width(name, 46, "bold") + 110) * sc
+        pill(L, cx, cy, w, 96 * sc, col(INK2, a), col((60, 68, 80), a))
+        L.circle(cx - w / 2 + 44 * sc, cy, 15 * sc, col(dot, a))
+        L.text(cx - w / 2 + 76 * sc, cy, name, 46 * sc, "bold", col(PAPER, a), "lm")
+    pop_text(L, 540, 1345, "verkaufen.", 56, "medium", MUTED, t, 1.8)
+
+
+def scene_v6_questions(L, t):
+    for i in range(3):
+        st = V6_QSTART[i]
+        p = prog(t, st, 0.5)
+        if p <= 0:
+            continue
+        top = V6_TOPS_Q[i]
+        ox = (1 - ease_back(p)) * 900
+        x0, x1 = 100 + ox, 980 + ox
+        nxt = V6_QSTART[i + 1] if i < 2 else 99
+        k = 1.0 - prog(t, nxt, 0.3) if i < 2 else 1.0
+        fill = v6_mix(INK2, LIME, k)
+        L.rrect(x0, top, x1, top + 290, 44, fill=col(fill), outline=col(v6_mix((60, 68, 80), LIME, k)), width=4)
+        v6_question_face(L, i, x0, top, x1, top + 290, k)
+
+
+def v6_answer_face(L, i, x0, y0, x1, y1, t, tstart):
+    cy = (y0 + y1) / 2
+    check_circle(L, x0 + 72, cy, 44, bg=GREEN, fg=WHITE)
+    k = ease_out(prog(t, tstart + 0.3, 0.7))
+    if i == 0:
+        L.text(x0 + 140, y0 + 62, "Verkäufe dieses Jahr", 36, "medium", col(DARKMUTED), "lm")
+        L.text(x0 + 140, cy + 40, str(int(round(47 * k))), 150, "heavy", col(INK), "lm")
+    elif i == 1:
+        rows = [("Vinted", 27, 30, "27 / 30 Verkäufe", DOT["Vinted"]), ("eBay", 1850, 2000, "1.850 / 2.000 €", DOT["eBay"])]
+        for r, (name, v, lim, label, dot) in enumerate(rows):
+            ry = y0 + 84 + r * 100
+            L.circle(x0 + 152, ry, 13, col(dot))
+            L.text(x0 + 178, ry, name, 38, "bold", col(INK), "lm")
+            L.text(x1 - 44, ry, label, 32, "medium", col(DARKMUTED), "rm")
+            bx0, bx1 = x0 + 140, x1 - 44
+            L.rrect(bx0, ry + 30, bx1, ry + 50, 10, fill=col(TRACK))
+            L.rrect(bx0, ry + 30, bx0 + (bx1 - bx0) * min(1, v / lim) * k, ry + 50, 10, fill=col(AMBER))
+    else:
+        L.text(x0 + 140, y0 + 62, "Gewinn nach Einkauf", 36, "medium", col(DARKMUTED), "lm")
+        val = f"{842.5 * k:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+        L.text(x0 + 140, cy + 40, val + " €", 112, "heavy", col(DEEPGREEN), "lm")
+
+
+def scene_v6_answers(L, t):
+    if t < 2.2:
+        pop_text(L, 540, 410, "Keine Ahnung?", 118, "heavy", PAPER, t, 0.0)
+    else:
+        wa = L.width("SellCheck ", 78, "heavy")
+        wb = L.width("antwortet.", 78, "heavy")
+        x0 = 540 - (wa + wb) / 2
+        p = prog(t, 2.2, 0.35)
+        sc = 0.75 + 0.25 * ease_back(p)
+        a = 255 * clamp(p * 3)
+        L.text(x0, 410, "SellCheck", 78 * sc, "heavy", col(LIME, a), "ls")
+        L.text(x0 + wa, 410, "antwortet.", 78 * sc, "heavy", col(PAPER, a), "ls")
+    for i in range(3):
+        top = V6_TOPS_A[i]
+        fp = prog(t, V6_FLIP[i], 0.4)
+        sx = abs(math.cos(math.pi * fp)) if 0 < fp < 1 else 1.0
+        ans = fp >= 0.5
+        cx = 540
+        hw = 440 * max(sx, 0.02)
+        if ans:
+            L.rrect(cx - hw, top, cx + hw, top + 290, 44, fill=col(PAPER))
+        else:
+            L.rrect(cx - hw, top, cx + hw, top + 290, 44, fill=col(INK2), outline=col((60, 68, 80)), width=4)
+        if sx > 0.6:
+            if ans:
+                v6_answer_face(L, i, cx - hw, top, cx + hw, top + 290, t, V6_FLIP[i])
+            else:
+                v6_question_face(L, i, cx - hw, top, cx + hw, top + 290, 0.0)
+    if t > V6_FLIP[2] + 0.5:
+        pop_text(L, 540, 1470, "Beispieldaten", 26, "medium", MUTED, t, V6_FLIP[2] + 0.5, dur=0.25)
+
+
 SCENES = {
+    "V6": [(1, scene_v6_hook), (2, scene_v6_questions), (3, scene_v6_answers)],
     "A": [(1, scene_hook_a), (2, scene_problem_a)],
     "B": [(1, scene_hook_b), (2, scene_problem_b)],
     "V2": [(1, scene_v2_hook), (2, scene_v2_deadline)],
     "V3": [(1, scene_v3_hook), (2, scene_v2_deadline)],
     "V7": [(1, scene_v7_hook), (2, scene_v7_profit)],
 }
-COMMON = [(3, scene_demo), (4, scene_cta)] if V2LIKE else [(3, scene_demo), (4, scene_benefits), (5, scene_cta)]
+COMMON = [(4, scene_cta)] if VAR == "V6" else [(3, scene_demo), (4, scene_cta)] if V2LIKE else [(3, scene_demo), (4, scene_benefits), (5, scene_cta)]
 
 
 # ------------------------------------------------------------------ Hintergrund & Frame
@@ -584,6 +717,13 @@ VO_RATE = os.environ.get("AD_VOICE_RATE", "165")    # Wörter pro Minute
 
 # Sprechertext je Variante: (absolute Startzeit, Text, spätestes Ende)
 def vo_lines(variant):
+    if variant == "V6":
+        return [
+            (at(1, 0.05), "Drei Fragen an alle, die auf Vinted, eBay oder Kleinanzeigen verkaufen.", START[2]),
+            (at(2, 0.05), "Eins: Wie viele Verkäufe hattest du dieses Jahr? Zwei: Wie viel Umsatz davon auf welcher Plattform? Drei: Und was davon ist WIRKLICH Gewinn?", START[3]),
+            (at(3, 0.05), "Keine Ahnung? Dann bist du nicht allein. SellCheck beantwortet dir alle drei.", START[4]),
+            (at(4, -0.10), "SellCheck. Jetzt GRATIS testen. Einfach unten antippen.", DUR - 0.05),
+        ]
     if variant == "V7":
         return [
             (at(1, 0.05), "[curious] Du bist Reseller, oder willst wissen, was du WIRKLICH verdienst?", START[2]),
@@ -792,7 +932,8 @@ def build_audio(variant, path, with_voice=False, voice_files=None):
 
     for k in KEYS[1:]:
         swipe(START[k] - 0.12)
-    swipe(at(3, S3_B) - 0.1)
+    if variant != "V6":
+        swipe(at(3, S3_B) - 0.1)
 
     if variant == "A":
         for base in (0.9, 1.25, 1.6):
@@ -827,16 +968,22 @@ def build_audio(variant, path, with_voice=False, voice_files=None):
         pop(at(2, 0.0), 640)
         pop(at(2, 0.18), 720)
 
-    add(sfx, at(3, 0.8), tone(180, 0.18, "sine", 8.0, 60), 0.5)    # Datei landet
-    ding(at(3, 0.95), 784.0)                                           # "Datei gelesen"
-    for i in range(4):
-        tick(at(3, 2.0 + DEMO_SHIFT + i * 0.28 + 0.15), 1100 + i * 120)
-    blip_down(at(3, 4.15 + DEMO_SHIFT))
-    ding(at(3, S3_B + 1.6), 659.25)                                 # Summe ist oben angekommen
-    if variant not in ("V2", "V3", "V7"):
+    if variant == "V6":
+        for i, qs in enumerate(V6_QSTART):
+            pop(at(2, qs + 0.05), 480 + i * 90)
+        for i, ft in enumerate(V6_FLIP):
+            ding(at(3, ft + 0.4), (523.25, 659.25, 783.99)[i])
+    else:
+        add(sfx, at(3, 0.8), tone(180, 0.18, "sine", 8.0, 60), 0.5)    # Datei landet
+        ding(at(3, 0.95), 784.0)                                           # "Datei gelesen"
+        for i in range(4):
+            tick(at(3, 2.0 + DEMO_SHIFT + i * 0.28 + 0.15), 1100 + i * 120)
+        blip_down(at(3, 4.15 + DEMO_SHIFT))
+        ding(at(3, S3_B + 1.6), 659.25)                                 # Summe ist oben angekommen
+    if variant not in ("V2", "V3", "V6", "V7"):
         for i, f in enumerate((523.25, 659.25, 783.99)):
             ding(at(4, 0.35 + i * 0.4), f)
-    cta = 4 if variant in ("V2", "V3", "V7") else 5
+    cta = 4 if variant in ("V2", "V3", "V6", "V7") else 5
     for j, f in enumerate((523.25, 659.25, 783.99, 1046.5)):
         ding(at(cta, 0.9) + j * 0.1, f)
 
@@ -903,7 +1050,7 @@ def main():
         print("Testframes gerendert")
         return
     if only == "voice":
-        folder = sys.argv[3] if len(sys.argv) > 3 else os.environ.get("AD_VOICE_DIR", os.path.join(HERE, {"V2": "voice_v2", "V3": "voice_v3", "V7": "voice_v7"}.get(variant, "voice")))
+        folder = sys.argv[3] if len(sys.argv) > 3 else os.environ.get("AD_VOICE_DIR", os.path.join(HERE, {"V2": "voice_v2", "V3": "voice_v3", "V6": "voice_v6", "V7": "voice_v7"}.get(variant, "voice")))
         files = find_voice_files(folder)
         missing = [i + 1 for i, f in enumerate(files) if not f]
         if len(missing) == len(files):
