@@ -626,14 +626,15 @@ def scene_v6_answers(L, t):
     if t < 2.2:
         pop_text(L, 540, 410, "Keine Ahnung?", 118, "heavy", PAPER, t, 0.0)
     else:
-        wa = L.width("SellCheck ", 78, "heavy")
-        wb = L.width("antwortet.", 78, "heavy")
+        wa = L.width("SellCheck ", 70, "heavy")
+        wb = L.width("beantwortet", 70, "heavy")
         x0 = 540 - (wa + wb) / 2
         p = prog(t, 2.2, 0.35)
         sc = 0.75 + 0.25 * ease_back(p)
         a = 255 * clamp(p * 3)
-        L.text(x0, 410, "SellCheck", 78 * sc, "heavy", col(LIME, a), "ls")
-        L.text(x0 + wa, 410, "antwortet.", 78 * sc, "heavy", col(PAPER, a), "ls")
+        L.text(x0, 380, "SellCheck", 70 * sc, "heavy", col(LIME, a), "ls")
+        L.text(x0 + wa, 380, "beantwortet", 70 * sc, "heavy", col(PAPER, a), "ls")
+        pop_text(L, 540, 462, "alle drei.", 70, "heavy", PAPER, t, 2.35)
     for i in range(3):
         top = V6_TOPS_A[i]
         fp = prog(t, V6_FLIP[i], 0.4)
@@ -645,7 +646,7 @@ def scene_v6_answers(L, t):
             L.rrect(cx - hw, top, cx + hw, top + 290, 44, fill=col(PAPER))
         else:
             L.rrect(cx - hw, top, cx + hw, top + 290, 44, fill=col(INK2), outline=col((60, 68, 80)), width=4)
-        if sx > 0.6:
+        if sx > 0.97:
             if ans:
                 v6_answer_face(L, i, cx - hw, top, cx + hw, top + 290, t, V6_FLIP[i])
             else:
