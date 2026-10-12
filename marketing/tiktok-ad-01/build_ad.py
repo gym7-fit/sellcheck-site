@@ -1200,6 +1200,8 @@ def v9_glass(L, x0, y0, x1, y1, radius, tint=(250, 250, 252), alpha=150):
     ImageDraw.Draw(sh).rounded_rectangle([pad, pad + int(10 * S), pad + X1 - X0, pad + Y1 - Y0 + int(10 * S)], radius=int(radius * S), fill=(0, 0, 0, 70))
     v8_blend(L, sh.filter(ImageFilter.GaussianBlur(int(16 * S))), X0 - pad, Y0 - pad)
     cx0, cy0, cx1, cy1 = max(0, X0), max(0, Y0), min(L.im.width, X1), min(L.im.height, Y1)
+    if cx1 <= cx0 or cy1 <= cy0:
+        return  # Banner liegt gerade außerhalb des Bildes
     reg = L.im.crop((cx0, cy0, cx1, cy1)).filter(ImageFilter.GaussianBlur(int(22 * S)))
     glass = Image.new("RGBA", reg.size, tint + (alpha,))
     reg = Image.alpha_composite(reg, glass)
