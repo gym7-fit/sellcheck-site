@@ -30,7 +30,7 @@ import sellcheck_logo as LOGO  # echtes SellCheck-Logo (Variante 6B)
 W, H, FPS, S = 1080, 1920, 30, 2          # S = Supersampling-Faktor
 
 
-def v9_type_times(text, t0, cps=10.5):
+def v9_type_times(text, t0, cps=13.0):
     """Zeitpunkte der Tastenanschläge beim 'Tippen' (mit leichten Schwankungen und Pausen bei Satzzeichen)."""
     rnd = random.Random(len(text) * 7 + 3)
     ts, t = [], t0
@@ -92,7 +92,7 @@ elif VAR == "V3":
     SLOW = {k: TARGET[k] / BASE[k] for k in KEYS}
 elif VAR == "V9":
     KEYS = (1, 2, 3, 4)
-    BASE = {1: round(V9S["end1"], 2), 2: 10.2, 3: round(V9S["end3"], 2), 4: 5.8}  # Chat 1, Webseite, Chat 2, Endkarte (Sekunden, SLOW = 1)
+    BASE = {1: round(V9S["end1"], 2), 2: 14.9, 3: round(V9S["end3"], 2), 4: 5.8}  # Chat 1, Webseite, Chat 2, Endkarte (Sekunden, SLOW = 1)
     TARGET = dict(BASE)
     SLOW = {k: 1.0 for k in KEYS}
 elif VAR == "V8":
@@ -1075,8 +1075,9 @@ V9_CHAT2 = [
     ("tim", V9_TEXTS["tim3"], V9S["tim3"], "text"),
 ]
 V9_T = {"tap_link": V9S["tap_link"], "link_y": 640,
-        "up_tap": 1.0, "banner_in": 1.6, "banner_out": 8.0, "go_scroll": 2.4, "go_tap": 4.2, "res_switch": 4.7,
-        "res_scroll1": 5.5, "res_scroll2": 7.5, "res_hl": 8.8}
+        "scroll0": 0.6, "scroll1": 5.7, "banner_in": 2.3, "banner_out": 8.6,
+        "up_tap": 6.5, "go_scroll": 7.3, "go_tap": 9.1, "res_switch": 9.6,
+        "res_scroll1": 10.3, "res_scroll2": 12.1, "res_hl": 13.3}
 V9_BANNER = V9_TEXTS["tim_long"]
 
 
@@ -1363,18 +1364,41 @@ def scene_v9_chat1(L, t):
     v8_tap(L, t, V9_T["tap_link"], 420, y_card)  # Tap auf die Link-Vorschau
 
 
+V9_TOP = {"stepper": 705, "drop": 9518}  # Zeilen im Mitschnitt von der Seite (oben beginnend)
+
+
+def v9_smooth(a, b, t, t0, t1):
+    """Weiches Scrollen mit sanftem Anfang und Ende."""
+    p = clamp((t - t0) / max(1e-6, t1 - t0))
+    p = p * p * (3 - 2 * p)
+    return a + (b - a) * p
+
+
+def v9_top_window(L, Y):
+    """Die Seite von oben: erst Navigation fest, der Stepper-Balken wandert mit und bleibt dann oben stehen."""
+    rs = V9_TOP["stepper"]
+    if Y < rs:
+        ui_window(L, "v9_top.jpg", "header_nav.jpg", Y, hdr_h=200)
+    else:
+        ui_window(L, "v9_top.jpg", "header_step3.jpg", Y + 150)
+
+
 def scene_v9_site(L, t):
-    """Die echte Oberfläche öffnet sich (von unten), Banner von Tim oben, Upload und Ergebnis."""
+    """Die echte Oberfläche öffnet sich (von unten), Anna scrollt oben beginnend langsam nach unten, Banner von Tim,
+    Ablagefläche, Upload und Ergebnis."""
     tw = V9_T
     tmp = Layer()
     if t < tw["res_switch"]:
-        after = t >= tw["up_tap"] + 0.35
-        img = "v8_step3_geladen.jpg" if after else "v8_step3_leer.jpg"
-        y = 6300.0
-        y = v8_ease(y, 9330, t, tw["go_scroll"], tw["go_scroll"] + 1.2)
-        ui_window(tmp, img, "header_step3.jpg", y)
-        v8_tap(tmp, t, tw["up_tap"], 540, V8_S3["drop"] + V8_S3["drop_h"] / 2 + (350 - 6300))
-        v8_tap(tmp, t, tw["go_tap"], 310, V8_S3["go"] + 80 + (350 - 9330))
+        if t < tw["up_tap"] + 0.35:
+            y_end = V9_TOP["drop"] - 150 - 489
+            Y = v9_smooth(0, y_end, t, tw["scroll0"], tw["scroll1"])
+            v9_top_window(tmp, Y)
+            v8_tap(tmp, t, tw["up_tap"], 540, V8_S3["drop"] + V8_S3["drop_h"] / 2 + (350 - 6300))
+        else:
+            y = v8_ease(6300.0, 9330, t, tw["go_scroll"], tw["go_scroll"] + 1.2)
+            ui_window(tmp, "v8_step3_geladen.jpg", "header_step3.jpg", y)
+            v8_tap(tmp, t, tw["up_tap"], 540, V8_S3["drop"] + V8_S3["drop_h"] / 2 + (350 - 6300))
+            v8_tap(tmp, t, tw["go_tap"], 310, V8_S3["go"] + 80 + (350 - 9330))
     else:
         y = 960.0
         y = v8_ease(y, V8_S5["vinted"] - 40, t, tw["res_scroll1"], tw["res_scroll1"] + 1.2)
