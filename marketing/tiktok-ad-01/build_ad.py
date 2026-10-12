@@ -45,8 +45,8 @@ elif VAR == "V3":
     SLOW = {k: TARGET[k] / BASE[k] for k in KEYS}
 elif VAR == "V6":
     KEYS = (1, 2, 3, 4)
-    BASE = {1: 3.4, 2: 10.0, 3: 6.2, 4: 4.2}
-    TARGET = dict(BASE)  # Szenenzeiten in Sekunden, nach den Sprachclips anzupassen
+    BASE = {1: 4.75, 2: 9.1, 3: 5.0, 4: 4.2}
+    TARGET = dict(BASE)  # Szenenzeiten in Sekunden, abgestimmt auf die Sprachclips (4,55 / 8,9 / 4,4 / 3,7 s)
     SLOW = {k: 1.0 for k in KEYS}
 elif VAR == "V7":
     KEYS = (1, 2, 3, 4)
@@ -531,8 +531,8 @@ def scene_v2_deadline(L, t):
 # ---- V6 "Drei Fragen" (dunkles Design wie V2/V3/V7)
 V6_TOPS_Q = (400, 730, 1060)
 V6_TOPS_A = (520, 830, 1140)
-V6_QSTART = (0.2, 3.5, 6.8)
-V6_FLIP = (2.6, 3.4, 4.2)
+V6_QSTART = (0.1, 2.9, 6.1)
+V6_FLIP = (2.7, 3.25, 3.8)
 V6_QUESTIONS = (("Wie viele Verkäufe", "hattest du dieses Jahr?"),
                 ("Wie viel Umsatz davon", "auf welcher Plattform?"),
                 ("Und was davon ist", "wirklich Gewinn?"))
@@ -578,9 +578,9 @@ def scene_v6_hook(L, t):
         x = 540 - (w3 + wf) / 2
         L.text(x, base, "3", 250 * sc, "heavy", col(LIME, a), "ls")
         L.text(x + w3, base, "Fragen", 190 * sc, "heavy", col(PAPER, a), "ls")
-    pop_text(L, 540, 860, "an alle, die auf", 62, "medium", MUTED, t, 0.75)
+    pop_text(L, 540, 860, "an alle, die auf", 62, "medium", MUTED, t, 0.95)
     for k, (name, dot, cx, cy) in enumerate(V6_CHIPS):
-        p = prog(t, 1.0 + k * 0.15, 0.3)
+        p = prog(t, (2.3, 2.95, 3.5)[k], 0.3)
         if p <= 0:
             continue
         sc = 0.8 + 0.2 * ease_back(p)
@@ -589,7 +589,7 @@ def scene_v6_hook(L, t):
         pill(L, cx, cy, w, 108 * sc, col(INK2, a), col((60, 68, 80), a))
         L.circle(cx - w / 2 + 50 * sc, cy, 17 * sc, col(dot, a))
         L.text(cx - w / 2 + 86 * sc, cy, name, 54 * sc, "bold", col(PAPER, a), "lm")
-    pop_text(L, 540, 1320, "verkaufen.", 62, "medium", MUTED, t, 1.8)
+    pop_text(L, 540, 1320, "verkaufen.", 62, "medium", MUTED, t, 4.0)
 
 
 def scene_v6_questions(L, t):
@@ -614,7 +614,7 @@ def v6_answer_face(L, i, x0, y0, x1, y1, t, tstart):
     cxl = x0 + 70
     check_circle(L, cxl, cy, r, bg=GREEN, fg=WHITE)
     tx = cxl + r + 26
-    k = ease_out(prog(t, tstart + 0.3, 0.7))
+    k = ease_out(prog(t, tstart + 0.3, 0.55))
     if i == 0:
         L.text(tx, y0 + 70, "Verkäufe dieses Jahr", 36, "medium", col(DARKMUTED), "lm")
         num = str(int(round(47 * k)))
@@ -637,18 +637,18 @@ def v6_answer_face(L, i, x0, y0, x1, y1, t, tstart):
 
 
 def scene_v6_answers(L, t):
-    if t < 2.2:
-        pop_text(L, 540, 410, "Keine Ahnung?", 118, "heavy", PAPER, t, 0.0)
+    if t < 2.25:
+        pop_text(L, 540, 410, "Keine Ahnung?", 104, "heavy", PAPER, t, 0.0)
     else:
         wa = L.width("SellCheck ", 70, "heavy")
         wb = L.width("beantwortet", 70, "heavy")
         x0 = 540 - (wa + wb) / 2
-        p = prog(t, 2.2, 0.35)
+        p = prog(t, 2.25, 0.35)
         sc = 0.75 + 0.25 * ease_back(p)
         a = 255 * clamp(p * 3)
         L.text(x0, 380, "SellCheck", 70 * sc, "heavy", col(LIME, a), "ls")
         L.text(x0 + wa, 380, "beantwortet", 70 * sc, "heavy", col(PAPER, a), "ls")
-        pop_text(L, 540, 462, "alle drei.", 70, "heavy", PAPER, t, 2.35)
+        pop_text(L, 540, 462, "alle drei.", 70, "heavy", PAPER, t, 2.4)
     for i in range(3):
         top = V6_TOPS_A[i]
         fp = prog(t, V6_FLIP[i], 0.4)
