@@ -50,7 +50,7 @@ V9_TEXTS = {
     "anna2": "Ahh cool, so eine praktische Website kannte ich gar nicht.",
     "tim3": "Jap! Und das Beste: kostenlos, mit Konto, und deine Daten bleiben im Browser.",
     # Tims längere Nachricht: im Banner (abgeschnitten) und später vollständig im Chatverlauf
-    "tim_long": "Du lädst einfach deine Verkäufe als CSV hoch, und SellCheck zeigt dir pro Plattform, wo du stehst. Dazu bekommst du deinen Gewinn und eine Übersicht für die Steuererklärung.",
+    "tim_long": "Du lädst einfach deine Verkäufe als CSV hoch, und SellCheck zeigt dir für jede Plattform den Gewinn und wie weit du von der Grenze entfernt bist oder bereits drüber bist.",
 }
 
 
