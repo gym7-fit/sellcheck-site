@@ -30,7 +30,7 @@ import sellcheck_logo as LOGO  # echtes SellCheck-Logo (Variante 6B)
 W, H, FPS, S = 1080, 1920, 30, 2          # S = Supersampling-Faktor
 
 
-def v9_type_times(text, t0, cps=17.0):
+def v9_type_times(text, t0, cps=21.0):
     """Zeitpunkte der Tastenanschläge beim 'Tippen' (mit leichten Schwankungen und Pausen bei Satzzeichen)."""
     rnd = random.Random(len(text) * 7 + 3)
     ts, t = [], t0
@@ -44,33 +44,33 @@ def v9_type_times(text, t0, cps=17.0):
 
 
 V9_TEXTS = {
-    "tim1": "Hey Anna, wusstest du, dass Plattformen deine Verkäufe an die Steuerbehörde melden?",
-    "anna1": "Warte, was? Woher weiß ich, ob ich über der Grenze bin?",
+    "tim1": "Wusstest du, dass Plattformen deine Verkäufe an die Steuerbehörde melden?",
+    "anna1": "Warte, was? Woher weiß ich, ob ich drüber bin?",
     "tim2": "Mit SellCheck:",
-    "anna2": "Ahh cool, so eine praktische Website kannte ich gar nicht.",
-    "tim3": "Jap! Und das Beste: kostenlos, mit Konto, und deine Daten bleiben im Browser.",
+    "anna2": "Ahh cool, die Website kannte ich gar nicht.",
+    "tim3": "Jap! Kostenlos mit Konto, und deine Daten bleiben im Browser.",
     # Tims längere Nachricht: im Banner (abgeschnitten) und später vollständig im Chatverlauf
-    "tim_long": "Du lädst einfach deine Verkäufe als CSV hoch, und SellCheck zeigt dir pro Plattform, wo du stehst. Dazu bekommst du deinen Gewinn und eine Übersicht für die Steuererklärung.",
+    "tim_long": "Du lädst einfach deine Verkäufe als CSV hoch, und SellCheck zeigt dir pro Plattform, wo du stehst. Dazu gibt's deinen Gewinn und eine Übersicht für die Steuererklärung.",
 }
 
 
 def v9_schedule():
     """Zeitplan der beiden Chat-Szenen (Sekunden ab Szenenstart): erst lesen lassen, dann tippen, dann senden."""
     d = {}
-    d["tim1"] = 0.7
-    d["a1_start"] = d["tim1"] + 1.8          # Nachricht in Ruhe lesen lassen
+    d["tim1"] = 0.5
+    d["a1_start"] = d["tim1"] + 1.3          # Nachricht in Ruhe lesen lassen
     d["a1_ts"], e = v9_type_times(V9_TEXTS["anna1"], d["a1_start"])
-    d["a1_send"] = e + 0.35
-    d["tim_type1"] = d["a1_send"] + 0.6
-    d["tim2"] = d["tim_type1"] + 1.1
-    d["tap_link"] = d["tim2"] + 1.5
-    d["end1"] = d["tap_link"] + 0.6
-    d["a2_start"] = 1.4
+    d["a1_send"] = e + 0.3
+    d["tim_type1"] = d["a1_send"] + 0.45
+    d["tim2"] = d["tim_type1"] + 0.85
+    d["tap_link"] = d["tim2"] + 1.0
+    d["end1"] = d["tap_link"] + 0.5
+    d["a2_start"] = 0.8
     d["a2_ts"], e = v9_type_times(V9_TEXTS["anna2"], d["a2_start"])
-    d["a2_send"] = e + 0.35
-    d["tim_type2"] = d["a2_send"] + 0.6
-    d["tim3"] = d["tim_type2"] + 1.2
-    d["end3"] = d["tim3"] + 3.2
+    d["a2_send"] = e + 0.3
+    d["tim_type2"] = d["a2_send"] + 0.45
+    d["tim3"] = d["tim_type2"] + 0.85
+    d["end3"] = d["tim3"] + 2.7
     return d
 
 
@@ -92,7 +92,7 @@ elif VAR == "V3":
     SLOW = {k: TARGET[k] / BASE[k] for k in KEYS}
 elif VAR == "V9":
     KEYS = (1, 2, 3, 4)
-    BASE = {1: round(V9S["end1"], 2), 2: 17.1, 3: round(V9S["end3"], 2), 4: 5.8}  # Chat 1, Webseite, Chat 2, Endkarte (Sekunden, SLOW = 1)
+    BASE = {1: round(V9S["end1"], 2), 2: 13.1, 3: round(V9S["end3"], 2), 4: 5.8}  # Chat 1, Webseite, Chat 2, Endkarte (Sekunden, SLOW = 1)
     TARGET = dict(BASE)
     SLOW = {k: 1.0 for k in KEYS}
 elif VAR == "V8":
@@ -1075,10 +1075,10 @@ V9_CHAT2 = [
     ("tim", V9_TEXTS["tim3"], V9S["tim3"], "text"),
 ]
 V9_T = {"tap_link": V9S["tap_link"], "link_y": 640,
-        "scroll0": 0.6, "scroll1": 5.7, "banner_in": 1.9, "banner_out": 6.1,
-        "up_tap": 6.5, "sheet_in": 6.9, "file_tap": 8.2, "sheet_out": 8.6,
-        "go_scroll": 9.5, "go_tap": 11.3, "res_switch": 11.8,
-        "res_scroll1": 12.5, "res_scroll2": 14.3, "res_hl": 15.5}
+        "scroll0": 0.3, "scroll1": 3.7, "banner_in": 1.0, "banner_out": 4.7,
+        "up_tap": 4.1, "sheet_in": 4.4, "file_tap": 5.4, "sheet_out": 5.75,
+        "go_scroll": 6.4, "go_tap": 7.8, "res_switch": 8.3,
+        "res_scroll1": 8.8, "res_scroll2": 10.3, "res_hl": 11.5}
 V9_BANNER = V9_TEXTS["tim_long"]
 
 
