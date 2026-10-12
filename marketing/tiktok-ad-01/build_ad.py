@@ -44,13 +44,13 @@ def v9_type_times(text, t0, cps=21.0):
 
 
 V9_TEXTS = {
-    "tim1": "Wusstest du, dass Plattformen deine Verkäufe an die Steuerbehörde melden?",
-    "anna1": "Warte, was? Woher weiß ich, ob ich drüber bin?",
+    "tim1": "Hey Anna, wusstest du, dass Plattformen deine Verkäufe an die Steuerbehörde melden?",
+    "anna1": "Warte, was? Woher weiß ich, ob ich über der Grenze bin?",
     "tim2": "Mit SellCheck:",
-    "anna2": "Ahh cool, die Website kannte ich gar nicht.",
-    "tim3": "Jap! Kostenlos mit Konto, und deine Daten bleiben im Browser.",
+    "anna2": "Ahh cool, so eine praktische Website kannte ich gar nicht.",
+    "tim3": "Jap! Und das Beste: kostenlos, mit Konto, und deine Daten bleiben im Browser.",
     # Tims längere Nachricht: im Banner (abgeschnitten) und später vollständig im Chatverlauf
-    "tim_long": "Du lädst einfach deine Verkäufe als CSV hoch, und SellCheck zeigt dir pro Plattform, wo du stehst. Dazu gibt's deinen Gewinn und eine Übersicht für die Steuererklärung.",
+    "tim_long": "Du lädst einfach deine Verkäufe als CSV hoch, und SellCheck zeigt dir pro Plattform, wo du stehst. Dazu bekommst du deinen Gewinn und eine Übersicht für die Steuererklärung.",
 }
 
 
@@ -58,7 +58,7 @@ def v9_schedule():
     """Zeitplan der beiden Chat-Szenen (Sekunden ab Szenenstart): erst lesen lassen, dann tippen, dann senden."""
     d = {}
     d["tim1"] = 0.5
-    d["a1_start"] = d["tim1"] + 1.3          # Nachricht in Ruhe lesen lassen
+    d["a1_start"] = d["tim1"] + 1.8          # Nachricht in Ruhe lesen lassen
     d["a1_ts"], e = v9_type_times(V9_TEXTS["anna1"], d["a1_start"])
     d["a1_send"] = e + 0.3
     d["tim_type1"] = d["a1_send"] + 0.45
@@ -70,7 +70,7 @@ def v9_schedule():
     d["a2_send"] = e + 0.3
     d["tim_type2"] = d["a2_send"] + 0.45
     d["tim3"] = d["tim_type2"] + 0.85
-    d["end3"] = d["tim3"] + 2.7
+    d["end3"] = d["tim3"] + 3.2
     return d
 
 
@@ -92,7 +92,7 @@ elif VAR == "V3":
     SLOW = {k: TARGET[k] / BASE[k] for k in KEYS}
 elif VAR == "V9":
     KEYS = (1, 2, 3, 4)
-    BASE = {1: round(V9S["end1"], 2), 2: 13.8, 3: round(V9S["end3"], 2), 4: 5.8}  # Chat 1, Webseite, Chat 2, Endkarte (Sekunden, SLOW = 1)
+    BASE = {1: round(V9S["end1"], 2), 2: 15.5, 3: round(V9S["end3"], 2), 4: 5.8}  # Chat 1, Webseite, Chat 2, Endkarte (Sekunden, SLOW = 1)
     TARGET = dict(BASE)
     SLOW = {k: 1.0 for k in KEYS}
 elif VAR == "V8":
@@ -1075,10 +1075,10 @@ V9_CHAT2 = [
     ("tim", V9_TEXTS["tim3"], V9S["tim3"], "text"),
 ]
 V9_T = {"tap_link": V9S["tap_link"], "link_y": 640,
-        "scroll0": 0.3, "scroll1": 4.2, "banner_in": 1.6, "banner_out": 5.0,
-        "up_tap": 4.7, "sheet_in": 5.1, "file_tap": 6.1, "sheet_out": 6.45,
-        "go_scroll": 7.1, "go_tap": 8.5, "res_switch": 9.0,
-        "res_scroll1": 9.5, "res_scroll2": 11.0, "res_hl": 12.2}
+        "scroll0": 0.4, "scroll1": 6.0, "banner_in": 2.0, "banner_out": 5.7,
+        "up_tap": 6.4, "sheet_in": 6.8, "file_tap": 7.8, "sheet_out": 8.15,
+        "go_scroll": 8.8, "go_tap": 10.2, "res_switch": 10.7,
+        "res_scroll1": 11.2, "res_scroll2": 12.7, "res_hl": 13.9}
 V9_BANNER = V9_TEXTS["tim_long"]
 
 
