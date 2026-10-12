@@ -92,7 +92,7 @@ elif VAR == "V3":
     SLOW = {k: TARGET[k] / BASE[k] for k in KEYS}
 elif VAR == "V9":
     KEYS = (1, 2, 3, 4)
-    BASE = {1: round(V9S["end1"], 2), 2: 14.9, 3: round(V9S["end3"], 2), 4: 5.8}  # Chat 1, Webseite, Chat 2, Endkarte (Sekunden, SLOW = 1)
+    BASE = {1: round(V9S["end1"], 2), 2: 17.1, 3: round(V9S["end3"], 2), 4: 5.8}  # Chat 1, Webseite, Chat 2, Endkarte (Sekunden, SLOW = 1)
     TARGET = dict(BASE)
     SLOW = {k: 1.0 for k in KEYS}
 elif VAR == "V8":
@@ -1075,9 +1075,10 @@ V9_CHAT2 = [
     ("tim", V9_TEXTS["tim3"], V9S["tim3"], "text"),
 ]
 V9_T = {"tap_link": V9S["tap_link"], "link_y": 640,
-        "scroll0": 0.6, "scroll1": 5.7, "banner_in": 2.3, "banner_out": 8.6,
-        "up_tap": 6.5, "go_scroll": 7.3, "go_tap": 9.1, "res_switch": 9.6,
-        "res_scroll1": 10.3, "res_scroll2": 12.1, "res_hl": 13.3}
+        "scroll0": 0.6, "scroll1": 5.7, "banner_in": 1.9, "banner_out": 6.1,
+        "up_tap": 6.5, "sheet_in": 6.9, "file_tap": 8.2, "sheet_out": 8.6,
+        "go_scroll": 9.5, "go_tap": 11.3, "res_switch": 11.8,
+        "res_scroll1": 12.5, "res_scroll2": 14.3, "res_hl": 15.5}
 V9_BANNER = V9_TEXTS["tim_long"]
 
 
@@ -1383,13 +1384,82 @@ def v9_top_window(L, Y):
         ui_window(L, "v9_top.jpg", "header_step3.jpg", Y + 150)
 
 
+def v9_file_icon(L, x, y, kind):
+    """Kleines Dokument-Symbol (CSV, PDF, Bild, Numbers) wie in der Dateien-App."""
+    if kind == "png":
+        L.rrect(x, y + 6, x + 84, y + 100, 10, fill=(125, 178, 220, 255))
+        L.poly([(x, y + 100), (x + 34, y + 54), (x + 58, y + 80), (x + 72, y + 64), (x + 84, y + 100)], (92, 150, 110, 255))
+        L.circle(x + 62, y + 30, 9, (255, 236, 160, 255))
+        return
+    L.rrect(x + 6, y, x + 78, y + 104, 8, fill=(255, 255, 255, 255), outline=(200, 200, 205, 255), width=2)
+    L.poly([(x + 58, y), (x + 78, y + 20), (x + 58, y + 20)], (226, 226, 232, 255))
+    lab, colr = {"csv": ("CSV", (60, 150, 90, 255)), "pdf": ("PDF", (222, 64, 56, 255)), "num": ("NUM", (40, 160, 90, 255))}[kind]
+    L.rrect(x + 14, y + 70, x + 70, y + 94, 6, fill=colr)
+    hn_text(L, x + 42, y + 82, lab, 20, (255, 255, 255), True, anchor="mm")
+    for k in range(3):
+        L.rrect(x + 18, y + 26 + k * 12, x + 66 - (k == 2) * 18, y + 31 + k * 12, 2, fill=(214, 214, 220, 255))
+
+
+V9_FILES = [
+    ("Vinted_Verkäufe_2026.csv", "Heute, 09:38 · 6 KB", "csv"),
+    ("Rechnung_Oktober.pdf", "Gestern, 18:12 · 128 KB", "pdf"),
+    ("Versandetikett_Vinted.pdf", "10.10.2026 · 54 KB", "pdf"),
+    ("IMG_4821.png", "09.10.2026 · 2,1 MB", "png"),
+    ("Einkaufsliste.numbers", "07.10.2026 · 38 KB", "num"),
+]
+
+
+def v9_picker(L, t, pin, pout, file_tap):
+    """Dateiauswahl des iPhones: Blatt fährt von unten herein, oben dunkles Abblenden der Seite dahinter."""
+    prog_in = ease_out(prog(t, pin, 0.45))
+    prog_out = ease_out(prog(t, pout, 0.38))
+    sp = prog_in - prog_out
+    if sp <= 0.001:
+        return
+    top = 170 + (1 - sp) * (H - 170)
+    v8_blend(L, Image.new("RGBA", (int(W * S), int(H * S)), (0, 0, 0, int(105 * sp))), 0, 0)
+    L.rrect(0, top, W, H + 60, 36, fill=(242, 242, 247, 255))
+    # Navigationsleiste des Blatts
+    hn_text(L, 44, top + 62, "Abbrechen", 46, (0, 122, 255), anchor="lm")
+    hn_text(L, 540, top + 62, "Zuletzt benutzt", 46, (0, 0, 0), True, anchor="mm")
+    # Suchfeld
+    L.rrect(32, top + 118, W - 32, top + 206, 24, fill=(226, 226, 232, 255))
+    L.d.ellipse([(76 - 14) * S, (top + 162 - 14) * S, (76 + 10) * S, (top + 162 + 10) * S], outline=(138, 138, 144, 255), width=int(4 * S))
+    L.line([(70, top + 168), (86, top + 184)], (138, 138, 144, 255), 5)
+    hn_text(L, 120, top + 162, "Suchen", 44, (138, 138, 144), anchor="lm")
+    # Dateiliste
+    ly = top + 244
+    L.rrect(24, ly, W - 24, ly + len(V9_FILES) * 150, 22, fill=(255, 255, 255, 255))
+    selected = file_tap is not None and t >= file_tap
+    for i, (name, sub, kind) in enumerate(V9_FILES):
+        ry = ly + i * 150
+        if i == 0 and selected:
+            L.rrect(24, ry, W - 24, ry + 150, 22 if i == 0 else 0, fill=(214, 214, 220, 255))
+        v9_file_icon(L, 52, ry + 23, kind)
+        hn_text(L, 168, ry + 54, name, 44, (0, 0, 0), anchor="lm")
+        hn_text(L, 168, ry + 102, sub, 33, (120, 120, 128), anchor="lm")
+        if i < len(V9_FILES) - 1:
+            L.d.rectangle([168 * S, (ry + 149) * S, (W - 24) * S, (ry + 151) * S], fill=(220, 220, 226, 255))
+    # Tab-Leiste unten (fährt mit dem Blatt)
+    tb = H - 150 + (top - 170)
+    L.d.rectangle([0, tb * S, W * S, (tb + 400) * S], fill=(249, 249, 249, 255))
+    L.d.rectangle([0, tb * S, W * S, (tb + 2) * S], fill=(200, 200, 205, 255))
+    L.d.ellipse([(270 - 26) * S, (tb + 38 - 26) * S, (270 + 26) * S, (tb + 38 + 26) * S], outline=(0, 122, 255, 255), width=int(5 * S))
+    L.line([(270, tb + 20), (270, tb + 38), (284, tb + 46)], (0, 122, 255, 255), 5)
+    hn_text(L, 270, tb + 96, "Zuletzt benutzt", 30, (0, 122, 255), anchor="mm")
+    L.rrect(762 - 30, tb + 16, 762 + 30, tb + 54, 8, outline=(140, 140, 146, 255), width=5)
+    hn_text(L, 810, tb + 96, "Durchsuchen", 30, (140, 140, 146), anchor="mm")
+    return top + 244 + 75  # Mitte der ersten Zeile (für den Tap)
+
+
 def scene_v9_site(L, t):
     """Die echte Oberfläche öffnet sich (von unten), Anna scrollt oben beginnend langsam nach unten, Banner von Tim,
-    Ablagefläche, Upload und Ergebnis."""
+    Ablagefläche, Dateiauswahl (iPhone-Dateien), Upload und Ergebnis."""
     tw = V9_T
     tmp = Layer()
+    t_loaded = tw["sheet_out"] + 0.05
     if t < tw["res_switch"]:
-        if t < tw["up_tap"] + 0.35:
+        if t < t_loaded:
             y_end = V9_TOP["drop"] - 150 - 489
             Y = v9_smooth(0, y_end, t, tw["scroll0"], tw["scroll1"])
             v9_top_window(tmp, Y)
@@ -1397,8 +1467,10 @@ def scene_v9_site(L, t):
         else:
             y = v8_ease(6300.0, 9330, t, tw["go_scroll"], tw["go_scroll"] + 1.2)
             ui_window(tmp, "v8_step3_geladen.jpg", "header_step3.jpg", y)
-            v8_tap(tmp, t, tw["up_tap"], 540, V8_S3["drop"] + V8_S3["drop_h"] / 2 + (350 - 6300))
             v8_tap(tmp, t, tw["go_tap"], 310, V8_S3["go"] + 80 + (350 - 9330))
+        row_y = v9_picker(tmp, t, tw["sheet_in"], tw["sheet_out"], tw["file_tap"])
+        if row_y:
+            v8_tap(tmp, t, tw["file_tap"], 460, row_y)
     else:
         y = 960.0
         y = v8_ease(y, V8_S5["vinted"] - 40, t, tw["res_scroll1"], tw["res_scroll1"] + 1.2)
@@ -1792,6 +1864,8 @@ def build_audio(variant, path, with_voice=False, voice_files=None):
         ping(at(1, V9S["tim2"]))
         tick(at(1, V9_T["tap_link"]), 1500)
         tick(at(2, V9_T["up_tap"]), 1500)
+        tick(at(2, V9_T["file_tap"]), 1700)
+        add(sfx, at(2, V9_T["sheet_in"]), tone(260, 0.28, "sine", 3.5, 520, attack=2000.0), 0.1)
         tick(at(2, V9_T["go_tap"]), 1500)
         ding(at(2, V9_T["res_hl"] + 0.2), 659.25)
         ping(at(2, V9_T["banner_in"]))

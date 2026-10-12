@@ -124,5 +124,5 @@ Hinweis: Die Stimme ist synthetisch, in TikTok als KI-generierte Inhalte kennzei
 
 ## Version 9 (Chat Tim und Anna, V9)
 
-Chat im Messenger-Look (generisch, ohne fremde Marke): Tim erzählt von der Meldegrenze, Anna fragt nach, der Link öffnet die echte Oberfläche (Aufnahmen aus `assets/v8/`), Banner von Tim oben, Upload und Ergebnis, zurück in den Chat, Endkarte. Geplant: Tim = Stimme Mats (wie V7), Anna = Pauli (wie V2/V3). Erste Fassung nur Bild plus Ping und Tipp-Geräusche, noch keine Stimmen.
+Chat im Messenger-Look (generisch, ohne fremde Marke): Tim erzählt von der Meldegrenze, Anna fragt nach, der Link öffnet die echte Oberfläche (Aufnahmen aus `assets/v8/`), Banner von Tim oben, Dateiauswahl des iPhones (Blatt von unten, Auswahl „Vinted_Verkäufe_2026.csv“), Upload und Ergebnis, zurück in den Chat, Endkarte. Geplant: Tim = Stimme Mats (wie V7), Anna = Pauli (wie V2/V3). Erste Fassung nur Bild plus Ping und Tipp-Geräusche, noch keine Stimmen.
 Erzeugen: `python3 marketing/tiktok-ad-01/build_ad.py V9`. Die Zeiten (`V9_CHAT1`, `V9_CHAT2`, `V9_T`, `BASE`) sind auf geschätzte Sprechdauer gelegt und werden nach den Clips angepasst.
