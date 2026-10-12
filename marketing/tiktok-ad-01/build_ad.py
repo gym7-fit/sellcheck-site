@@ -22,7 +22,7 @@ import wave
 from functools import lru_cache
 from multiprocessing import Pool
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "logo-final"))
 import sellcheck_logo as LOGO  # echtes SellCheck-Logo (Variante 6B)
@@ -1018,8 +1018,8 @@ V9_LAYOUT = {"top": 470, "bottom": 1340, "gap": 10}
 
 # Nachrichten: (Absender, Text, Erscheinen, Typ). Zeiten je Szene, werden nach den Sprachclips angepasst.
 V9_CHAT1 = [
-    ("tim", "Hey Anna, wusstest du, dass Plattformen deine Verkäufe ab einer Grenze an die Steuerbehörde melden?", 0.6, "text"),
-    ("anna", "Warte, was? Aber woher weiß ich, ob ich über der Grenze bin, bei all den Plattformen?", 2.5, "text"),
+    ("tim", "Hey Anna, wusstest du, dass Plattformen deine Verkäufe an die Steuerbehörde melden?", 0.6, "text"),
+    ("anna", "Warte, was? Woher weiß ich, ob ich über der Grenze bin?", 2.4, "text"),
     ("tim", "Mit SellCheck:", 3.5, "link"),
 ]
 V9_CHAT2_PREV = [m[:3] + ("text",) for m in V9_CHAT1[:2]] + [V9_CHAT1[2][:3] + ("link",)]
@@ -1116,35 +1116,97 @@ def v9_keyboard(L):
 
 
 def v9_memoji(L, cx, cy, r):
-    """Gezeichnetes Profilbild im Stil eines Memojis (kein echtes Apple-Memoji): Kopf, Haare, Gesicht auf buntem Kreis."""
+    """Gezeichnetes Profilbild im Stil eines Memojis (kein echtes Apple-Memoji): rundes Gesicht mit weicher Schattierung auf Pastellkreis."""
     n = int(2 * r * S)
-    patch = Image.new("RGBA", (n, n), (0, 0, 0, 0))
-    d = ImageDraw.Draw(patch)
-    u = r * S  # Einheit
-    c = n / 2
-    def el(x, y, rx, ry, fill=None, outline=None, width=0):
-        d.ellipse([c + (x - rx) * u, c + (y - ry) * u, c + (x + rx) * u, c + (y + ry) * u], fill=fill, outline=outline, width=width)
-    el(0, 0, 1.0, 1.0, fill=(255, 211, 116, 255))                       # Hintergrund
-    el(0, 1.02, 0.78, 0.45, fill=(70, 118, 205, 255))                   # Schultern
-    d.rectangle([c - 0.17 * u, c + 0.42 * u, c + 0.17 * u, c + 0.7 * u], fill=(236, 184, 140, 255))  # Hals
-    el(-0.56, 0.0, 0.1, 0.15, fill=(236, 184, 140, 255))                # Ohren
-    el(0.56, 0.0, 0.1, 0.15, fill=(236, 184, 140, 255))
-    el(0, -0.28, 0.64, 0.58, fill=(76, 52, 38, 255))                    # Haare hinten
-    el(0, 0.02, 0.53, 0.62, fill=(246, 200, 158, 255))                  # Gesicht
-    el(0, -0.5, 0.58, 0.3, fill=(76, 52, 38, 255))                      # Haare oben
-    el(-0.3, -0.38, 0.3, 0.2, fill=(76, 52, 38, 255))                   # Stirnfransen
-    el(0.28, -0.4, 0.28, 0.17, fill=(76, 52, 38, 255))
+    u, c = r * S, n / 2
+
+    def layer():
+        return Image.new("RGBA", (n, n), (0, 0, 0, 0))
+
+    def el(img, x, y, rx, ry, fill):
+        ImageDraw.Draw(img).ellipse([c + (x - rx) * u, c + (y - ry) * u, c + (x + rx) * u, c + (y + ry) * u], fill=fill)
+
+    base = layer()
+    # Hintergrund: Pastellverlauf
+    bg = layer()
+    el(bg, 0, 0, 1.0, 1.0, (255, 214, 130, 255))
+    el(bg, -0.25, -0.35, 0.8, 0.7, (255, 232, 170, 255))
+    bg = bg.filter(ImageFilter.GaussianBlur(u * 0.12))
+    base.alpha_composite(bg)
+    # Schultern/Shirt
+    sh = layer()
+    el(sh, 0, 1.05, 0.82, 0.5, (64, 118, 214, 255))
+    el(sh, -0.2, 0.9, 0.4, 0.2, (90, 144, 236, 255))
+    base.alpha_composite(sh.filter(ImageFilter.GaussianBlur(u * 0.04)))
+    hals = layer()
+    ImageDraw.Draw(hals).rectangle([c - 0.17 * u, c + 0.42 * u, c + 0.17 * u, c + 0.72 * u], fill=(226, 172, 128, 255))
+    base.alpha_composite(hals)
+    # Haare hinten
+    hh = layer()
+    el(hh, 0, -0.26, 0.66, 0.6, (72, 48, 36, 255))
+    base.alpha_composite(hh)
+    # Ohren
+    ears = layer()
+    el(ears, -0.57, 0.04, 0.1, 0.15, (232, 180, 138, 255))
+    el(ears, 0.57, 0.04, 0.1, 0.15, (232, 180, 138, 255))
+    base.alpha_composite(ears)
+    # Gesicht mit Licht von oben links und Schatten unten rechts
+    face = layer()
+    el(face, 0, 0.04, 0.54, 0.62, (242, 196, 154, 255))
+    shade = layer()
+    el(shade, 0.14, 0.2, 0.5, 0.55, (214, 156, 116, 140))
+    light = layer()
+    el(light, -0.15, -0.12, 0.3, 0.3, (255, 232, 205, 170))
+    mask = layer()
+    el(mask, 0, 0.04, 0.54, 0.62, (255, 255, 255, 255))
+    face.alpha_composite(Image.composite(shade.filter(ImageFilter.GaussianBlur(u * 0.12)), layer(), mask.getchannel("A")))
+    face.alpha_composite(Image.composite(light.filter(ImageFilter.GaussianBlur(u * 0.1)), layer(), mask.getchannel("A")))
+    base.alpha_composite(face)
+    # Haare oben, Fransen mit Glanz
+    top = layer()
+    el(top, 0, -0.5, 0.6, 0.31, (72, 48, 36, 255))
+    el(top, -0.3, -0.38, 0.3, 0.2, (72, 48, 36, 255))
+    el(top, 0.28, -0.4, 0.28, 0.17, (72, 48, 36, 255))
+    base.alpha_composite(top)
+    gl = layer()
+    el(gl, -0.18, -0.58, 0.22, 0.07, (140, 100, 78, 150))
+    base.alpha_composite(gl.filter(ImageFilter.GaussianBlur(u * 0.03)))
+    # Gesichtszüge
+    f = layer()
+    d = ImageDraw.Draw(f)
     for sx in (-1, 1):
-        el(sx * 0.2, -0.02, 0.07, 0.095, fill=(35, 28, 28, 255))        # Augen
-        el(sx * 0.18, -0.05, 0.022, 0.03, fill=(255, 255, 255, 255))
-        d.line([c + (sx * 0.31) * u, c - 0.17 * u, c + (sx * 0.1) * u, c - 0.19 * u], fill=(76, 52, 38, 255), width=max(2, int(0.045 * u)))
-        el(sx * 0.33, 0.17, 0.09, 0.055, fill=(244, 160, 150, 150))     # Wangen
-    d.arc([c - 0.2 * u, c + 0.08 * u, c + 0.2 * u, c + 0.38 * u], 20, 160, fill=(170, 68, 68, 255), width=max(3, int(0.055 * u)))  # Lächeln
-    d.line([c, c + 0.0 * u, c - 0.03 * u, c + 0.12 * u], fill=(214, 156, 120, 255), width=max(2, int(0.035 * u)))  # Nase
-    mask = Image.new("L", (n, n), 0)
-    ImageDraw.Draw(mask).ellipse([0, 0, n - 1, n - 1], fill=255)
-    patch.putalpha(Image.composite(patch.getchannel("A"), Image.new("L", (n, n), 0), mask))
-    v8_blend(L, patch, cx * S - c, cy * S - c)
+        el(f, sx * 0.2, -0.02, 0.085, 0.115, (34, 26, 26, 255))
+        el(f, sx * 0.175, -0.06, 0.03, 0.04, (255, 255, 255, 255))
+        el(f, sx * 0.225, 0.02, 0.014, 0.02, (255, 255, 255, 200))
+        d.line([c + (sx * 0.34) * u, c - 0.17 * u, c + (sx * 0.1) * u, c - 0.2 * u], fill=(60, 40, 30, 255), width=max(3, int(0.06 * u)))
+        el(f, sx * 0.34, 0.2, 0.1, 0.06, (244, 150, 140, 120))
+    d.line([c, c + 0.02 * u, c - 0.035 * u, c + 0.14 * u, c + 0.03 * u, c + 0.15 * u], fill=(206, 146, 110, 255), width=max(2, int(0.04 * u)))
+    # Lächeln mit Zähnen
+    d.chord([c - 0.2 * u, c + 0.14 * u, c + 0.2 * u, c + 0.42 * u], 0, 180, fill=(168, 60, 62, 255))
+    d.chord([c - 0.16 * u, c + 0.15 * u, c + 0.16 * u, c + 0.27 * u], 0, 180, fill=(255, 255, 255, 255))
+    base.alpha_composite(f)
+    m = Image.new("L", (n, n), 0)
+    ImageDraw.Draw(m).ellipse([0, 0, n - 1, n - 1], fill=255)
+    base.putalpha(Image.composite(base.getchannel("A"), Image.new("L", (n, n), 0), m))
+    v8_blend(L, base, cx * S - c, cy * S - c)
+
+
+def v9_glass(L, x0, y0, x1, y1, radius, tint=(250, 250, 252), alpha=150):
+    """Milchglas wie bei iOS: Hintergrund wird weichgezeichnet und leicht aufgehellt, mit weichem Schatten."""
+    X0, Y0, X1, Y1 = int(x0 * S), int(y0 * S), int(x1 * S), int(y1 * S)
+    pad = int(40 * S)
+    # Schatten
+    sh = Image.new("RGBA", (X1 - X0 + 2 * pad, Y1 - Y0 + 2 * pad), (0, 0, 0, 0))
+    ImageDraw.Draw(sh).rounded_rectangle([pad, pad + int(10 * S), pad + X1 - X0, pad + Y1 - Y0 + int(10 * S)], radius=int(radius * S), fill=(0, 0, 0, 70))
+    v8_blend(L, sh.filter(ImageFilter.GaussianBlur(int(16 * S))), X0 - pad, Y0 - pad)
+    cx0, cy0, cx1, cy1 = max(0, X0), max(0, Y0), min(L.im.width, X1), min(L.im.height, Y1)
+    reg = L.im.crop((cx0, cy0, cx1, cy1)).filter(ImageFilter.GaussianBlur(int(22 * S)))
+    glass = Image.new("RGBA", reg.size, tint + (alpha,))
+    reg = Image.alpha_composite(reg, glass)
+    m = Image.new("L", (X1 - X0, Y1 - Y0), 0)
+    ImageDraw.Draw(m).rounded_rectangle([0, 0, X1 - X0 - 1, Y1 - Y0 - 1], radius=int(radius * S), fill=255)
+    m = m.crop((cx0 - X0, cy0 - Y0, cx1 - X0, cy1 - Y0))
+    L.im.paste(reg, (cx0, cy0), m)
 
 
 def v9_header(L, status):
@@ -1266,25 +1328,25 @@ def scene_v9_site(L, t):
     p = ease_out(prog(t, 0.0, 0.45))
     L.d.rectangle([0, 0, W * S, H * S], fill=CH_BG + (255,))
     L.im.paste(tmp.im, (0, int((1 - p) * H * S)))
-    # Mitteilungsbanner wie auf dem iPhone: heller, abgerundeter Streifen mit Profilbild, Name, Text und "jetzt"
+    # Mitteilungsbanner wie auf dem iPhone (iOS 17): Milchglas, große Rundung, Kontaktfoto mit App-Symbol, Name, Text
     b0, b1 = tw["banner_in"], tw["banner_out"]
     if b0 <= t < b1 + 0.5:
-        lines = hn_wrap(L, V9_BANNER, 36, 700)[:3]
-        h = 56 + 54 + len(lines) * 46 + 14
+        lines = hn_wrap(L, V9_BANNER, 41, 760)[:3]
+        h = 36 + 52 + len(lines) * 52 + 28
         pin = ease_back(prog(t, b0, 0.5))
         pout = ease_out(prog(t, b1, 0.35))
-        by = 28 + (-h - 60) * (1 - pin) + (-h - 60) * pout
-        v8_blend(L, Image.new("RGBA", (int(1032 * S), int(h * S)), (248, 248, 250, 242)), 24 * S, by * S)
-        L.rrect(24, by, 1056, by + h, 52, outline=(214, 216, 222, 255), width=2)
-        v9_memoji(L, 100, by + 84, 46)
-        L.circle(136, by + 120, 20, col((255, 255, 255)))
-        L.circle(136, by + 120, 16, col((37, 160, 106)))
-        hn_text(L, 176, by + 40, "Tim", 40, (0, 0, 0), True)
-        hn_text(L, 1030, by + 44, "jetzt", 30, (140, 140, 147), anchor="ra")
-        ty = by + 92
+        by = 150 + (-h - 200) * (1 - pin) + (-h - 200) * pout
+        v9_glass(L, 22, by, 1058, by + h, 66)
+        v9_memoji(L, 112, by + h / 2 - 4, 50)
+        # kleines App-Symbol an der Ecke des Fotos
+        L.rrect(128, by + h / 2 + 22, 176, by + h / 2 + 70, 12, fill=(37, 211, 102, 255), outline=(255, 255, 255, 255), width=3)
+        L.circle(152, by + h / 2 + 46, 11, col((255, 255, 255)))
+        hn_text(L, 200, by + 34, "Tim", 44, (0, 0, 0), True)
+        hn_text(L, 1030, by + 38, "jetzt", 34, (120, 120, 128), anchor="ra")
+        ty = by + 34 + 54
         for ln in lines:
-            hn_text(L, 176, ty, ln, 36, (28, 28, 30))
-            ty += 46
+            hn_text(L, 200, ty, ln, 41, (20, 20, 22))
+            ty += 52
 
 
 def scene_v9_chat2(L, t):
