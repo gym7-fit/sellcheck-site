@@ -54,23 +54,39 @@ V9_TEXTS = {
 }
 
 
+V9_DUR = {1: 4.71, 2: 3.62, 3: 0.98, 4: 9.35, 5: 4.06, 6: 5.44}   # Dauer der Sprachclips (voice_v9/1..6) in Sekunden
+
+
+def v9_type_times_fit(text, t0, dur):
+    """Tastenanschläge so verteilt, dass das Tippen genau so lange dauert wie die gesprochene Nachricht."""
+    rnd = random.Random(len(text) * 7 + 3)
+    w = [rnd.uniform(0.75, 1.35) + (2.2 if ch in ",.?!:" else 0.0) for ch in text]
+    tot = sum(w)
+    ts, t = [], t0
+    for x in w:
+        ts.append(t)
+        t += (dur - 0.25) * x / tot
+    return ts, t
+
+
 def v9_schedule():
-    """Zeitplan der beiden Chat-Szenen (Sekunden ab Szenenstart): erst lesen lassen, dann tippen, dann senden."""
+    """Zeitplan der beiden Chat-Szenen (Sekunden ab Szenenstart). Jede Nachricht wird genau dann gesprochen, wenn sie
+    erscheint (Tim) bzw. getippt wird (Anna); das Tippen läuft so lang wie ihr Satz."""
     d = {}
-    d["tim1"] = 0.5
-    d["a1_start"] = d["tim1"] + 1.8          # Nachricht in Ruhe lesen lassen
-    d["a1_ts"], e = v9_type_times(V9_TEXTS["anna1"], d["a1_start"])
-    d["a1_send"] = e + 0.3
-    d["tim_type1"] = d["a1_send"] + 0.45
-    d["tim2"] = d["tim_type1"] + 0.85
-    d["tap_link"] = d["tim2"] + 1.0
-    d["end1"] = d["tap_link"] + 0.5
-    d["a2_start"] = 0.8
-    d["a2_ts"], e = v9_type_times(V9_TEXTS["anna2"], d["a2_start"])
-    d["a2_send"] = e + 0.3
-    d["tim_type2"] = d["a2_send"] + 0.45
-    d["tim3"] = d["tim_type2"] + 0.85
-    d["end3"] = d["tim3"] + 3.2
+    d["tim1"] = 0.4
+    d["a1_start"] = d["tim1"] + 0.15 + V9_DUR[1] + 0.1
+    d["a1_ts"], e = v9_type_times_fit(V9_TEXTS["anna1"], d["a1_start"], V9_DUR[2])
+    d["a1_send"] = d["a1_start"] + V9_DUR[2] + 0.1
+    d["tim_type1"] = d["a1_send"] + 0.2
+    d["tim2"] = d["tim_type1"] + 0.6
+    d["tap_link"] = d["tim2"] + 0.1 + V9_DUR[3] + 0.25
+    d["end1"] = d["tap_link"] + 0.35
+    d["a2_start"] = 0.5
+    d["a2_ts"], e = v9_type_times_fit(V9_TEXTS["anna2"], d["a2_start"], V9_DUR[5])
+    d["a2_send"] = d["a2_start"] + V9_DUR[5] + 0.1
+    d["tim_type2"] = d["a2_send"] + 0.15
+    d["tim3"] = d["tim_type2"] + 0.5
+    d["end3"] = d["tim3"] + 0.1 + V9_DUR[6] + 0.15
     return d
 
 
@@ -92,7 +108,7 @@ elif VAR == "V3":
     SLOW = {k: TARGET[k] / BASE[k] for k in KEYS}
 elif VAR == "V9":
     KEYS = (1, 2, 3, 4)
-    BASE = {1: round(V9S["end1"], 2), 2: 15.5, 3: round(V9S["end3"], 2), 4: 5.8}  # Chat 1, Webseite, Chat 2, Endkarte (Sekunden, SLOW = 1)
+    BASE = {1: round(V9S["end1"], 2), 2: 12.4, 3: round(V9S["end3"], 2), 4: 5.3}  # Chat 1, Webseite, Chat 2, Endkarte (Sekunden, SLOW = 1)
     TARGET = dict(BASE)
     SLOW = {k: 1.0 for k in KEYS}
 elif VAR == "V8":
@@ -1075,10 +1091,10 @@ V9_CHAT2 = [
     ("tim", V9_TEXTS["tim3"], V9S["tim3"], "text"),
 ]
 V9_T = {"tap_link": V9S["tap_link"], "link_y": 640,
-        "scroll0": 0.4, "scroll1": 6.0, "banner_in": 2.0, "banner_out": 5.7,
-        "up_tap": 6.4, "sheet_in": 6.8, "file_tap": 7.8, "sheet_out": 8.15,
-        "go_scroll": 8.8, "go_tap": 10.2, "res_switch": 10.7,
-        "res_scroll1": 11.2, "res_scroll2": 12.7, "res_hl": 13.9}
+        "scroll0": 0.4, "scroll1": 5.3, "banner_in": 1.8, "banner_out": 5.4,
+        "up_tap": 5.5, "sheet_in": 5.85, "file_tap": 6.8, "sheet_out": 7.15,
+        "go_scroll": 7.6, "go_tap": 8.8, "res_switch": 9.2,
+        "res_scroll1": 9.6, "res_scroll2": 10.6, "res_hl": 11.2}
 V9_BANNER = V9_TEXTS["tim_long"]
 
 
@@ -1604,6 +1620,16 @@ VO_RATE = os.environ.get("AD_VOICE_RATE", "165")    # Wörter pro Minute
 
 # Sprechertext je Variante: (absolute Startzeit, Text, spätestes Ende)
 def vo_lines(variant):
+    if variant == "V9":
+        return [
+            (at(1, V9S["tim1"] + 0.15), V9_TEXTS["tim1"], at(1, V9S["a1_start"])),
+            (at(1, V9S["a1_start"]), V9_TEXTS["anna1"], at(1, V9S["a1_send"] + 0.4)),
+            (at(1, V9S["tim2"] + 0.1), V9_TEXTS["tim2"], at(1, V9S["end1"])),
+            (at(2, V9_T["banner_in"] + 0.35), V9_TEXTS["tim_long"], at(3, 0.0)),
+            (at(3, V9S["a2_start"]), V9_TEXTS["anna2"], at(3, V9S["a2_send"] + 0.4)),
+            (at(3, V9S["tim3"] + 0.1), V9_TEXTS["tim3"], at(4, 0.0)),
+            (at(4, -0.10), "SellCheck. Check, was WIRKLICH bleibt. Für mehr Infos unten klicken.", DUR - 0.05),
+        ]
     if variant == "V8":
         return [
             (at(1, 0.05), "Wusstest du, dass Vinted, eBay und Kleinanzeigen deine Verkäufe an die Steuerbehörde melden, sobald du eine bestimmte Grenze erreichst? Ich zeig dir kurz, wo du stehst.", START[2]),
@@ -2011,7 +2037,7 @@ def main():
         print("Testframes gerendert")
         return
     if only == "voice":
-        folder = sys.argv[3] if len(sys.argv) > 3 else os.environ.get("AD_VOICE_DIR", os.path.join(HERE, {"V2": "voice_v2", "V3": "voice_v3", "V6": "voice_v6", "V7": "voice_v7", "V8": "voice_v8"}.get(variant, "voice")))
+        folder = sys.argv[3] if len(sys.argv) > 3 else os.environ.get("AD_VOICE_DIR", os.path.join(HERE, {"V2": "voice_v2", "V3": "voice_v3", "V6": "voice_v6", "V7": "voice_v7", "V8": "voice_v8", "V9": "voice_v9"}.get(variant, "voice")))
         files = find_voice_files(folder)
         missing = [i + 1 for i, f in enumerate(files) if not f]
         if len(missing) == len(files):
