@@ -1115,80 +1115,23 @@ def v9_keyboard(L):
     hn_text(L, 792 + 132, yb + kh / 2, "Senden", 40, (30, 30, 30), anchor="mm")
 
 
-def v9_memoji(L, cx, cy, r):
-    """Gezeichnetes Profilbild im Stil eines Memojis (kein echtes Apple-Memoji): rundes Gesicht mit weicher Schattierung auf Pastellkreis."""
+@lru_cache(maxsize=1)
+def v9_memoji_img():
+    return Image.open(os.path.join(HERE, "assets", "v9", "tim_memoji.png")).convert("RGBA")
+
+
+def v9_memoji(L, cx, cy, r, bg=(206, 228, 247)):
+    """Tims Profilbild: Memoji-Grafik (vom Nutzer geliefert, zwinkernd) freigestellt auf Pastellkreis."""
     n = int(2 * r * S)
-    u, c = r * S, n / 2
-
-    def layer():
-        return Image.new("RGBA", (n, n), (0, 0, 0, 0))
-
-    def el(img, x, y, rx, ry, fill):
-        ImageDraw.Draw(img).ellipse([c + (x - rx) * u, c + (y - ry) * u, c + (x + rx) * u, c + (y + ry) * u], fill=fill)
-
-    base = layer()
-    # Hintergrund: Pastellverlauf
-    bg = layer()
-    el(bg, 0, 0, 1.0, 1.0, (255, 214, 130, 255))
-    el(bg, -0.25, -0.35, 0.8, 0.7, (255, 232, 170, 255))
-    bg = bg.filter(ImageFilter.GaussianBlur(u * 0.12))
-    base.alpha_composite(bg)
-    # Schultern/Shirt
-    sh = layer()
-    el(sh, 0, 1.05, 0.82, 0.5, (64, 118, 214, 255))
-    el(sh, -0.2, 0.9, 0.4, 0.2, (90, 144, 236, 255))
-    base.alpha_composite(sh.filter(ImageFilter.GaussianBlur(u * 0.04)))
-    hals = layer()
-    ImageDraw.Draw(hals).rectangle([c - 0.17 * u, c + 0.42 * u, c + 0.17 * u, c + 0.72 * u], fill=(226, 172, 128, 255))
-    base.alpha_composite(hals)
-    # Haare hinten
-    hh = layer()
-    el(hh, 0, -0.26, 0.66, 0.6, (72, 48, 36, 255))
-    base.alpha_composite(hh)
-    # Ohren
-    ears = layer()
-    el(ears, -0.57, 0.04, 0.1, 0.15, (232, 180, 138, 255))
-    el(ears, 0.57, 0.04, 0.1, 0.15, (232, 180, 138, 255))
-    base.alpha_composite(ears)
-    # Gesicht mit Licht von oben links und Schatten unten rechts
-    face = layer()
-    el(face, 0, 0.04, 0.54, 0.62, (242, 196, 154, 255))
-    shade = layer()
-    el(shade, 0.14, 0.2, 0.5, 0.55, (214, 156, 116, 140))
-    light = layer()
-    el(light, -0.15, -0.12, 0.3, 0.3, (255, 232, 205, 170))
-    mask = layer()
-    el(mask, 0, 0.04, 0.54, 0.62, (255, 255, 255, 255))
-    face.alpha_composite(Image.composite(shade.filter(ImageFilter.GaussianBlur(u * 0.12)), layer(), mask.getchannel("A")))
-    face.alpha_composite(Image.composite(light.filter(ImageFilter.GaussianBlur(u * 0.1)), layer(), mask.getchannel("A")))
-    base.alpha_composite(face)
-    # Haare oben, Fransen mit Glanz
-    top = layer()
-    el(top, 0, -0.5, 0.6, 0.31, (72, 48, 36, 255))
-    el(top, -0.3, -0.38, 0.3, 0.2, (72, 48, 36, 255))
-    el(top, 0.28, -0.4, 0.28, 0.17, (72, 48, 36, 255))
-    base.alpha_composite(top)
-    gl = layer()
-    el(gl, -0.18, -0.58, 0.22, 0.07, (140, 100, 78, 150))
-    base.alpha_composite(gl.filter(ImageFilter.GaussianBlur(u * 0.03)))
-    # Gesichtszüge
-    f = layer()
-    d = ImageDraw.Draw(f)
-    for sx in (-1, 1):
-        el(f, sx * 0.2, -0.02, 0.085, 0.115, (34, 26, 26, 255))
-        el(f, sx * 0.175, -0.06, 0.03, 0.04, (255, 255, 255, 255))
-        el(f, sx * 0.225, 0.02, 0.014, 0.02, (255, 255, 255, 200))
-        d.line([c + (sx * 0.34) * u, c - 0.17 * u, c + (sx * 0.1) * u, c - 0.2 * u], fill=(60, 40, 30, 255), width=max(3, int(0.06 * u)))
-        el(f, sx * 0.34, 0.2, 0.1, 0.06, (244, 150, 140, 120))
-    d.line([c, c + 0.02 * u, c - 0.035 * u, c + 0.14 * u, c + 0.03 * u, c + 0.15 * u], fill=(206, 146, 110, 255), width=max(2, int(0.04 * u)))
-    # Lächeln mit Zähnen
-    d.chord([c - 0.2 * u, c + 0.14 * u, c + 0.2 * u, c + 0.42 * u], 0, 180, fill=(168, 60, 62, 255))
-    d.chord([c - 0.16 * u, c + 0.15 * u, c + 0.16 * u, c + 0.27 * u], 0, 180, fill=(255, 255, 255, 255))
-    base.alpha_composite(f)
+    base = Image.new("RGBA", (n, n), bg + (255,))
+    mm = v9_memoji_img()
+    sc = (1.62 * r * S) / mm.width
+    mm = mm.resize((max(1, int(mm.width * sc)), max(1, int(mm.height * sc))), Image.LANCZOS)
+    base.alpha_composite(mm, ((n - mm.width) // 2, int(n * 0.50 - mm.height * 0.50)))
     m = Image.new("L", (n, n), 0)
     ImageDraw.Draw(m).ellipse([0, 0, n - 1, n - 1], fill=255)
     base.putalpha(Image.composite(base.getchannel("A"), Image.new("L", (n, n), 0), m))
-    v8_blend(L, base, cx * S - c, cy * S - c)
+    v8_blend(L, base, cx * S - n / 2, cy * S - n / 2)
 
 
 def v9_glass(L, x0, y0, x1, y1, radius, tint=(250, 250, 252), alpha=150):
@@ -1337,7 +1280,7 @@ def scene_v9_site(L, t):
         h = 36 + 52 + len(lines) * 52 + 28
         pin = ease_back(prog(t, b0, 0.5))
         pout = ease_out(prog(t, b1, 0.35))
-        by = 150 + (-h - 200) * (1 - pin) + (-h - 200) * pout
+        by = 16 + (-h - 200) * (1 - pin) + (-h - 200) * pout
         v9_glass(L, 22, by, 1058, by + h, 66)
         v9_memoji(L, 112, by + h / 2 - 4, 50)
         # kleines App-Symbol an der Ecke des Fotos
@@ -1692,10 +1635,12 @@ def build_audio(variant, path, with_voice=False, voice_files=None):
 
     if variant == "V9":
         def ping(t0):
-            # heller Glockenton, ähnlich dem iPhone-Hinweiston: Grundton plus unharmonische Obertöne
-            add(sfx, t0, tone(1318.5, 0.9, "sine", 5.0), 0.34)
-            add(sfx, t0, tone(1318.5 * 2.76, 0.5, "sine", 9.0), 0.13)
-            add(sfx, t0, tone(1318.5 * 5.4, 0.3, "sine", 14.0), 0.05)
+            # heller, glasiger Hinweiston: zwei schnell aufeinanderfolgende hohe Töne mit lang nachklingendem Funkeln
+            for dt, f, g in ((0.0, 1760.0, 0.30), (0.085, 2349.3, 0.26)):
+                add(sfx, t0 + dt, tone(f, 1.1, "sine", 4.2), g)
+                add(sfx, t0 + dt, tone(f * 2.76, 0.7, "sine", 6.0), g * 0.42)
+                add(sfx, t0 + dt, tone(f * 5.4, 0.5, "sine", 9.0), g * 0.2)
+                add(sfx, t0 + dt, tone(f * 8.93, 0.35, "sine", 12.0), g * 0.08)
         ping(at(1, V9_CHAT1[0][2]))
         pop(at(1, V9_CHAT1[1][2]), 480)
         ping(at(1, V9_CHAT1[2][2]))
