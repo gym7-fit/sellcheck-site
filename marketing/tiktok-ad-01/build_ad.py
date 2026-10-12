@@ -528,14 +528,14 @@ def scene_v2_deadline(L, t):
 
 
 # ---- V6 "Drei Fragen" (dunkles Design wie V2/V3/V7)
-V6_TOPS_Q = (430, 770, 1110)
-V6_TOPS_A = (500, 810, 1120)
+V6_TOPS_Q = (400, 730, 1060)
+V6_TOPS_A = (520, 830, 1140)
 V6_QSTART = (0.2, 3.5, 6.8)
 V6_FLIP = (2.6, 3.4, 4.2)
 V6_QUESTIONS = (("Wie viele Verkäufe", "hattest du dieses Jahr?"),
                 ("Wie viel Umsatz davon", "auf welcher Plattform?"),
                 ("Und was davon ist", "wirklich Gewinn?"))
-V6_CHIPS = (("Vinted", (9, 177, 186), 345, 1050), ("eBay", (54, 101, 243), 700, 1050), ("Kleinanzeigen", (134, 184, 23), 540, 1185))
+V6_CHIPS = (("Vinted", (9, 177, 186), 335, 1020), ("eBay", (54, 101, 243), 715, 1020), ("Kleinanzeigen", (134, 184, 23), 540, 1160))
 
 
 def v6_mix(a, b, k):
@@ -543,23 +543,31 @@ def v6_mix(a, b, k):
 
 
 def v6_question_face(L, i, x0, y0, x1, y1, k_active):
-    """k_active 1 = Karte aktiv (Lime), 0 = ruhig (dunkel)."""
+    """Frage-Karte: Nummer links, Text mittig, Fragezeichen rechts (spiegelbildlich, gleiche Ränder).
+    k_active 1 = Karte aktiv (Lime), 0 = ruhig (dunkel)."""
     cy = (y0 + y1) / 2
+    r = 38
+    cxl, cxr = x0 + 70, x1 - 70
+    tile = v6_mix(INK2, LIME, k_active)
     fg = v6_mix(PAPER, INK, k_active)
-    L.circle(x0 + 72, cy, 44, col(v6_mix(LIME, INK, k_active)))
-    L.text(x0 + 72, cy + 2, str(i + 1), 56, "heavy", col(v6_mix(INK, LIME, k_active)), "mm")
+    acc = v6_mix(LIME, INK, k_active)
+    L.circle(cxl, cy, r, col(acc))
+    L.text(cxl, cy + 1, str(i + 1), 50, "heavy", col(tile), "mm")
+    L.circle(cxr, cy, r, col(acc))
+    L.circle(cxr, cy, r - 6, col(tile))
+    L.text(cxr, cy + 1, "?", 52, "heavy", col(acc), "mm")
     lines = V6_QUESTIONS[i]
-    size = 58
-    while max(L.width(s, size, "heavy") for s in lines) > 600 and size > 30:
+    maxw = (cxr - r - 26) - (cxl + r + 26)
+    size = 56
+    while max(L.width(s, size, "heavy") for s in lines) > maxw and size > 30:
         size -= 1
-    ty = cy - size * 0.62
+    lh = size * 1.2
     for j, s in enumerate(lines):
-        L.text(x0 + 140, ty + j * size * 1.22, s, size, "heavy", col(fg), "lt")
-    L.text(x1 - 46, cy + 4, "?", 120, "heavy", col(v6_mix(LIME, INK, k_active)), "mm")
+        L.text(cxl + r + 26, cy + (j - 0.5) * lh, s, size, "heavy", col(fg), "lm")
 
 
 def scene_v6_hook(L, t):
-    base = 760
+    base = 720
     p = prog(t, 0.0, 0.45)
     if p > 0:
         sc = 0.7 + 0.3 * ease_back(p)
@@ -569,18 +577,18 @@ def scene_v6_hook(L, t):
         x = 540 - (w3 + wf) / 2
         L.text(x, base, "3", 250 * sc, "heavy", col(LIME, a), "ls")
         L.text(x + w3, base, "Fragen", 190 * sc, "heavy", col(PAPER, a), "ls")
-    pop_text(L, 540, 880, "an alle, die auf", 56, "medium", MUTED, t, 0.75)
+    pop_text(L, 540, 860, "an alle, die auf", 62, "medium", MUTED, t, 0.75)
     for k, (name, dot, cx, cy) in enumerate(V6_CHIPS):
         p = prog(t, 1.0 + k * 0.15, 0.3)
         if p <= 0:
             continue
         sc = 0.8 + 0.2 * ease_back(p)
         a = 255 * clamp(p * 3)
-        w = (L.width(name, 46, "bold") + 110) * sc
-        pill(L, cx, cy, w, 96 * sc, col(INK2, a), col((60, 68, 80), a))
-        L.circle(cx - w / 2 + 44 * sc, cy, 15 * sc, col(dot, a))
-        L.text(cx - w / 2 + 76 * sc, cy, name, 46 * sc, "bold", col(PAPER, a), "lm")
-    pop_text(L, 540, 1345, "verkaufen.", 56, "medium", MUTED, t, 1.8)
+        w = (L.width(name, 54, "bold") + 124) * sc
+        pill(L, cx, cy, w, 108 * sc, col(INK2, a), col((60, 68, 80), a))
+        L.circle(cx - w / 2 + 50 * sc, cy, 17 * sc, col(dot, a))
+        L.text(cx - w / 2 + 86 * sc, cy, name, 54 * sc, "bold", col(PAPER, a), "lm")
+    pop_text(L, 540, 1320, "verkaufen.", 62, "medium", MUTED, t, 1.8)
 
 
 def scene_v6_questions(L, t):
@@ -601,25 +609,30 @@ def scene_v6_questions(L, t):
 
 def v6_answer_face(L, i, x0, y0, x1, y1, t, tstart):
     cy = (y0 + y1) / 2
-    check_circle(L, x0 + 72, cy, 44, bg=GREEN, fg=WHITE)
+    r = 38
+    cxl = x0 + 70
+    check_circle(L, cxl, cy, r, bg=GREEN, fg=WHITE)
+    tx = cxl + r + 26
     k = ease_out(prog(t, tstart + 0.3, 0.7))
     if i == 0:
-        L.text(x0 + 140, y0 + 62, "Verkäufe dieses Jahr", 36, "medium", col(DARKMUTED), "lm")
-        L.text(x0 + 140, cy + 40, str(int(round(47 * k))), 150, "heavy", col(INK), "lm")
+        L.text(tx, y0 + 70, "Verkäufe dieses Jahr", 36, "medium", col(DARKMUTED), "lm")
+        num = str(int(round(47 * k)))
+        L.text(tx, y0 + 232, num, 150, "heavy", col(INK), "ls")
+        L.text(tx + L.width("47", 150, "heavy") + 24, y0 + 232, "Verkäufe", 46, "medium", col(DARKMUTED), "ls")
     elif i == 1:
         rows = [("Vinted", 27, 30, "27 / 30 Verkäufe", DOT["Vinted"]), ("eBay", 1850, 2000, "1.850 / 2.000 €", DOT["eBay"])]
-        for r, (name, v, lim, label, dot) in enumerate(rows):
-            ry = y0 + 84 + r * 100
-            L.circle(x0 + 152, ry, 13, col(dot))
-            L.text(x0 + 178, ry, name, 38, "bold", col(INK), "lm")
-            L.text(x1 - 44, ry, label, 32, "medium", col(DARKMUTED), "rm")
-            bx0, bx1 = x0 + 140, x1 - 44
-            L.rrect(bx0, ry + 30, bx1, ry + 50, 10, fill=col(TRACK))
-            L.rrect(bx0, ry + 30, bx0 + (bx1 - bx0) * min(1, v / lim) * k, ry + 50, 10, fill=col(AMBER))
+        for r_, (name, v, lim, label, dot) in enumerate(rows):
+            ry = y0 + 92 + r_ * 100
+            L.circle(tx + 12, ry, 12, col(dot))
+            L.text(tx + 36, ry, name, 38, "bold", col(INK), "lm")
+            L.text(x1 - 40, ry, label, 32, "medium", col(DARKMUTED), "rm")
+            bx0, bx1 = tx, x1 - 40
+            L.rrect(bx0, ry + 30, bx1, ry + 48, 9, fill=col(TRACK))
+            L.rrect(bx0, ry + 30, bx0 + (bx1 - bx0) * min(1, v / lim) * k, ry + 48, 9, fill=col(AMBER))
     else:
-        L.text(x0 + 140, y0 + 62, "Gewinn nach Einkauf", 36, "medium", col(DARKMUTED), "lm")
+        L.text(tx, y0 + 70, "Gewinn nach Einkauf", 36, "medium", col(DARKMUTED), "lm")
         val = f"{842.5 * k:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-        L.text(x0 + 140, cy + 40, val + " €", 112, "heavy", col(DEEPGREEN), "lm")
+        L.text(tx, y0 + 226, val + " €", 112, "heavy", col(DEEPGREEN), "ls")
 
 
 def scene_v6_answers(L, t):
@@ -652,7 +665,7 @@ def scene_v6_answers(L, t):
             else:
                 v6_question_face(L, i, cx - hw, top, cx + hw, top + 290, 0.0)
     if t > V6_FLIP[2] + 0.5:
-        pop_text(L, 540, 1470, "Beispieldaten", 26, "medium", MUTED, t, V6_FLIP[2] + 0.5, dur=0.25)
+        pop_text(L, 540, 1490, "Beispieldaten", 26, "medium", MUTED, t, V6_FLIP[2] + 0.5, dur=0.25)
 
 
 SCENES = {
