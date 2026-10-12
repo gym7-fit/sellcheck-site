@@ -49,6 +49,8 @@ V9_TEXTS = {
     "tim2": "Mit SellCheck:",
     "anna2": "Ahh cool, so eine praktische Website kannte ich gar nicht.",
     "tim3": "Jap! Und das Beste: kostenlos, mit Konto, und deine Daten bleiben im Browser.",
+    # Tims längere Nachricht: im Banner (abgeschnitten) und später vollständig im Chatverlauf
+    "tim_long": "Du lädst einfach deine Verkäufe als CSV hoch, und SellCheck zeigt dir pro Plattform, wo du stehst. Dazu bekommst du deinen Gewinn und eine Übersicht für die Steuererklärung.",
 }
 
 
@@ -63,7 +65,7 @@ def v9_schedule():
     d["tim2"] = d["tim_type1"] + 1.1
     d["tap_link"] = d["tim2"] + 1.5
     d["end1"] = d["tap_link"] + 0.6
-    d["a2_start"] = 0.6
+    d["a2_start"] = 1.4
     d["a2_ts"], e = v9_type_times(V9_TEXTS["anna2"], d["a2_start"])
     d["a2_send"] = e + 0.35
     d["tim_type2"] = d["a2_send"] + 0.6
@@ -1067,7 +1069,7 @@ V9_CHAT1 = [
     ("anna", V9_TEXTS["anna1"], V9S["a1_send"], "text"),
     ("tim", V9_TEXTS["tim2"], V9S["tim2"], "link"),
 ]
-V9_CHAT2_PREV = [m[:3] + ("text",) for m in V9_CHAT1[:2]] + [V9_CHAT1[2][:3] + ("link",)]
+V9_CHAT2_PREV = [m[:3] + ("text",) for m in V9_CHAT1[:2]] + [V9_CHAT1[2][:3] + ("link",)] + [("tim", V9_TEXTS["tim_long"], 0.0, "text")]
 V9_CHAT2 = [
     ("anna", V9_TEXTS["anna2"], V9S["a2_send"], "text"),
     ("tim", V9_TEXTS["tim3"], V9S["tim3"], "text"),
@@ -1075,7 +1077,7 @@ V9_CHAT2 = [
 V9_T = {"tap_link": V9S["tap_link"], "link_y": 640,
         "up_tap": 1.0, "banner_in": 1.6, "banner_out": 8.0, "go_scroll": 2.4, "go_tap": 4.2, "res_switch": 4.7,
         "res_scroll1": 5.5, "res_scroll2": 7.5, "res_hl": 8.8}
-V9_BANNER = "Du lädst einfach deine Verkäufe als CSV hoch, und SellCheck zeigt dir pro Plattform, wo du stehst."
+V9_BANNER = V9_TEXTS["tim_long"]
 
 
 def v9_bubble_layout(L, msgs):
@@ -1386,7 +1388,10 @@ def scene_v9_site(L, t):
     # Mitteilungsbanner wie auf dem iPhone (iOS 17): Milchglas, große Rundung, Kontaktfoto mit App-Symbol, Name, Text
     b0, b1 = tw["banner_in"], tw["banner_out"]
     if b0 <= t < b1 + 0.5:
-        lines = hn_wrap(L, V9_BANNER, 41, 760)[:3]
+        all_lines = hn_wrap(L, V9_BANNER, 41, 740)
+        lines = all_lines[:3]
+        if len(all_lines) > 3:
+            lines[2] = lines[2].rstrip(" ,") + " …"
         h = 36 + 52 + len(lines) * 52 + 28
         pin = ease_back(prog(t, b0, 0.5))
         pout = ease_out(prog(t, b1, 0.35))
