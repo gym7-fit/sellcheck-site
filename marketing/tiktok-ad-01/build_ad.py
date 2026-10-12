@@ -35,23 +35,23 @@ os.environ["AD_VARIANT"] = VAR  # damit Worker-Prozesse dieselbe Variante nutzen
 V2LIKE = VAR in ("V2", "V3", "V6", "V7")
 if VAR == "V2":
     KEYS = (1, 2, 3, 4)
-    BASE = {1: 2.4, 2: 4.0, 3: 7.9, 4: 3.4}
-    TARGET = {1: 2.85, 2: 6.85, 3: 8.05, 4: 4.25}  # Sekunden je Szene, abgestimmt auf die Sprechzeiten
+    BASE = {1: 2.4, 2: 4.0, 3: 7.9, 4: 5.1}
+    TARGET = {1: 2.85, 2: 6.85, 3: 8.05, 4: 5.1}  # Sekunden je Szene, abgestimmt auf die Sprechzeiten
     SLOW = {k: TARGET[k] / BASE[k] for k in KEYS}
 elif VAR == "V3":
     KEYS = (1, 2, 3, 4)
-    BASE = {1: 2.4, 2: 4.0, 3: 7.9, 4: 3.4}
-    TARGET = {1: 2.6, 2: 8.2, 3: 8.1, 4: 4.1}  # nach Messung der Sprechzeiten (Clips 2,4 / 8,0 / 8,0 / 3,9 s)
+    BASE = {1: 2.4, 2: 4.0, 3: 7.9, 4: 5.1}
+    TARGET = {1: 2.6, 2: 8.2, 3: 8.1, 4: 5.1}  # nach Messung der Sprechzeiten (Clips 2,4 / 8,0 / 8,0 / 3,9 s)
     SLOW = {k: TARGET[k] / BASE[k] for k in KEYS}
 elif VAR == "V6":
     KEYS = (1, 2, 3, 4)
-    BASE = {1: 4.75, 2: 9.1, 3: 5.0, 4: 4.2}
+    BASE = {1: 4.75, 2: 9.1, 3: 5.0, 4: 5.1}
     TARGET = dict(BASE)  # Szenenzeiten in Sekunden, abgestimmt auf die Sprachclips (4,55 / 8,9 / 4,4 / 3,7 s)
     SLOW = {k: 1.0 for k in KEYS}
 elif VAR == "V7":
     KEYS = (1, 2, 3, 4)
-    BASE = {1: 2.4, 2: 4.0, 3: 7.9, 4: 3.4}
-    TARGET = {1: 4.1, 2: 5.6, 3: 7.6, 4: 4.1}  # nach Messung der Sprechzeiten (Clips 3,9 / 5,2 / 7,0 / 3,7 s)
+    BASE = {1: 2.4, 2: 4.0, 3: 7.9, 4: 5.1}
+    TARGET = {1: 4.1, 2: 5.6, 3: 7.6, 4: 5.1}  # nach Messung der Sprechzeiten (Clips 3,9 / 5,2 / 7,0 / 3,7 s)
     SLOW = {k: TARGET[k] / BASE[k] for k in KEYS}
 else:
     KEYS = (1, 2, 3, 4, 5)
@@ -96,6 +96,7 @@ if VAR == "V3":
 P7_T = (0.5, 2.07, 0.79, 1.07, 2.71, 3.04)  # Reseller-Gewinnszene (Basiszeit): Überschrift 1, Überschrift 2, Karte, Verkauf, Einkauf, Gewinn
 if VAR == "V7":
     S3_B, CAP2_T = 5.5, 1.55
+CTA_T = (0.75, 2.6)  # Claim erscheint, "Für mehr Infos" und Klick-Hinweis (Sekunden ab Szenenstart)
 DEMO_SHIFT = 1.4 if VAR == "V3" else 0.0  # Karte/Ampel erst, wenn "und siehst pro Plattform" gesprochen wird
 
 
@@ -405,7 +406,37 @@ def scene_benefits(L, t):
     pop_text(L, 540, 1352, "Deine Daten bleiben bei dir.", 50, "medium", MUTED, t, 1.8)
 
 
+def scene_cta_v2like(L, t):
+    """Endkarte der neueren Ads: Logo, Claim, Hinweis 'Hier unten klicken' mit Pfeil über der TikTok-Klickfläche."""
+    p = prog(t, 0.0, 0.45)
+    sc = 0.75 + 0.25 * ease_back(p)
+    h = 145 * sc
+    w, _ = LOGO.lockup_size(h * S)
+    tmp = Image.new("RGBA", L.im.size, (0, 0, 0, 0))
+    LOGO.draw_lockup(ImageDraw.Draw(tmp), 540 * S - w / 2, (600 - h / 2) * S, h * S, on_dark=True)
+    tmp.putalpha(tmp.getchannel("A").point(lambda v: int(v * clamp(p * 3))))
+    L.im.alpha_composite(tmp)
+    pop_text(L, 540, 840, "Check, was", 108, "heavy", PAPER, t, CTA_T[0])
+    pop_text(L, 540, 965, "wirklich bleibt.", 108, "heavy", LIME, t, CTA_T[0] + 0.12)
+    pop_text(L, 540, 1090, "Für mehr Infos", 52, "medium", MUTED, t, CTA_T[1])
+    pop_text(L, 540, 1215, "Unabhängig von den genannten Plattformen.", 28, "medium", MUTED, t, CTA_T[1] + 0.2, dur=0.3)
+    pop_text(L, 540, 1255, "Orientierung, keine Steuer- oder Rechtsberatung.", 28, "medium", MUTED, t, CTA_T[1] + 0.3, dur=0.3)
+    # Hinweis direkt über der Klickfläche von TikTok (unten), Pfeil wippt nach unten
+    pp = prog(t, CTA_T[1] + 0.5, 0.4)
+    if pp > 0:
+        a = 255 * clamp(pp * 3)
+        bob = 14 * math.sin(max(0, t - CTA_T[1] - 0.9) * 7)
+        pill_w = L.width("Hier unten klicken", 62, "heavy") + 130
+        pill(L, 540, 1385, pill_w * (0.85 + 0.15 * ease_back(pp)), 118, col(LIME, a))
+        L.text(540, 1388, "Hier unten klicken", 62, "heavy", col(INK, a), "mm")
+        ax, ay = 540, 1500 + bob
+        L.line([(ax, ay - 40), (ax, ay + 24)], col(LIME, a), 12)
+        L.line([(ax - 30, ay), (ax, ay + 32), (ax + 30, ay)], col(LIME, a), 12)
+
+
 def scene_cta(L, t):
+    if V2LIKE:
+        return scene_cta_v2like(L, t)
     p = prog(t, 0.0, 0.5)
     sc = 0.75 + 0.25 * ease_back(p)
     h = (145 if V2LIKE else 170) * sc
@@ -431,11 +462,13 @@ def scene_cta(L, t):
         ax, ay = 540 + ax_off, ly
         L.line([(ax, ay - 14), (ax, ay + 16)], col(INK, 255 * clamp(pp * 3)), 8)
         L.line([(ax - 14, ay + 3), (ax, ay + 18), (ax + 14, ay + 3)], col(INK, 255 * clamp(pp * 3)), 8)
+    if V2LIKE:
+        pop_text(L, 540, 1275, "Check, was wirklich bleibt.", 44, "heavy", LIME, t, 1.5, dur=0.35)
     if VAR in ("V3", "V6", "V7"):
-        pop_text(L, 540, 1290, "Unabhängig von den genannten Plattformen.", 28, "medium", MUTED, t, 1.6, dur=0.3)
-        pop_text(L, 540, 1330, "Orientierung, keine Steuer- oder Rechtsberatung.", 28, "medium", MUTED, t, 1.7, dur=0.3)
+        pop_text(L, 540, 1355, "Unabhängig von den genannten Plattformen.", 28, "medium", MUTED, t, 1.6, dur=0.3)
+        pop_text(L, 540, 1395, "Orientierung, keine Steuer- oder Rechtsberatung.", 28, "medium", MUTED, t, 1.7, dur=0.3)
     else:
-        pop_text(L, 540, 1290 if V2LIKE else 1250, "Orientierung, keine Steuer- oder Rechtsberatung.", 28, "medium", MUTED, t, 1.6, dur=0.3)
+        pop_text(L, 540, 1355 if V2LIKE else 1250, "Orientierung, keine Steuer- oder Rechtsberatung.", 28, "medium", MUTED, t, 1.6, dur=0.3)
 
 
 def scene_v3_hook(L, t):
@@ -737,21 +770,21 @@ def vo_lines(variant):
             (at(1, 0.05), "Drei Fragen an alle, die auf Vinted, eBay oder Kleinanzeigen verkaufen.", START[2]),
             (at(2, 0.05), "Eins: Wie viele Verkäufe hattest du dieses Jahr? Zwei: Wie viel Umsatz davon auf welcher Plattform? Drei: Und was davon ist WIRKLICH Gewinn?", START[3]),
             (at(3, 0.05), "Keine Ahnung? Dann bist du nicht allein. SellCheck beantwortet dir alle drei.", START[4]),
-            (at(4, -0.10), "SellCheck. Jetzt GRATIS testen. Einfach unten antippen.", DUR - 0.05),
+            (at(4, -0.10), "SellCheck. Check, was WIRKLICH bleibt. Für mehr Infos unten klicken.", DUR - 0.05),
         ]
     if variant == "V7":
         return [
             (at(1, 0.05), "[curious] Du bist Reseller, oder willst wissen, was du WIRKLICH verdienst?", START[2]),
             (at(2, 0.05), "Dann zählt nicht dein UMSATZ. Sondern, was dir nach dem Einkauf ÜBRIG bleibt.", START[3]),
             (at(3, 0.05), "Und weil du viel umsetzt, bist du schnell an der gesetzlichen Grenze, ab der Plattformen dich melden. SellCheck zeigt dir BEIDES.", START[4]),
-            (at(4, -0.10), "SellCheck. Jetzt GRATIS testen. Einfach unten antippen.", DUR - 0.05),
+            (at(4, -0.10), "SellCheck. Check, was WIRKLICH bleibt. Für mehr Infos unten klicken.", DUR - 0.05),
         ]
     if variant == "V3":
         return [
             (at(1, 0.05), "[curious] Du verkaufst viel auf Vinted und Co?", START[2]),
             (at(2, 0.05), "Dann solltest du wissen: Plattformen melden dich bis Ende JANUAR, ab DREIßIG Verkäufen oder ZWEItausend Euro, an die Steuerbehörde.", START[3]),
             (at(3, 0.05), "Mit SellCheck lädst du einfach deine Verkäufe hoch und siehst pro Plattform, wie NAH du an der Grenze bist. Und was dir WIRKLICH bleibt.", START[4]),
-            (at(4, -0.10), "SellCheck. Jetzt GRATIS testen. Einfach unten antippen.", DUR - 0.05),
+            (at(4, -0.10), "SellCheck. Check, was WIRKLICH bleibt. Für mehr Infos unten klicken.", DUR - 0.05),
         ]
     if variant == "V2":
         return [
@@ -760,7 +793,7 @@ def vo_lines(variant):
             (at(3, 0.05), "Lade deine Verkäufe hoch.", at(3, 1.5)),
             (at(3, 1.50), "Du siehst sofort, wie nah du pro Plattform an der Grenze bist.", at(3, S3_B)),
             (at(3, S3_B - 0.55), "Und was dir nach Abzug wirklich bleibt.", START[4]),
-            (at(4, -0.10), "SellCheck. Jetzt gratis testen. Einfach unten antippen.", DUR - 0.05),
+            (at(4, -0.10), "SellCheck. Check, was WIRKLICH bleibt. Für mehr Infos unten klicken.", DUR - 0.05),
         ]
     if variant != "A":
         return []
