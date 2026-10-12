@@ -92,7 +92,7 @@ elif VAR == "V3":
     SLOW = {k: TARGET[k] / BASE[k] for k in KEYS}
 elif VAR == "V9":
     KEYS = (1, 2, 3, 4)
-    BASE = {1: round(V9S["end1"], 2), 2: 13.1, 3: round(V9S["end3"], 2), 4: 5.8}  # Chat 1, Webseite, Chat 2, Endkarte (Sekunden, SLOW = 1)
+    BASE = {1: round(V9S["end1"], 2), 2: 13.8, 3: round(V9S["end3"], 2), 4: 5.8}  # Chat 1, Webseite, Chat 2, Endkarte (Sekunden, SLOW = 1)
     TARGET = dict(BASE)
     SLOW = {k: 1.0 for k in KEYS}
 elif VAR == "V8":
@@ -1075,10 +1075,10 @@ V9_CHAT2 = [
     ("tim", V9_TEXTS["tim3"], V9S["tim3"], "text"),
 ]
 V9_T = {"tap_link": V9S["tap_link"], "link_y": 640,
-        "scroll0": 0.3, "scroll1": 3.7, "banner_in": 1.0, "banner_out": 4.7,
-        "up_tap": 4.1, "sheet_in": 4.4, "file_tap": 5.4, "sheet_out": 5.75,
-        "go_scroll": 6.4, "go_tap": 7.8, "res_switch": 8.3,
-        "res_scroll1": 8.8, "res_scroll2": 10.3, "res_hl": 11.5}
+        "scroll0": 0.3, "scroll1": 4.2, "banner_in": 1.6, "banner_out": 5.0,
+        "up_tap": 4.7, "sheet_in": 5.1, "file_tap": 6.1, "sheet_out": 6.45,
+        "go_scroll": 7.1, "go_tap": 8.5, "res_switch": 9.0,
+        "res_scroll1": 9.5, "res_scroll2": 11.0, "res_hl": 12.2}
 V9_BANNER = V9_TEXTS["tim_long"]
 
 
