@@ -121,3 +121,8 @@ Stand 2026-10-12: echte Aufnahmen der Oberfläche (`assets/v8/`, mit Beispieldat
 Bildschirmaufnahme im TikTok-Look: Finger-Taps, Wort-für-Wort-Untertitel (Wortzeiten aus den Clips, `v8_words.json` wird beim Bauen erzeugt), lockere Erklärstimme (ElevenLabs „Jan“, Clips in `voice_v8/1.mp3 … 4.mp3`). Bewusst **keine erfundene Erfahrung** („ich habe …“), sondern Erklärung („ich zeig dir kurz was“).
 Erzeugen: `python3 marketing/tiktok-ad-01/build_ad.py V8` und danach `… V8 voice`. Ausgabe: `out/sellcheck_tiktok_ad_V8_mit_Stimme.mp4` (ca. 39,7 s).
 Hinweis: Die Stimme ist synthetisch, in TikTok als KI-generierte Inhalte kennzeichnen.
+
+## Version 9 (Chat Tim und Anna, V9)
+
+Chat im Messenger-Look (generisch, ohne fremde Marke): Tim erzählt von der Meldegrenze, Anna fragt nach, der Link öffnet die echte Oberfläche (Aufnahmen aus `assets/v8/`), Banner von Tim oben, Upload und Ergebnis, zurück in den Chat, Endkarte. Geplant: Tim = Stimme Mats (wie V7), Anna = Pauli (wie V2/V3). Erste Fassung nur Bild plus Ping und Tipp-Geräusche, noch keine Stimmen.
+Erzeugen: `python3 marketing/tiktok-ad-01/build_ad.py V9`. Die Zeiten (`V9_CHAT1`, `V9_CHAT2`, `V9_T`, `BASE`) sind auf geschätzte Sprechdauer gelegt und werden nach den Clips angepasst.

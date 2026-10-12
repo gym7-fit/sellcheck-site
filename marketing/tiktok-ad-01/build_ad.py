@@ -29,10 +29,10 @@ import sellcheck_logo as LOGO  # echtes SellCheck-Logo (Variante 6B)
 
 W, H, FPS, S = 1080, 1920, 30, 2          # S = Supersampling-Faktor
 # Variante: A und B (Hook-Tests der ersten Ad), V2 = "Frist"-Version (Überblick, Ende Januar, Nutzen, Handlung)
-VAR = sys.argv[1].upper() if len(sys.argv) > 1 and sys.argv[1].upper() in ("A", "B", "V2", "V3", "V6", "V7", "V8") else os.environ.get("AD_VARIANT", "A")
+VAR = sys.argv[1].upper() if len(sys.argv) > 1 and sys.argv[1].upper() in ("A", "B", "V2", "V3", "V6", "V7", "V8", "V9") else os.environ.get("AD_VARIANT", "A")
 os.environ["AD_VARIANT"] = VAR  # damit Worker-Prozesse dieselbe Variante nutzen
 # Dauer je Szene = Basiszeit der Animation x Streckung
-V2LIKE = VAR in ("V2", "V3", "V6", "V7", "V8")
+V2LIKE = VAR in ("V2", "V3", "V6", "V7", "V8", "V9")
 if VAR == "V2":
     KEYS = (1, 2, 3, 4)
     BASE = {1: 2.4, 2: 4.0, 3: 7.9, 4: 5.1}
@@ -43,6 +43,11 @@ elif VAR == "V3":
     BASE = {1: 2.4, 2: 4.0, 3: 7.9, 4: 5.1}
     TARGET = {1: 2.6, 2: 8.2, 3: 8.1, 4: 5.1}  # nach Messung der Sprechzeiten (Clips 2,4 / 8,0 / 8,0 / 3,9 s)
     SLOW = {k: TARGET[k] / BASE[k] for k in KEYS}
+elif VAR == "V9":
+    KEYS = (1, 2, 3, 4)
+    BASE = {1: 18.0, 2: 11.0, 3: 10.9, 4: 5.8}  # Chat 1, Webseite, Chat 2, Endkarte (Sekunden, SLOW = 1; Zeiten nach geschätzter Sprechdauer)
+    TARGET = dict(BASE)
+    SLOW = {k: 1.0 for k in KEYS}
 elif VAR == "V8":
     KEYS = (1, 2, 3, 4, 5)
     BASE = {1: 9.05, 2: 5.9, 3: 10.3, 4: 8.7, 5: 5.8}  # Meldegrenze, Upload und Anleitungen, Ergebnis, Steuer-Übersicht, Endkarte (Sekunden, SLOW = 1; Clips 8,9 / 5,7 / 10,0 / 8,6 / 5,3 s)
@@ -101,7 +106,7 @@ if VAR == "V3":
 P7_T = (0.5, 2.07, 0.79, 1.07, 2.71, 3.04)  # Reseller-Gewinnszene (Basiszeit): Überschrift 1, Überschrift 2, Karte, Verkauf, Einkauf, Gewinn
 if VAR == "V7":
     S3_B, CAP2_T = 5.5, 1.55
-CTA_T = (0.75, 1.4) if VAR == "V8" else (0.75, 2.6)
+CTA_T = (0.75, 1.4) if VAR in ("V8", "V9") else (0.75, 2.6)
 V8_T = {"s1_end": 9.0, "hl": 5.7, "tap_up": 2.0, "guide_scroll": 2.8, "tap_guide": 4.8,
         "r_scroll1": 0.4, "tap_gelb": 3.4, "r_scroll2": 4.4, "tap_rot": 6.9, "hl_gewinn": 8.9,
         "rep_hl1": 1.6, "rep_scroll": 3.5, "rep_hl2": 4.9}  # V8 (UGC-Stil): Ereigniszeiten je Szene
@@ -435,7 +440,7 @@ def scene_cta_v2like(L, t):
     LOGO.draw_lockup(ImageDraw.Draw(tmp), 540 * S - w / 2, (600 - h / 2) * S, h * S, on_dark=True)
     tmp.putalpha(tmp.getchannel("A").point(lambda v: int(v * clamp(p * 3))))
     L.im.alpha_composite(tmp)
-    if VAR == "V8":
+    if VAR in ("V8", "V9"):
         pop_text(L, 540, 760, "Check, was", 92, "heavy", PAPER, t, CTA_T[0])
         pop_text(L, 540, 860, "wirklich bleibt.", 92, "heavy", LIME, t, CTA_T[0] + 0.12)
         for k, label in enumerate(("Kostenlos mit Konto", "Daten bleiben im Browser", "Übersicht für die Steuererklärung")):
@@ -973,7 +978,219 @@ def scene_v8_s4(L, t):
     v8_highlight(L, 30, g0 + off, 700, g1 + off, t, V8_T["rep_hl2"])
 
 
+# ---- V9: Chat zwischen Tim und Anna (generisches Messenger-Design, keine fremde Marke), dazwischen die echte Oberfläche
+@lru_cache(maxsize=64)
+def hn(size, bold=False):
+    return ImageFont.truetype("/System/Library/Fonts/HelveticaNeue.ttc", int(round(size * S)), index=1 if bold else 0)
+
+
+def hn_wrap(L, text, size, maxw, bold=False):
+    words, lines, cur = text.split(), [], ""
+    for w in words:
+        trial = (cur + " " + w).strip()
+        if L.d.textlength(trial, font=hn(size, bold)) / S <= maxw:
+            cur = trial
+        else:
+            lines.append(cur)
+            cur = w
+    if cur:
+        lines.append(cur)
+    return lines
+
+
+def hn_text(L, x, y, s, size, fill, bold=False, anchor="la"):
+    L.d.text((int(x * S), int(y * S)), s, font=hn(size, bold), fill=fill, anchor=anchor)
+
+
+CH_BG = (236, 229, 221)
+CH_IN = (255, 255, 255)
+CH_OUT = (217, 253, 211)
+CH_INK = (17, 27, 33)
+CH_GREY = (102, 119, 129)
+CH_HEAD = (31, 44, 52)
+V9_LAYOUT = {"top": 250, "bottom": 1360, "gap": 24}
+
+# Nachrichten: (Absender, Text, Erscheinen, Typ). Zeiten je Szene, werden nach den Sprachclips angepasst.
+V9_CHAT1 = [
+    ("tim", "Hey Anna, wusstest du, dass Plattformen deine Verkäufe ab einer Grenze an die Steuerbehörde melden?", 1.3, "text"),
+    ("anna", "Warte, was? Aber woher weiß ich, ob ich über der Grenze bin, bei all den Plattformen?", 9.1, "text"),
+    ("tim", "Mit SellCheck:", 15.6, "link"),
+]
+V9_CHAT2_PREV = [m[:3] + ("text",) for m in V9_CHAT1[:2]] + [V9_CHAT1[2][:3] + ("link",)]
+V9_CHAT2 = [
+    ("anna", "Ahh cool, so eine praktische Website kannte ich gar nicht.", 0.9, "text"),
+    ("tim", "Jap! Und das Beste: kostenlos, mit Konto, und deine Daten bleiben im Browser.", 5.5, "text"),
+]
+V9_T = {"tim_type0": 0.3, "anna_type0": 8.3, "tim_type1": 15.0, "tap_link": 17.6,
+        "c2_anna_type0": 0.2, "c2_tim_type": 5.0,
+        "up_tap": 1.4, "banner_in": 2.0, "banner_out": 8.5, "go_scroll": 3.0, "go_tap": 5.0, "res_switch": 5.5,
+        "res_scroll1": 6.5, "res_scroll2": 8.6, "res_hl": 10.0}
+V9_BANNER = "Du lädst einfach deine Verkäufe als CSV hoch, und SellCheck zeigt dir pro Plattform, wo du stehst."
+
+
+def v9_bubble_layout(L, msgs):
+    """Berechnet Position und Größe aller Blasen (unabhängig von der Zeit)."""
+    out, y = [], V9_LAYOUT["top"]
+    for who, text, t0, kind in msgs:
+        maxw = 700
+        lines = hn_wrap(L, text, 42, maxw)
+        w = max(L.d.textlength(l, font=hn(42)) / S for l in lines) + 56
+        h = len(lines) * 56 + 38 + 34
+        if kind == "link":
+            w = max(w, 700)
+            h += 250
+        x0 = 48 if who == "tim" else 1032 - w
+        out.append(dict(who=who, text=text, lines=lines, t0=t0, kind=kind, x0=x0, y0=y, w=w, h=h))
+        y += h + V9_LAYOUT["gap"]
+    return out
+
+
+def v9_draw_link_card(L, x, y, w):
+    L.rrect(x + 14, y + 14, x + w - 14, y + 234, 22, fill=(238, 241, 243))
+    # Logo-Fläche
+    L.rrect(x + 14, y + 14, x + 214, y + 234, 22, fill=col(INK))
+    wlo, _ = LOGO.lockup_size(64 * S)
+    mark = Image.new("RGBA", (200 * S, 220 * S), (0, 0, 0, 0))
+    LOGO.draw_mark(ImageDraw.Draw(mark), 70 * S, 72 * S, 76 * S, on_dark=True)
+    L.im.alpha_composite(mark, (int((x + 14) * S), int((y + 14) * S)))
+    hn_text(L, x + 236, y + 52, "SellCheck", 36, CH_INK, True)
+    hn_text(L, x + 236, y + 100, "Alle Plattformen.", 30, CH_GREY)
+    hn_text(L, x + 236, y + 138, "Ein Überblick.", 30, CH_GREY)
+    hn_text(L, x + 236, y + 190, "gym7-fit.github.io", 26, (47, 111, 142))
+
+
+def v9_draw_chat(L, t, msgs, prev_msgs=(), typing=None, anna_typing=None, tap=None, status_typing=None):
+    """Zeichnet den Chatbildschirm. typing=(t0,t1) Tims Schreibanzeige, anna_typing=(t0,t1,text,t_send)."""
+    L.d.rectangle([0, 0, W * S, H * S], fill=CH_BG + (255,))
+    allm = list(prev_msgs) + list(msgs)
+    lay = v9_bubble_layout(L, allm)
+    npv = len(prev_msgs)
+    shown = [b for i, b in enumerate(lay) if i < npv or t >= b["t0"]]
+    bottom = max((b["y0"] + b["h"] for b in shown), default=0)
+    tw_active = next((w for w in (typing or []) if w[0] <= t < w[1]), None)
+    if tw_active:
+        bottom += 96 + V9_LAYOUT["gap"] * (1 if shown else 0)
+    off = max(0, bottom - V9_LAYOUT["bottom"])
+    for i, b in enumerate(lay):
+        if i >= npv and t < b["t0"]:
+            continue
+        p = 1.0 if i < npv else ease_out(prog(t, b["t0"], 0.25))
+        yy = b["y0"] - off + (1 - p) * 30
+        if yy + b["h"] < 200 or yy > 1400:
+            continue
+        fill = CH_IN if b["who"] == "tim" else CH_OUT
+        L.rrect(b["x0"], yy, b["x0"] + b["w"], yy + b["h"], 30, fill=fill + (255,))
+        ty = yy + 20
+        for ln in b["lines"]:
+            hn_text(L, b["x0"] + 28, ty, ln, 42, CH_INK)
+            ty += 56
+        if b["kind"] == "link":
+            v9_draw_link_card(L, b["x0"] + 0, ty + 4, b["w"])
+        hn_text(L, b["x0"] + b["w"] - 24, yy + b["h"] - 18, "9:41", 24, CH_GREY, anchor="rb")
+        if b["who"] == "anna":
+            cx0, cy0 = b["x0"] + b["w"] - 118, yy + b["h"] - 30
+            for dx in (0, 14):
+                L.line([(cx0 + dx - 8, cy0), (cx0 + dx - 2, cy0 + 8), (cx0 + dx + 10, cy0 - 8)], (53, 156, 211, 255), 3)
+    # Schreibanzeige von Tim
+    if tw_active:
+        last_bottom = max((b["y0"] + b["h"] for b in shown), default=None)
+        yy = (last_bottom - off + V9_LAYOUT["gap"]) if last_bottom is not None else V9_LAYOUT["top"]
+        L.rrect(48, yy, 48 + 150, yy + 72, 36, fill=CH_IN + (255,))
+        for k in range(3):
+            bob = math.sin((t - tw_active[0]) * 9 + k * 0.9) * 6
+            L.circle(48 + 42 + k * 34, yy + 36 + bob, 9, col((150, 160, 168)))
+    # Kopfzeile
+    L.d.rectangle([0, 0, W * S, 200 * S], fill=CH_HEAD + (255,))
+    hn_text(L, 60, 40, "9:41", 30, (255, 255, 255), True)
+    L.rrect(940, 44, 1000, 74, 8, fill=(255, 255, 255, 255))
+    L.circle(100, 130, 42, col((120, 144, 156)))
+    hn_text(L, 100, 132, "T", 44, (255, 255, 255), True, anchor="mm")
+    hn_text(L, 170, 98, "Tim", 44, (255, 255, 255), True)
+    is_typing = bool(tw_active or status_typing)
+    hn_text(L, 170, 150, "schreibt …" if is_typing else "online", 30, (120, 220, 150) if is_typing else (180, 195, 203))
+    # Eingabeleiste
+    L.rrect(24, 1385, 1056, 1485, 50, fill=(255, 255, 255, 255))
+    txt = ""
+    if anna_typing:
+        a0, a1, full, tsend = anna_typing
+        if a0 <= t < tsend:
+            k = int(len(full) * clamp((t - a0) / max(0.1, a1 - a0)))
+            txt = full[:k]
+    if txt:
+        shown_txt = txt if L.d.textlength(txt, font=hn(40)) / S < 880 else "…" + txt[-34:]
+        hn_text(L, 60, 1435, shown_txt, 40, CH_INK, anchor="lm")
+    else:
+        hn_text(L, 60, 1435, "Nachricht", 40, (150, 160, 168), anchor="lm")
+    L.circle(1010, 1435, 40, col((37, 160, 106)))
+    # Tastatur-Andeutung
+    L.d.rectangle([0, 1510 * S, W * S, H * S], fill=(210, 213, 219, 255))
+    for r_, n in enumerate((10, 9, 7)):
+        kw = 86
+        x_start = (W - n * (kw + 10)) / 2 + 5
+        for c_ in range(n):
+            L.rrect(x_start + c_ * (kw + 10), 1540 + r_ * 118, x_start + c_ * (kw + 10) + kw, 1540 + r_ * 118 + 100, 14, fill=(255, 255, 255, 255))
+    L.rrect(120, 1900 - 130 + 10, 960, 1900 - 130 + 100, 14, fill=(255, 255, 255, 255))
+    if tap:
+        v8_tap(L, t, tap[0], tap[1], tap[2])
+
+
+def scene_v9_chat1(L, t):
+    anna_txt = V9_CHAT1[1][1]
+    v9_draw_chat(L, t, V9_CHAT1,
+                 typing=[(V9_T["tim_type0"], V9_CHAT1[0][2]), (V9_T["tim_type1"], V9_CHAT1[2][2])],
+                 anna_typing=(V9_T["anna_type0"], V9_CHAT1[1][2] - 0.1, anna_txt, V9_CHAT1[1][2]))
+    v8_tap(L, t, V9_T["tap_link"], 420, 1030)  # Tap auf die Link-Vorschau
+
+
+def scene_v9_site(L, t):
+    """Die echte Oberfläche öffnet sich (von unten), Banner von Tim oben, Upload und Ergebnis."""
+    tw = V9_T
+    tmp = Layer()
+    if t < tw["res_switch"]:
+        after = t >= tw["up_tap"] + 0.35
+        img = "v8_step3_geladen.jpg" if after else "v8_step3_leer.jpg"
+        y = 6300.0
+        y = v8_ease(y, 9330, t, tw["go_scroll"], tw["go_scroll"] + 1.2)
+        ui_window(tmp, img, "header_step3.jpg", y)
+        v8_tap(tmp, t, tw["up_tap"], 540, V8_S3["drop"] + V8_S3["drop_h"] / 2 + (350 - 6300))
+        v8_tap(tmp, t, tw["go_tap"], 310, V8_S3["go"] + 80 + (350 - 9330))
+    else:
+        y = 960.0
+        y = v8_ease(y, V8_S5["vinted"] - 40, t, tw["res_scroll1"], tw["res_scroll1"] + 1.2)
+        y = v8_ease(y, V8_S5["etsy"] - 120, t, tw["res_scroll2"], tw["res_scroll2"] + 1.4)
+        ui_window(tmp, "v8_step5.jpg", "header_step5.jpg", y)
+        off = 350 - y
+        v8_highlight(tmp, 150, V8_S5["etsy"] + 470 + off, 705, V8_S5["etsy"] + 535 + off, t, tw["res_hl"])
+    p = ease_out(prog(t, 0.0, 0.45))
+    L.d.rectangle([0, 0, W * S, H * S], fill=CH_BG + (255,))
+    L.im.paste(tmp.im, (0, int((1 - p) * H * S)))
+    # Banner von Tim
+    b0, b1 = tw["banner_in"], tw["banner_out"]
+    if b0 <= t < b1 + 0.4:
+        bp = ease_out(prog(t, b0, 0.35)) * (1 - ease_out(prog(t, b1, 0.35)))
+        by = -330 + 330 * bp + 30
+        lines = hn_wrap(L, V9_BANNER, 36, 800)
+        h = 120 + len(lines) * 46
+        v8_blend(L, Image.new("RGBA", (int(1000 * S), int(h * S)), (247, 247, 249, 240)), 40 * S, by * S)
+        L.rrect(40, by, 1040, by + h, 36, outline=(205, 208, 214, 255), width=2)
+        L.rrect(66, by + 24, 126, by + 84, 14, fill=(37, 160, 106, 255))
+        hn_text(L, 146, by + 30, "Tim", 36, CH_INK, True)
+        hn_text(L, 1010, by + 32, "jetzt", 28, CH_GREY, anchor="ra")
+        ty = by + 96
+        for ln in lines:
+            hn_text(L, 66, ty, ln, 36, CH_INK)
+            ty += 46
+
+
+def scene_v9_chat2(L, t):
+    anna_txt = V9_CHAT2[0][1]
+    v9_draw_chat(L, t, V9_CHAT2, prev_msgs=V9_CHAT2_PREV,
+                 anna_typing=(V9_T["c2_anna_type0"], V9_CHAT2[0][2] - 0.1, anna_txt, V9_CHAT2[0][2]),
+                 typing=[(V9_T["c2_tim_type"], V9_CHAT2[1][2])])
+
+
 SCENES = {
+    "V9": [(1, scene_v9_chat1), (2, scene_v9_site), (3, scene_v9_chat2)],
     "V8": [(1, scene_v8_s1), (2, scene_v8_s2), (3, scene_v8_s3), (4, scene_v8_s4)],
     "V6": [(1, scene_v6_hook), (2, scene_v6_questions), (3, scene_v6_answers)],
     "A": [(1, scene_hook_a), (2, scene_problem_a)],
@@ -982,7 +1199,7 @@ SCENES = {
     "V3": [(1, scene_v3_hook), (2, scene_v2_deadline)],
     "V7": [(1, scene_v7_hook), (2, scene_v7_profit)],
 }
-COMMON = [(5, scene_cta)] if VAR == "V8" else [(4, scene_cta)] if VAR == "V6" else [(3, scene_demo), (4, scene_cta)] if V2LIKE else [(3, scene_demo), (4, scene_benefits), (5, scene_cta)]
+COMMON = [(5, scene_cta)] if VAR == "V8" else [(4, scene_cta)] if VAR == "V9" else [(4, scene_cta)] if VAR == "V6" else [(3, scene_demo), (4, scene_cta)] if V2LIKE else [(3, scene_demo), (4, scene_benefits), (5, scene_cta)]
 
 
 # ------------------------------------------------------------------ Hintergrund & Frame
@@ -1008,7 +1225,7 @@ def render_frame(args):
     t = i / FPS
     im = background().copy()
     L0 = Layer()
-    if not (variant == "V8" and t < START[5]):
+    if not (variant == "V8" and t < START[5]) and not (variant == "V9" and t < START[4]):
         brand(L0, t)
     im.paste(L0.im, (0, 0), L0.im)
     scenes = SCENES[variant] + COMMON
@@ -1245,6 +1462,9 @@ def build_audio(variant, path, with_voice=False, voice_files=None):
         t += 4 * beat
         bar += 1
 
+    if variant == "V9":
+        music = [0.0] * n  # Chat-Ad ohne Musikbett
+
     # Effekte: nur weiche Töne, kein Rauschen
     def tick(t0, f=1500):
         add(sfx, t0, tone(f, 0.05, "sine", 10.0), 0.28)
@@ -1301,7 +1521,21 @@ def build_audio(variant, path, with_voice=False, voice_files=None):
         pop(at(2, 0.0), 640)
         pop(at(2, 0.18), 720)
 
-    if variant == "V8":
+    if variant == "V9":
+        def ping(t0):
+            ding(t0, 1174.66)
+            ding(t0 + 0.12, 1568.0)
+        ping(at(1, V9_CHAT1[0][2]))
+        pop(at(1, V9_CHAT1[1][2]), 480)
+        ping(at(1, V9_CHAT1[2][2]))
+        tick(at(1, V9_T["tap_link"]), 1500)
+        tick(at(2, V9_T["up_tap"]), 1500)
+        tick(at(2, V9_T["go_tap"]), 1500)
+        ding(at(2, V9_T["res_hl"] + 0.2), 659.25)
+        ping(at(2, V9_T["banner_in"]))
+        pop(at(3, V9_CHAT2[0][2]), 480)
+        ping(at(3, V9_CHAT2[1][2]))
+    elif variant == "V8":
         for key, sc_ in (("tap_up", 2), ("tap_guide", 2), ("tap_gelb", 3), ("tap_rot", 3)):
             tick(at(sc_, V8_T[key]), 1500)
         ding(at(2, V8_T["tap_up"] + 0.5), 784.0)
@@ -1319,10 +1553,10 @@ def build_audio(variant, path, with_voice=False, voice_files=None):
             tick(at(3, 2.0 + DEMO_SHIFT + i * 0.28 + 0.15), 1100 + i * 120)
         blip_down(at(3, 4.15 + DEMO_SHIFT))
         ding(at(3, S3_B + 1.6), 659.25)                                 # Summe ist oben angekommen
-    if variant not in ("V2", "V3", "V6", "V7", "V8"):
+    if variant not in ("V2", "V3", "V6", "V7", "V8", "V9"):
         for i, f in enumerate((523.25, 659.25, 783.99)):
             ding(at(4, 0.35 + i * 0.4), f)
-    cta = 4 if variant in ("V2", "V3", "V6", "V7") else 5
+    cta = 4 if variant in ("V2", "V3", "V6", "V7", "V9") else 5
     for j, f in enumerate((523.25, 659.25, 783.99, 1046.5)):
         ding(at(cta, 0.9) + j * 0.1, f)
 
