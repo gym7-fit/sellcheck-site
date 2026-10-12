@@ -116,6 +116,8 @@ Ein helles Alternativdesign (Futura, Marker-Gelb) liegt in `build_ad_v6.py` (nur
 
 ## Version 8 (UGC-Stil ohne Gesicht, V8)
 
+Stand 2026-10-12: echte Aufnahmen der Oberfläche (`assets/v8/`, mit Beispieldaten), fünf Szenen (Meldegrenze erklärt, Upload, Ergebnis, Steuer-Übersicht, Endkarte), Clips `voice_v8/1..5.mp3` (Jan). Details unten stammen aus der ersten Fassung.
+
 Bildschirmaufnahme im TikTok-Look: Finger-Taps, Wort-für-Wort-Untertitel (Wortzeiten aus den Clips, `v8_words.json` wird beim Bauen erzeugt), lockere Erklärstimme (ElevenLabs „Jan“, Clips in `voice_v8/1.mp3 … 4.mp3`). Bewusst **keine erfundene Erfahrung** („ich habe …“), sondern Erklärung („ich zeig dir kurz was“).
-Erzeugen: `python3 marketing/tiktok-ad-01/build_ad.py V8` und danach `… V8 voice`. Ausgabe: `out/sellcheck_tiktok_ad_V8_mit_Stimme.mp4` (ca. 22,7 s).
+Erzeugen: `python3 marketing/tiktok-ad-01/build_ad.py V8` und danach `… V8 voice`. Ausgabe: `out/sellcheck_tiktok_ad_V8_mit_Stimme.mp4` (ca. 39,7 s).
 Hinweis: Die Stimme ist synthetisch, in TikTok als KI-generierte Inhalte kennzeichnen.

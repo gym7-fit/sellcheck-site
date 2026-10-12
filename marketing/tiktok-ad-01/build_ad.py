@@ -44,8 +44,8 @@ elif VAR == "V3":
     TARGET = {1: 2.6, 2: 8.2, 3: 8.1, 4: 5.1}  # nach Messung der Sprechzeiten (Clips 2,4 / 8,0 / 8,0 / 3,9 s)
     SLOW = {k: TARGET[k] / BASE[k] for k in KEYS}
 elif VAR == "V8":
-    KEYS = (1, 2, 3, 4)
-    BASE = {1: 9.3, 2: 5.6, 3: 10.3, 4: 4.7}  # Aufnahme Meldegrenze, Upload, Ergebnis, Endkarte (Sekunden, SLOW = 1; Clips 9,2 / 5,4 / 10,0 / 4,2 s)
+    KEYS = (1, 2, 3, 4, 5)
+    BASE = {1: 9.3, 2: 5.6, 3: 10.3, 4: 8.7, 5: 5.8}  # Meldegrenze, Upload, Ergebnis, Steuer-Übersicht, Endkarte (Sekunden, SLOW = 1; Clips 9,2 / 5,4 / 10,0 / 8,6 / 5,3 s)
     TARGET = dict(BASE)
     SLOW = {k: 1.0 for k in KEYS}
 elif VAR == "V6":
@@ -101,9 +101,10 @@ if VAR == "V3":
 P7_T = (0.5, 2.07, 0.79, 1.07, 2.71, 3.04)  # Reseller-Gewinnszene (Basiszeit): Überschrift 1, Überschrift 2, Karte, Verkauf, Einkauf, Gewinn
 if VAR == "V7":
     S3_B, CAP2_T = 5.5, 1.55
-CTA_T = (0.75, 2.6)
+CTA_T = (0.75, 1.4) if VAR == "V8" else (0.75, 2.6)
 V8_T = {"s1_end": 9.0, "hl": 4.0, "tap_up": 2.3, "go_scroll": 3.9, "tap_go": 5.0,
-        "r_scroll1": 0.4, "tap_gelb": 3.4, "r_scroll2": 4.4, "tap_rot": 6.9, "hl_gewinn": 8.9}  # V8 (UGC-Stil): Ereigniszeiten je Szene
+        "r_scroll1": 0.4, "tap_gelb": 3.4, "r_scroll2": 4.4, "tap_rot": 6.9, "hl_gewinn": 8.9,
+        "rep_hl1": 1.6, "rep_scroll": 3.5, "rep_hl2": 4.9}  # V8 (UGC-Stil): Ereigniszeiten je Szene
 if VAR == "V8":
     S3_B, CAP2_T = 5.7, 0.0  # Claim erscheint, "Für mehr Infos" und Klick-Hinweis (Sekunden ab Szenenstart)
 DEMO_SHIFT = 1.4 if VAR == "V3" else (-1.4 if VAR == "V8" else 0.0)  # Karte/Ampel erst, wenn "und siehst pro Plattform" gesprochen wird
@@ -434,6 +435,31 @@ def scene_cta_v2like(L, t):
     LOGO.draw_lockup(ImageDraw.Draw(tmp), 540 * S - w / 2, (600 - h / 2) * S, h * S, on_dark=True)
     tmp.putalpha(tmp.getchannel("A").point(lambda v: int(v * clamp(p * 3))))
     L.im.alpha_composite(tmp)
+    if VAR == "V8":
+        pop_text(L, 540, 760, "Check, was", 92, "heavy", PAPER, t, CTA_T[0])
+        pop_text(L, 540, 860, "wirklich bleibt.", 92, "heavy", LIME, t, CTA_T[0] + 0.12)
+        for k, label in enumerate(("Kostenlos mit Konto", "Daten bleiben im Browser", "Übersicht für die Steuererklärung")):
+            pp0 = prog(t, CTA_T[1] + k * 0.35, 0.3)
+            if pp0 <= 0:
+                continue
+            a0 = 255 * clamp(pp0 * 3)
+            cy0 = 985 + k * 92
+            pill(L, 540, cy0, 800 * (0.9 + 0.1 * ease_back(pp0)), 76, col(INK2, a0), col((60, 68, 80), a0))
+            check_circle(L, 540 - 340, cy0, 22, bg=LIME, fg=INK)
+            L.text(540 - 296, cy0 + 1, label, 40, "bold", col(PAPER, a0), "lm")
+        pop_text(L, 540, 1285, "Unabhängig von den genannten Plattformen.", 26, "medium", MUTED, t, CTA_T[1] + 1.2, dur=0.3)
+        pop_text(L, 540, 1322, "Orientierung, keine Steuer- oder Rechtsberatung.", 26, "medium", MUTED, t, CTA_T[1] + 1.3, dur=0.3)
+        pp = prog(t, CTA_T[1] + 1.6, 0.4)
+        if pp > 0:
+            a = 255 * clamp(pp * 3)
+            bob = 14 * math.sin(max(0, t - CTA_T[1] - 2.0) * 7)
+            pill_w = L.width("Hier unten klicken", 62, "heavy") + 130
+            pill(L, 540, 1405, pill_w * (0.85 + 0.15 * ease_back(pp)), 118, col(LIME, a))
+            L.text(540, 1408, "Hier unten klicken", 62, "heavy", col(INK, a), "mm")
+            ax, ay = 540, 1520 + bob
+            L.line([(ax, ay - 36), (ax, ay + 20)], col(LIME, a), 12)
+            L.line([(ax - 28, ay - 4), (ax, ay + 28), (ax + 28, ay - 4)], col(LIME, a), 12)
+        return
     pop_text(L, 540, 840, "Check, was", 108, "heavy", PAPER, t, CTA_T[0])
     pop_text(L, 540, 965, "wirklich bleibt.", 108, "heavy", LIME, t, CTA_T[0] + 0.12)
     pop_text(L, 540, 1090, "Für mehr Infos", 52, "medium", MUTED, t, CTA_T[1])
@@ -833,14 +859,15 @@ def v8_img(name):
     return Image.open(os.path.join(HERE, "assets", "v8", name)).convert("RGB")
 
 
-def ui_window(L, img_name, header_name, y, alpha=255):
+def ui_window(L, img_name, header_name, y, alpha=255, hdr_h=350):
     """Zeichnet die Aufnahme (Inhalt ab Zeile y) unter der festen Kopfleiste, wie ein Scroll in der Seite."""
     img = v8_img(img_name)
-    y = int(max(0, min(img.height - 1535, y)))
-    part = img.crop((0, y, 1080, y + 1535)).resize((1080 * S, 1535 * S), Image.BICUBIC)
-    hdr = v8_img(header_name).resize((1080 * S, 350 * S), Image.BICUBIC)
+    ch = 1535 if hdr_h == 350 else 1920 - hdr_h
+    y = int(max(0, min(img.height - ch, y)))
+    part = img.crop((0, y, 1080, y + ch)).resize((1080 * S, ch * S), Image.BICUBIC)
+    hdr = v8_img(header_name).resize((1080 * S, hdr_h * S), Image.BICUBIC)
     L.d.rectangle([0, 0, W * S, H * S], fill=(245, 243, 238, alpha))
-    L.im.paste(part, (0, 350 * S))
+    L.im.paste(part, (0, hdr_h * S))
     L.im.paste(hdr, (0, 0))
 
 
@@ -898,7 +925,7 @@ V8_S3 = {"drop": 6789, "drop_h": 694, "msg": 7785, "go": 9703}
 
 def scene_v8_s1(L, t):
     """Die Seite 'Meldegrenzen prüfen': Erklärtext mit Marker auf '30 Verkäufe oder 2.000 € Einnahmen'."""
-    y = v8_ease(0, 90, t, 0.0, V8_T["s1_end"])
+    y = 40  # ruhiger Bildausschnitt, kein Scrollen
     ui_window(L, "v8_step5.jpg", "header_step5.jpg", y)
     off = 350 - y
     for key, st in (("hl1", V8_T["hl"]), ("hl2", V8_T["hl"] + 0.25), ("hl3", V8_T["hl"] + 0.4)):
@@ -927,13 +954,28 @@ def scene_v8_s3(L, t):
     y = v8_ease(y, V8_S5["etsy"] - 120, t, V8_T["r_scroll2"], V8_T["r_scroll2"] + 1.6)
     ui_window(L, "v8_step5.jpg", "header_step5.jpg", y)
     off = 350 - y
-    v8_tap(L, t, V8_T["tap_gelb"], 560, V8_S5["vinted"] + 480 + (350 - (V8_S5["vinted"] - 40)))
-    v8_tap(L, t, V8_T["tap_rot"], 540, V8_S5["etsy"] + 500 + off)
-    v8_highlight(L, 150, V8_S5["etsy"] + 335 + off, 400, V8_S5["etsy"] + 405 + off, t, V8_T["hl_gewinn"])
+    v8_tap(L, t, V8_T["tap_gelb"], 560, V8_S5["vinted"] + 492 + (350 - (V8_S5["vinted"] - 40)))
+    v8_tap(L, t, V8_T["tap_rot"], 540, V8_S5["etsy"] + 492 + off)
+    # Gewinnzahl und Beschriftung der Etsy-Karte (gemessen: Zahl 322 bis 362, Label 397 bis 425, Karte ab 4014)
+    v8_highlight(L, 156, V8_S5["etsy"] + 312 + off, 384, V8_S5["etsy"] + 436 + off, t, V8_T["hl_gewinn"])
+
+
+V8_R = {"sub": (612, 742), "gewinn": (3050, 3235)}  # Zeilen in der Report-Aufnahme (gemessen)
+
+
+def scene_v8_s4(L, t):
+    """Steuer-Report: Ausfüllhilfe für die Anlage EÜR, Marker auf der Überschrift, dann auf dem Gewinn."""
+    y = v8_ease(0, 2250, t, V8_T["rep_scroll"], V8_T["rep_scroll"] + 1.2)
+    ui_window(L, "v8_report.jpg", "header_report.jpg", y, hdr_h=268)
+    off = 268 - y
+    a0, a1 = V8_R["sub"]
+    v8_highlight(L, 30, a0 + off, 1040, a1 + off, t, V8_T["rep_hl1"])
+    g0, g1 = V8_R["gewinn"]
+    v8_highlight(L, 30, g0 + off, 700, g1 + off, t, V8_T["rep_hl2"])
 
 
 SCENES = {
-    "V8": [(1, scene_v8_s1), (2, scene_v8_s2), (3, scene_v8_s3)],
+    "V8": [(1, scene_v8_s1), (2, scene_v8_s2), (3, scene_v8_s3), (4, scene_v8_s4)],
     "V6": [(1, scene_v6_hook), (2, scene_v6_questions), (3, scene_v6_answers)],
     "A": [(1, scene_hook_a), (2, scene_problem_a)],
     "B": [(1, scene_hook_b), (2, scene_problem_b)],
@@ -941,7 +983,7 @@ SCENES = {
     "V3": [(1, scene_v3_hook), (2, scene_v2_deadline)],
     "V7": [(1, scene_v7_hook), (2, scene_v7_profit)],
 }
-COMMON = [(4, scene_cta)] if VAR in ("V6", "V8") else [(3, scene_demo), (4, scene_cta)] if V2LIKE else [(3, scene_demo), (4, scene_benefits), (5, scene_cta)]
+COMMON = [(5, scene_cta)] if VAR == "V8" else [(4, scene_cta)] if VAR == "V6" else [(3, scene_demo), (4, scene_cta)] if V2LIKE else [(3, scene_demo), (4, scene_benefits), (5, scene_cta)]
 
 
 # ------------------------------------------------------------------ Hintergrund & Frame
@@ -967,7 +1009,7 @@ def render_frame(args):
     t = i / FPS
     im = background().copy()
     L0 = Layer()
-    if not (variant == "V8" and t < START[4]):
+    if not (variant == "V8" and t < START[5]):
         brand(L0, t)
     im.paste(L0.im, (0, 0), L0.im)
     scenes = SCENES[variant] + COMMON
@@ -984,7 +1026,7 @@ def render_frame(args):
                 L.im.putalpha(a)
             im.paste(L.im, (0, 0), L.im)
             break
-    if variant == "V8" and t < START[4]:
+    if variant == "V8" and t < START[5]:
         Lc = Layer()
         draw_captions_v8(Lc, t)
         im.paste(Lc.im, (0, 0), Lc.im)
@@ -1006,7 +1048,8 @@ def vo_lines(variant):
             (at(1, 0.05), "Wenn du auf Vinted, eBay oder Kleinanzeigen verkaufst: Ab einer bestimmten Grenze melden die Plattformen deine Verkäufe an die Steuerbehörde. Ich zeig dir kurz, wo du stehst.", START[2]),
             (at(2, 0.05), "Dafür lädst du einfach die Export-Datei mit deinen Verkäufen hoch. Die kannst du dir bei der Plattform herunterladen.", START[3]),
             (at(3, 0.05), "Dann siehst du pro Plattform, wie nah du an der Grenze bist. Gelb heißt: fast erreicht. Rot heißt: erreicht, so wie hier bei Etsy. Und in jeder Karte siehst du auch deinen Gewinn.", START[4]),
-            (at(4, -0.10), "SellCheck. Check, was wirklich bleibt. Für mehr Infos unten klicken.", DUR - 0.05),
+            (at(4, 0.05), "Und daraus macht SellCheck dir die Übersicht für deine Steuererklärung, oder für deinen Steuerberater. Kostenlos mit Konto, und deine Daten bleiben in deinem Browser.", START[5]),
+            (at(5, -0.10), "SellCheck. Check, was wirklich bleibt. Unten klicken, Datei hochladen, fertig.", DUR - 0.05),
         ]
     if variant == "V6":
         return [
@@ -1264,6 +1307,7 @@ def build_audio(variant, path, with_voice=False, voice_files=None):
             tick(at(sc_, V8_T[key]), 1500)
         ding(at(2, V8_T["tap_up"] + 0.5), 784.0)
         ding(at(3, V8_T["hl_gewinn"] + 0.2), 659.25)
+        ding(at(4, V8_T["rep_hl2"] + 0.2), 784.0)
     elif variant == "V6":
         for i, qs in enumerate(V6_QSTART):
             pop(at(2, qs + 0.05), 480 + i * 90)
@@ -1279,7 +1323,7 @@ def build_audio(variant, path, with_voice=False, voice_files=None):
     if variant not in ("V2", "V3", "V6", "V7", "V8"):
         for i, f in enumerate((523.25, 659.25, 783.99)):
             ding(at(4, 0.35 + i * 0.4), f)
-    cta = 4 if variant in ("V2", "V3", "V6", "V7", "V8") else 5
+    cta = 4 if variant in ("V2", "V3", "V6", "V7") else 5
     for j, f in enumerate((523.25, 659.25, 783.99, 1046.5)):
         ding(at(cta, 0.9) + j * 0.1, f)
 
