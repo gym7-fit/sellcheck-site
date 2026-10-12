@@ -104,6 +104,6 @@ Deutschland, 18–44 Jahre, Interessen Secondhand, Mode, Online-Shopping, Resell
 
 ## Version 7 („Reseller“, V7)
 
-Hook „Du bist Reseller, oder willst wissen, was du wirklich verdienst?“, dann Gewinn statt Umsatz (Beispielartikel: Verkauf 38 €, Einkauf 12 €, Gewinn 26 €), Meldegrenze pro Plattform, CTA. Stimme: ElevenLabs „Mats“ (`HvPMqVH31pBg9ThkOUPw`), Clips in `voice_v7/1.mp3 … 4.mp3`.
-Erzeugen: `python3 marketing/tiktok-ad-01/build_ad.py V7` und danach `… V7 voice`. Ausgabe: `out/sellcheck_tiktok_ad_V7_mit_Stimme.mp4` (ca. 22,5 s).
-Zeiten: `TARGET`, `P7_T`, `CAP2_T`, `S3_B` sind auf die gemessenen Clip-Längen (3,9 / 5,2 / 8,4 / 3,7 s) abgestimmt.
+Hook „Du bist Reseller, oder willst wissen, was du wirklich verdienst?“, dann Gewinn statt Umsatz (Beispielartikel: Verkauf 38 €, Einkauf 12 €, Gewinn 26 €), Meldegrenze (gesprochen ohne Zahlen, „… an der gesetzlichen Grenze, ab der Plattformen dich melden“; „ab 30 Verkäufen oder 2.000 € je Plattform“ steht nur im Bild), CTA. Stimme: ElevenLabs „Mats“ (`HvPMqVH31pBg9ThkOUPw`), Clips in `voice_v7/1.mp3 … 4.mp3`.
+Erzeugen: `python3 marketing/tiktok-ad-01/build_ad.py V7` und danach `… V7 voice`. Ausgabe: `out/sellcheck_tiktok_ad_V7_mit_Stimme.mp4` (ca. 21,4 s).
+Zeiten: `TARGET`, `P7_T`, `CAP2_T`, `S3_B` sind auf die gemessenen Clip-Längen (3,9 / 5,2 / 7,0 / 3,7 s) abgestimmt.

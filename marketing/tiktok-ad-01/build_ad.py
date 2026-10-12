@@ -46,7 +46,7 @@ elif VAR == "V3":
 elif VAR == "V7":
     KEYS = (1, 2, 3, 4)
     BASE = {1: 2.4, 2: 4.0, 3: 7.9, 4: 3.4}
-    TARGET = {1: 4.1, 2: 5.6, 3: 8.7, 4: 4.1}  # nach Messung der Sprechzeiten (Clips 3,9 / 5,2 / 8,4 / 3,7 s)
+    TARGET = {1: 4.1, 2: 5.6, 3: 7.6, 4: 4.1}  # nach Messung der Sprechzeiten (Clips 3,9 / 5,2 / 7,0 / 3,7 s)
     SLOW = {k: TARGET[k] / BASE[k] for k in KEYS}
 else:
     KEYS = (1, 2, 3, 4, 5)
@@ -90,7 +90,7 @@ if VAR == "V3":
     S3_B, CAP2_T, FRIST_T = 5.95, 2.95, (1.95, 2.6, 1.3, 1.4)  # Schwellen beim Sprechen von "ab dreißig" / "zweitausend", Hinweis schon bei "melden dich"
 P7_T = (0.5, 2.07, 0.79, 1.07, 2.71, 3.04)  # Reseller-Gewinnszene (Basiszeit): Überschrift 1, Überschrift 2, Karte, Verkauf, Einkauf, Gewinn
 if VAR == "V7":
-    S3_B, CAP2_T = 6.0, 1.4
+    S3_B, CAP2_T = 5.5, 1.55
 DEMO_SHIFT = 1.4 if VAR == "V3" else 0.0  # Karte/Ampel erst, wenn "und siehst pro Plattform" gesprochen wird
 
 
@@ -283,6 +283,11 @@ def scene_demo(L, t):
         pop_text(L, 540, 400, caps[1], sz[1], "heavy", LIME, t, CAP2_T)
     else:
         pop_text(L, 540, 400, caps[2], sz[2], "heavy", PAPER, t, S3_B)
+
+    if VAR == "V7" and CAP2_T <= t < S3_B - 0.05:
+        # Zahlen stehen nur im Bild, gesprochen wird die Grenze ohne Zahlen
+        pop_text(L, 540, 1488, "Meldung ab 30 Verkäufen", 40, "heavy", PAPER, t, CAP2_T + 0.2)
+        pop_text(L, 540, 1542, "oder 2.000 € je Plattform", 40, "heavy", LIME, t, CAP2_T + 0.35)
 
     # Beat a1: Ablagefläche, Datei landet darin (nichts überlagert anderen Inhalt)
     zone_a = 1.0 - ease_out(prog(t, 1.45 + DEMO_SHIFT, 0.25))
@@ -583,7 +588,7 @@ def vo_lines(variant):
         return [
             (at(1, 0.05), "[curious] Du bist Reseller, oder willst wissen, was du WIRKLICH verdienst?", START[2]),
             (at(2, 0.05), "Dann zählt nicht dein UMSATZ. Sondern, was dir nach dem Einkauf ÜBRIG bleibt.", START[3]),
-            (at(3, 0.05), "Und weil du viel umsetzt, bist du schnell an der Grenze: DREIßIG Verkäufe oder ZWEItausend Euro, pro Plattform. SellCheck zeigt dir BEIDES.", START[4]),
+            (at(3, 0.05), "Und weil du viel umsetzt, bist du schnell an der gesetzlichen Grenze, ab der Plattformen dich melden. SellCheck zeigt dir BEIDES.", START[4]),
             (at(4, -0.10), "SellCheck. Jetzt GRATIS testen. Einfach unten antippen.", DUR - 0.05),
         ]
     if variant == "V3":
