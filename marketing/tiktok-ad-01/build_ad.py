@@ -30,7 +30,7 @@ import sellcheck_logo as LOGO  # echtes SellCheck-Logo (Variante 6B)
 W, H, FPS, S = 1080, 1920, 30, 2          # S = Supersampling-Faktor
 
 
-def v9_type_times(text, t0, cps=13.0):
+def v9_type_times(text, t0, cps=17.0):
     """Zeitpunkte der Tastenanschläge beim 'Tippen' (mit leichten Schwankungen und Pausen bei Satzzeichen)."""
     rnd = random.Random(len(text) * 7 + 3)
     ts, t = [], t0
