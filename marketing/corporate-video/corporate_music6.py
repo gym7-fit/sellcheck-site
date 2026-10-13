@@ -12,7 +12,8 @@ Idee: Die Fakten fliegen ins Bild, die Person erschrickt. Der Ton ist ein Körpe
   Vertrauen    ruhiges, langsames Atmen (4 s je Zug), ein Seufzer je Aussage
   Abbinder     tiefes Einatmen, dann kräftiges Ausatmen mit vollem Klang; zum Schluss ein letzter, langer Atem
 
-Alle Töne sind synthetisiert: gefiltertes Rauschen mit Formanten, Sinus-Herzschlag, Pad. Kaum Tonhöhen:
+Alle Töne sind synthetisiert: Atem als weicher, vokalartiger Hauch (rosa Rauschen durch Formanten, etwas
+Stimmanteil, nichts über ca. 4 kHz), Herzschlag (Lub-Dub) als rhythmisches Rückgrat, Pad. Kaum Tonhöhen:
 nur Grundton D und ein offener Dur-Akkord für die Erleichterung. Alle Einsätze liegen auf CUES.
 
     .venv/bin/python corporate_music6.py out.wav
@@ -29,64 +30,97 @@ rng = np.random.default_rng(53)
 
 
 # ------------------------------------------------------------------ Atem-Bausteine
-def _noise2(n):
-    return rng.uniform(-1, 1, n), rng.uniform(-1, 1, n)
+PINK_B = [0.049922035, -0.095993537, 0.050612699, -0.004408786]
+PINK_A = [1, -2.494956002, 2.017265875, -0.522189400]
+VOWEL = {            # (F1, F2, F3) in Hz
+    "a": (730, 1250, 2600),
+    "o": (450, 850, 2450),
+    "i": (320, 2100, 2900),
+    "u": (330, 700, 2400),
+}
+
+
+def _pink(n):
+    from scipy.signal import lfilter
+    return lfilter(PINK_B, PINK_A, rng.uniform(-1, 1, n + 2000))[2000:]
+
+
+def _formants(x, vowel, q=5.0):
+    out = np.zeros_like(x)
+    for f, gain in zip(VOWEL[vowel], (1.0, 0.7, 0.35)):
+        lo, hi = f * (1 - 0.5 / q * 2), f * (1 + 0.5 / q * 2)
+        out += gain * M2.bp(x, lo, hi, 2)
+    return out
+
+
+def _breath(dur, v0, v1, voiced, f_voice, env, tail):
+    """Atemzug als weicher, vokalartiger Hauch: rosa Rauschen durch Formanten, dazu ein Stimmanteil.
+    Der Vokal wandert von v0 nach v1 (Überblendung), alles unter ca. 4 kHz."""
+    n = int((dur + tail) * SR)
+    t = tarr(n)
+    out = []
+    for ch in range(2):
+        src = _pink(n)
+        a = _formants(src, v0)
+        b = _formants(src, v1)
+        x = np.linspace(0, 1, n) ** 0.8
+        mixed = a * (1 - x) + b * x
+        if voiced > 0:
+            f = f_voice * (1 + 0.01 * np.sin(2 * np.pi * (4.5 + 0.5 * ch) * t))
+            gl = M2.saw(f, 2, rng.random())
+            gv = _formants(gl, v0) * (1 - x) + _formants(gl, v1) * x
+            mixed = mixed + voiced * gv * 0.6
+        y = lp(mixed, 3800, 2) * env(t, dur)
+        out.append(y)
+    pk = max(np.abs(out[0]).max(), np.abs(out[1]).max()) or 1.0
+    return out[0] / pk, out[1] / pk
 
 
 def breath_in(dur=0.3, f0=700.0, f1=3400.0, rasp=0.35):
-    """Einatmen: Rauschen, dessen Helligkeit nach oben fährt; schneller Anstieg, abruptes Ende (Schreck)."""
-    n = int((dur + 0.06) * SR)
-    t = tarr(n)
-    fc = np.geomspace(f0, f1, n)
-    env = np.clip(t / (0.35 * dur), 0, 1) ** 1.3
-    env *= np.where(t < dur, 1.0, np.clip(1 - (t - dur) / 0.05, 0, 1))
-    out = []
-    for x in _noise2(n):
-        y = hp(M2.lp_sweep(x, fc), 300)
-        y += 0.5 * M2.bp(x, 900, 1700) * env
-        flutter = 1 + rasp * lp(rng.uniform(-1, 1, n), 70) * 3
-        out.append(y * env * flutter)
-    pk = max(np.abs(out[0]).max(), np.abs(out[1]).max()) or 1.0
-    return out[0] / pk, out[1] / pk
+    """Einatmen ("haa", Vokal wandert o -> a), weicher Anstieg, kurzes Abklingen."""
+    def env(t, d):
+        e = np.clip(t / (0.45 * d), 0, 1) ** 1.6
+        e *= np.where(t < d, 1.0, np.exp(-(t - d) / 0.05))
+        return e
+    return _breath(dur, "o", "a", 0.08, 120.0, env, 0.2)
 
 
 def breath_out(dur=1.3, f0=4200.0, f1=650.0, soft=1.0):
-    """Ausatmen: Rauschen, dessen Helligkeit nach unten fällt; weicher Anstieg, langes Ausklingen."""
-    n = int((dur + 0.1) * SR)
-    t = tarr(n)
-    fc = np.geomspace(f0, f1, n)
-    env = np.clip(t / (0.06 * soft + 0.02), 0, 1) * np.exp(-t / (dur * 0.38))
-    out = []
-    for x in _noise2(n):
-        y = M2.lp_sweep(x, fc)
-        y += 0.6 * M2.bp(x, 350, 800) * env
-        out.append(y * env)
-    pk = max(np.abs(out[0]).max(), np.abs(out[1]).max()) or 1.0
-    return out[0] / pk, out[1] / pk
+    """Ausatmen ("haaah", Vokal wandert a -> u), weicher Anstieg, langes Ausklingen."""
+    def env(t, d):
+        return np.clip(t / (0.08 * soft + 0.03), 0, 1) ** 1.3 * np.exp(-t / (d * 0.42))
+    return _breath(dur, "a", "u", 0.12, 105.0, env, 0.1)
 
 
-def thump(f=52.0, dur=0.22):
+def soft_riser(dur):
+    """Anstieg aus weichem Rauschen, oben bei ca. 3 kHz abgeschnitten (nichts Schneidendes)."""
+    l, r = M2.make_riser(dur, 200, 3200)
+    return lp(l, 3500, 2), lp(r, 3500, 2)
+
+
+def thump(f=52.0, dur=0.3, soft=1.0):
+    """Herzschlag-Schlag: tiefer Sinus mit leichtem Tonhöhenabfall, weicher Anschlag, kein Klick."""
     n = int(dur * SR)
     t = tarr(n)
-    fr = f * (1 + 1.2 * np.exp(-t / 0.02))
-    y = np.sin(2 * np.pi * np.cumsum(fr) / SR) * np.exp(-t / 0.07)
-    y += hp(rng.uniform(-1, 1, n), 1500) * np.exp(-t / 0.004) * 0.12
-    return np.tanh(1.5 * y) * np.clip((n - np.arange(n)) / (0.01 * SR), 0, 1)
+    fr = f * (1 + 0.9 * np.exp(-t / 0.03))
+    y = np.sin(2 * np.pi * np.cumsum(fr) / SR) * np.exp(-t / (0.085 * soft)) * np.clip(t / 0.006, 0, 1)
+    y += lp(rng.uniform(-1, 1, n), 260) * np.exp(-t / 0.03) * 0.12
+    return np.tanh(1.3 * y) * np.clip((n - np.arange(n)) / (0.02 * SR), 0, 1)
 
 
 def pff(dur=0.14):
     """Kurzer Luftstoß als Snare: Rauschen mit Körper."""
     n = int(dur * SR)
     t = tarr(n)
-    x = M2.bp(rng.uniform(-1, 1, n), 900, 6000) * np.exp(-t / 0.035)
-    x += np.sin(2 * np.pi * 190 * t) * np.exp(-t / 0.04) * 0.35
+    x = M2.bp(_pink(n), 500, 3200) * np.exp(-t / 0.04)
+    x += np.sin(2 * np.pi * 170 * t) * np.exp(-t / 0.05) * 0.5
     return np.tanh(1.3 * x) / 1.0
 
 
 def tss(dur=0.07):
     n = int(dur * SR)
     t = tarr(n)
-    x = M2.bp(rng.uniform(-1, 1, n), 4000, 11000) * np.exp(-t / 0.018)
+    x = M2.bp(_pink(n), 2500, 5200) * np.exp(-t / 0.03)
     return x / (np.abs(x).max() or 1.0)
 
 
@@ -116,9 +150,9 @@ def build_stems(dur=DUR):
         st["body"].add(t, thump_s if f == 52.0 else thump(f), 0.9 * g)
         kick_times.append(t)
 
-    def heart(t, g=1.0):
+    def heart(t, g=1.0, gap=0.17):
         beat_thump(t, g)
-        beat_thump(t + 0.17, 0.6 * g, 46.0)
+        beat_thump(t + gap, 0.6 * g, 46.0)
 
     def sub(t, midi, d, g=1.0, a=0.05):
         f = mtof(midi)
@@ -139,13 +173,14 @@ def build_stems(dur=DUR):
         st["perc"].add(t, tss_s, 0.4 * g, pan)
 
     def groove(t_bar, level=1.0, hats=True):
+        """Der Rhythmus ist ein Herzschlag bei 120 bpm: Lub-Dub auf jedem Schlag, Dub etwas leiser."""
         for q in range(4):
-            beat_thump(t_bar + q * BEAT, (0.95 if q % 2 == 0 else 0.7) * level)
+            heart(t_bar + q * BEAT, (1.0 if q % 2 == 0 else 0.8) * level, 0.16)
             if q in (1, 3):
-                puff(t_bar + q * BEAT, 0.9 * level)
+                puff(t_bar + q * BEAT, 0.5 * level)
         if hats:
-            for q in range(8):
-                hat(t_bar + q * BEAT / 2, 0.45 * level * (1.0 if q % 2 else 0.6), pan=0.3 if q % 2 else -0.3)
+            for q in range(1, 8, 2):
+                hat(t_bar + q * BEAT / 2, 0.5 * level, pan=0.3 if q % 4 == 1 else -0.3)
 
     # ---------------------------------------------------- A: Hook 0 bis 4 s
     sub(0.0, 26, 2.5, 0.6, 1.5)
@@ -153,10 +188,10 @@ def build_stems(dur=DUR):
         gasp(tt, (0.5, 0.75, 1.05)[k], 700 + 350 * k, 3000 + 900 * k, 0.12 + 0.01 * k)
         beat_thump(tt, (0.6, 0.8, 1.1)[k])
     mute.append((2.0, 2.3))
-    st["fx"].add(2.0, ring(1.0, 4300.0), 0.05)
+    st["fx"].add(2.0, ring(0.9, 3200.0), 0.02)
     for tt in (2.5, 3.0, 3.25, 3.5, 3.625, 3.75, 3.875):
         heart(tt, 0.6 + 0.25 * (tt - 2.5))
-    st["fx"].add_st(2.0, *M2.make_riser(2.0, 250, 6500), 0.35)
+    st["fx"].add_st(2.0, *soft_riser(2.0), 0.3)
 
     # ---------------------------------------------------- B: Problem 4 bis 12 s
     sub(4.0, 38, 7.7, 0.7, 2.0)
@@ -169,7 +204,7 @@ def build_stems(dur=DUR):
     t8 = CUES["problem_banner"][0]
     gasp(t8 - 0.28, 1.25, 500, 4200, 0.28)         # das große Einatmen vor dem Schock
     beat_thump(t8, 1.3, 40.0)
-    st["fx"].add(t8, ring(1.4, 4300.0), 0.10)
+    st["fx"].add(t8, ring(1.2, 3200.0), 0.035)
     mute.append((t8 + 0.02, t8 + 0.42))
     gasp(CUES["problem_banner"][1] - 0.08, 0.6, 900, 3000, 0.1)
     # Hecheln und Anstieg
@@ -186,7 +221,7 @@ def build_stems(dur=DUR):
             exhale(t, 0.35 + 0.3 * x, 0.18, 3500, 1200)
         t += 0.34 - 0.14 * x
         k += 1
-    st["fx"].add_st(9.0, *M2.make_riser(3.0, 300, 9000), 0.5)
+    st["fx"].add_st(9.0, *soft_riser(3.0), 0.4)
     mute.append((11.72, 12.0))
 
     # ---------------------------------------------------- C: Lösung 12 bis 22 s
@@ -223,7 +258,7 @@ def build_stems(dur=DUR):
         gasp(tt - 0.14, 0.6, 600, 2600, 0.14)
         st["perc"].add(tt, tss_s, 0.7, 0.2)
     gasp(34.2, 0.9, 600, 4200, 3.5)              # langes Einatmen vor der Pause
-    st["fx"].add_st(34.0, *M2.make_riser(3.7, 300, 9500), 0.45)
+    st["fx"].add_st(34.0, *soft_riser(3.7), 0.35)
     t = 36.0
     while t < 37.7:
         heart(t, 0.7 + 0.4 * (t - 36.0) / 1.7)
@@ -282,7 +317,7 @@ def build_stems(dur=DUR):
     return {"stems": st, "duck": duck, "gate": gate, "breath": breath, "n": n}
 
 
-GAINS = {"air": 3.0, "body": 0.6, "perc": 2.5, "pad": 1.4, "sub": 0.3, "fx": 1.3}
+GAINS = {"air": 2.8, "body": 0.5, "perc": 1.5, "pad": 1.5, "sub": 0.3, "fx": 0.6}
 SECTION_DB = [(0, -3), (3.9, -3), (4.0, -4), (11.7, -2), (12.0, 0), (21.9, 0), (22.0, -1.5), (37.7, -1),
               (38.0, -4), (43.5, -4), (44.0, 0), (47.5, 0), (49.0, -1)]
 
