@@ -85,46 +85,52 @@ def build_stems(dur=DUR):
             st["piano"].add_st(t + k * spread, x[0], x[1], g * (0.4 + 0.9 * vel) * (0.9 if k == 0 else 1.0))
 
     # ---------------------------------------------------- Angst: Hook 0 bis 4 s
+    # Bewusst wenig: drei einzelne Schläge zu den drei Einblendungen, sonst nur ein leiser Boden.
     pad(0.0, NOTES["D"], 12.0, 300, 700, 0.35, fade_in=2.0)
     for k, tt in enumerate(CUES["hook_slams"]):
-        gasp(tt, (0.45, 0.6, 0.8)[k], 0.1)
-        heart(tt, (0.7, 0.85, 1.0)[k], 0.15)
-    # Herzklopfen setzt ein und wird schneller: Schlag, Schlag, dann dichter
-    for tt, g in ((2.5, 0.8), (3.0, 0.85), (3.4, 0.9), (3.75, 0.95)):
-        heart(tt, g, 0.14)
+        heart(tt, (0.6, 0.8, 1.0)[k], 0.15)
 
     # ---------------------------------------------------- Angst: Problem 4 bis 12 s
-    # gleichmäßig auf dem 120-bpm-Raster, mit jeder Karte etwas dichter und lauter
+    # erst ein Schlag pro Sekunde, ab 6 s auf jedem Schlag; die Karten bekommen keine eigenen Geräusche mehr
     t = 4.0
+    while t < 6.0 - 1e-6:
+        heart(t, 0.7 + 0.1 * (t - 4.0) / 2.0, 0.15)
+        t += 1.0
     while t < 8.0 - 1e-6:
-        heart(t, 0.8 + 0.1 * (t - 4.0) / 4.0, 0.14)
+        heart(t, 0.85, 0.14)
         t += 0.5
-    for k, tt in enumerate(CUES["problem_cards"]):
-        gasp(tt, 0.35 + 0.05 * k, 0.08)
     t8 = CUES["problem_banner"][0]
     gasp(t8 - 0.24, 0.8, 0.24)                    # Einatmen vor dem Schock
     heart(t8, 1.2, 0.13)                          # ein harter Doppelschlag
     mute.append((t8 + 0.34, t8 + 0.56))          # kurzer Aussetzer
-    # Herzklopfen wird schneller (0,5 s, 0,4 s, 0,33 s ... bis 0,2 s)
+    # danach wird das Herzklopfen schneller, aber nie hektisch (Abstand 0,5 s bis 0,3 s)
     t, step = 8.6, 0.5
     while t < 11.72:
-        heart(t, 0.85 + 0.15 * (t - 8.6) / 3.0, max(0.09, 0.14 - 0.03 * (t - 8.6) / 3.0))
+        heart(t, 0.85 + 0.12 * (t - 8.6) / 3.0, 0.14)
         t += step
-        step = max(0.2, step - 0.045)
+        step = max(0.3, step - 0.04)
     mute.append((11.72, 12.0))                    # Luft anhalten
 
-    # ---------------------------------------------------- Erleichterung: 12 bis 22 s
+    # ---------------------------------------------------- Aha: 12 bis 22 s
+    # Aufklaren: Ausatmen, das Pad geht gleich hell auf, ein hoher weicher Akkord wie ein Lichtblick
     exhale(12.0, 0.8, 1.9)
-    pad(12.0, NOTES["D"], 10.0, 700, 2300, 1.0, fade_in=0.9)
+    pad(12.0, NOTES["D"], 10.0, 1800, 2500, 1.0, fade_in=0.5)
+    pad(12.0, [62, 69, 74, 78], 6.0, 2600, 2200, 0.35, fade_in=0.4)
     sub(12.0, 38, 9.6, 0.8, 0.8)
-    for b in range(6, 11):
-        piano_chord(b * BAR, LOOP[(b - 6) % 4], 0.38, 2.4, 0.9)
+    for k, m in enumerate((74, 78, 81, 86)):
+        x = lib["piano"].note(m, 3.2, 0.5, 0.8, 0.0, rr=k)
+        st["piano"].add_st(12.0 + k * 0.04, x[0], x[1], 0.9 if k < 3 else 0.6)
+    for b in range(7, 11):
+        piano_chord(b * BAR, LOOP[(b - 6) % 4], 0.36, 2.4, 0.85)
 
-    # ---------------------------------------------------- Erleichterung: 22 bis 38 s (Produkt, noch ruhiger)
+    # ---------------------------------------------------- 22 bis 38 s (Produkt, ruhig)
     pad(22.0, NOTES["D"], 16.0, 900, 2000, 0.85, fade_in=1.0)
     sub(22.0, 38, 15.6, 0.7, 1.0)
     for b in range(11, 19, 2):
         piano_chord(b * BAR, LOOP[(b - 6) % 4], 0.33, 3.8, 0.85)
+    for tt in CUES["produkt_callouts"]:            # kleines, helles "Aha" bei jeder Markierung
+        x = lib["piano"].note(86, 2.0, 0.3, 0.6, 0.0, rr=int(tt))
+        st["piano"].add_st(tt, x[0], x[1], 0.5)
 
     # ---------------------------------------------------- 38 bis 44 s (Vertrauen)
     pad(38.0, [38, 45, 50, 54, 57], 6.0, 700, 1400, 0.8, fade_in=1.0)
@@ -132,14 +138,22 @@ def build_stems(dur=DUR):
     for b in (19, 21):
         piano_chord(b * BAR, LOOP[(b - 6) % 4], 0.3, 3.0, 0.8)
 
-    # ---------------------------------------------------- Abbinder 44 bis 49 s
+    # ---------------------------------------------------- Abbinder 44 bis 51 s (abrunden und ausklingen)
     exhale(44.0, 0.7, 1.6)
-    pad(44.0, NOTES["D"] + [74], 5.0, 1400, 2800, 1.0, fade_in=0.3)
-    sub(44.0, 38, 4.9, 0.9, 0.2)
+    pad(44.0, NOTES["D"] + [74], 4.0, 1400, 2800, 1.0, fade_in=0.3)
+    sub(44.0, 38, 3.9, 0.9, 0.2)
     piano_chord(44.0, "G", 0.5, 2.0, 1.0)
     piano_chord(46.0, "A", 0.5, 2.0, 1.0)
-    piano_chord(48.0, "D", 0.55, 3.0, 1.0)
-    exhale(48.0, 0.55, 2.4)
+    # Auflösung: D-Dur als gebrochener Akkord, der aufsteigt und lange im Hall ausklingt
+    pad(48.0, NOTES["D"] + [74], 4.5, 2000, 1500, 1.1, fade_in=0.25)
+    sub(48.0, 38, 3.6, 0.9, 0.3)
+    for k, m in enumerate((50, 57, 62, 66, 69, 74)):
+        x = lib["piano"].note(m, 3.4, 0.5, 1.2, 0.0, rr=k)
+        st["piano"].add_st(48.0 + k * 0.11, x[0], x[1], 0.95 if k < 5 else 0.75)
+    exhale(48.0, 0.5, 2.6)
+    for k, m in enumerate((81, 86)):
+        x = lib["piano"].note(m, 2.0, 0.28, 1.2, 0.0, rr=k)
+        st["piano"].add_st(48.9 + k * 0.5, x[0], x[1], 0.45)
 
     gate = np.ones(n)
     for a, b in mute:
@@ -152,7 +166,7 @@ def build_stems(dur=DUR):
 
 
 GAINS = {"air": 3.0, "heart": 1.3, "pad": 1.5, "piano": 1.0, "sub": 0.28, "fx": 0.5}
-SECTION_DB = [(0, 0), (11.7, 0), (12.0, -2), (43.9, -2), (44.0, 0), (49.0, -1)]
+SECTION_DB = [(0, -1.5), (11.7, -0.5), (12.0, -2), (43.9, -2), (44.0, 0), (48.0, 0), (51.0, -3)]
 
 
 def mixdown(parts, g=None, reverb=0.25):

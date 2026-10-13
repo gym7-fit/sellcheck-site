@@ -23,7 +23,7 @@ SR = 44100
 BPM = 120
 BEAT = 60.0 / BPM
 BAR = BEAT * 4
-DUR = 49.0
+DUR = 51.0
 TAIL = 3.0
 rng = np.random.default_rng(11)
 

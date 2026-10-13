@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""SellCheck Corporate-Video, 16:9 (1920x1080, 30 fps), ca. 49 s.
+"""SellCheck Corporate-Video, 16:9 (1920x1080, 30 fps), ca. 51 s.
 
 Zweck: Erklärfilm für Website und Social. Läuft auch ohne Ton (die Botschaft steht im Bild).
 Schnitt auf einem 120-bpm-Raster: Schrift schlägt im Beat ein, Wisch-Übergänge auf den Takt, treibender Beat.
@@ -56,7 +56,7 @@ BEAT = 60.0 / BPM  # 0,5 s
 # Szenen: (Name, Start, Länge). Alle Starts liegen auf dem Beat-Raster.
 SCENES = [("hook", 0.0, 4.0), ("problem", 4.0, 8.0), ("loesung", 12.0, 10.0), ("produkt", 22.0, 16.0),
           ("vertrauen", 38.0, 6.0), ("abbinder", 44.0, 5.0)]
-DUR = 49.0
+DUR = 51.0  # 49 s Bild plus 2 s Ausklingen der Musik auf der Endkarte
 NF = int(DUR * FPS)
 WIPE = 0.36  # Dauer des Wisch-Übergangs, Mitte = Schnitt
 
@@ -739,7 +739,7 @@ def build_audio(path, voice_dir=None, track=None, offset=None, grid=False):
     # Master: Musik auf feste mittlere Lautstärke, Sprache oben drauf, weiche Begrenzung
     rms = math.sqrt(sum(v * v for v in ml) / n) or 1.0
     g = (0.09 if grid else 0.14) / rms
-    fade_in, fade_out = int(0.02 * SR), int((0.5 if grid else 2.4 if track else 0.9) * SR)
+    fade_in, fade_out = int(0.02 * SR), int((1.8 if grid else 2.4 if track else 0.9) * SR)
     with wave.open(path, "wb") as w:
         w.setnchannels(2)
         w.setsampwidth(2)
@@ -792,10 +792,12 @@ def main():
         return
     if mode == "frames":
         print(f"Rendere {NF} Bilder …", flush=True)
+        todo = [i for i in range(NF) if not os.path.exists(os.path.join(FRAMES, f"f_{i:05d}.jpg"))]
+        print(f"  davon fehlen {len(todo)}", flush=True)
         with Pool() as pool:
-            for k, _ in enumerate(pool.imap_unordered(render_frame, [(i, FRAMES) for i in range(NF)], chunksize=6)):
+            for k, _ in enumerate(pool.imap_unordered(render_frame, [(i, FRAMES) for i in todo], chunksize=6)):
                 if k % 200 == 0:
-                    print(f"  {k}/{NF}", flush=True)
+                    print(f"  {k}/{len(todo)}", flush=True)
         print("Bilder fertig in", FRAMES)
         return
     track, offset, voice_dir = None, None, None

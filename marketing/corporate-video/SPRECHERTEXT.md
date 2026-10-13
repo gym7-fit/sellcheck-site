@@ -1,6 +1,6 @@
-# Corporate-Video SellCheck: Sprechertext (49 s)
+# Corporate-Video SellCheck: Sprechertext (51 s (49 s Sprache und Bild, 2 s Ausklingen))
 
-Format 16:9, 49 s, neutrale Ansprache (keine Du- oder Sie-Form), knapp und im Takt. Stimme (Vorschlag): Mats, wie V7 und V9.
+Format 16:9, 51 s (49 s Sprache und Bild, 2 s Ausklingen), neutrale Ansprache (keine Du- oder Sie-Form), knapp und im Takt. Stimme (Vorschlag): Mats, wie V7 und V9.
 Das Video funktioniert auch ohne Ton, die Kernaussagen stehen im Bild. Schnitt auf 120 bpm, Texte schlagen im Beat ein.
 
 | Nr. | Fenster | Bild | Text |
