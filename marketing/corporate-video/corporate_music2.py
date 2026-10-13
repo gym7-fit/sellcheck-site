@@ -133,11 +133,12 @@ class Stem:
 
     def add_st(self, t, xl, xr, g=1.0):
         i0 = int(round(t * SR))
-        if i0 >= self.n:
+        if i0 >= self.n or i0 + len(xl) <= 0:
             return
+        lo = max(0, -i0)
         hi = min(len(xl), self.n - i0)
-        self.d[0, i0:i0 + hi] += xl[:hi] * g
-        self.d[1, i0:i0 + hi] += xr[:hi] * g
+        self.d[0, i0 + lo:i0 + hi] += xl[lo:hi] * g
+        self.d[1, i0 + lo:i0 + hi] += xr[lo:hi] * g
 
 
 # ------------------------------------------------------------------ Schlagzeug und Effekte
