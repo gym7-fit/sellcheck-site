@@ -25,7 +25,7 @@ let videoSettings: [String: Any] = [
     AVVideoWidthKey: width,
     AVVideoHeightKey: height,
     AVVideoCompressionPropertiesKey: [
-        AVVideoAverageBitRateKey: 10_000_000,
+        AVVideoAverageBitRateKey: Int(ProcessInfo.processInfo.environment["VIDEO_BITRATE"] ?? "") ?? 10_000_000,
         AVVideoProfileLevelKey: AVVideoProfileLevelH264HighAutoLevel,
         AVVideoMaxKeyFrameIntervalKey: Int(fps) * 2,
     ],
