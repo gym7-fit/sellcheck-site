@@ -11,3 +11,10 @@
 | Namensnennung | nicht verlangt |
 
 Hinweis: Lizenztext vor einer größeren Verwendung (z. B. bezahlte Kampagne) erneut auf mixkit.co prüfen und diese Datei als Nachweis aufbewahren.
+
+## Instrumenten-Aufnahmen (corporate_music3.py)
+
+Quelle: VSCO-2-CE (Versilian Studios Chamber Orchestra 2, Community Edition), github.com/sgossner/VSCO-2-CE,
+Lizenz CC0 1.0 (gemeinfrei, kommerzielle Nutzung ohne Nachweis erlaubt). Verwendet: Cello-, Bratschen- und
+Violinensemble (gehalten, Vibrato), Upright Nr. 1 (mf), Pauke (Hit v3/v4). Abruf: `samples/_fetch.py`, Dateien
+liegen in `samples/` und sind nicht im Repo (.gitignore).

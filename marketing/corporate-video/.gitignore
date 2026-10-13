@@ -2,3 +2,4 @@ out/
 music/*.mp3
 music/*.wav
 .venv/
+samples/
