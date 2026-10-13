@@ -336,7 +336,7 @@
 
     // Ende
     $("to-review").disabled = !p.canReview;
-    $("wiz-end-note").textContent = p.canReview ? "Alles ausgefüllt. Prüfe jetzt noch einmal in Ruhe deine Angaben." : `Noch offen: Schritt ${Math.min(p.active, 6)}.`;
+    $("wiz-end-note").textContent = p.canReview ? "Alle Schritte sind erledigt. Du kannst deine Angaben jetzt prüfen." : `Noch offen: Schritt ${Math.min(p.active, 6)}.`;
 
     renderStepper(p);
 

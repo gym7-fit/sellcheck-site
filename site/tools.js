@@ -118,7 +118,7 @@ function renderAmpel() {
       ? ["Rot: Grenze erreicht", "Die Plattform meldet dich voraussichtlich ans BZSt. Das ist noch keine Steuerforderung. Halte Einkaufsbelege und Verkaufsdaten bereit und kläre bei Unsicherheit deinen Fall mit Finanzamt oder Steuerberatung.", "red"]
       : worst >= 0.6
       ? ["Gelb: Du näherst dich der Grenze", `Bei diesem Tempo erreichst du die Grenze voraussichtlich bald. Es fehlen noch ${Math.max(0, LIMIT_COUNT - count)} Verkäufe oder ${eur.format(Math.max(0, LIMIT_SUM - sum))}.`, "yellow"]
-      : ["Grün: Weit entfernt", "Du liegst deutlich unter der Meldegrenze dieser Plattform. Für gelegentliches Ausmisten musst du dir in der Regel keine Sorgen machen.", "green"];
+      : ["Grün: Weit entfernt", "Du liegst deutlich unter der Meldegrenze dieser Plattform. Für gelegentliche Verkäufe besteht in der Regel kein Handlungsbedarf.", "green"];
   box.className = "ampel " + cls;
   box.querySelector("strong").textContent = title;
   box.querySelector("div").textContent = text;
@@ -464,7 +464,7 @@ $("e-form").addEventListener("submit", (ev) => {
 /* ---------- 4. Checkliste ---------- */
 const SIGNALS = [
   "Ich kaufe Ware gezielt ein, um sie mit Gewinn weiterzuverkaufen.",
-  "Ich verkaufe regelmäßig und dauerhaft, nicht nur beim Ausmisten.",
+  "Ich verkaufe regelmäßig und dauerhaft, nicht nur einzelne eigene Gegenstände.",
   "Ich biete viele gleiche oder neue Artikel an (Neuware, mehrere Stück desselben Produkts).",
   "Ich habe einen festen Ablauf: Einkauf, Lager, Fotos, Versand.",
   "Ich möchte mit dem Verkaufen Geld verdienen, nicht nur Platz schaffen.",

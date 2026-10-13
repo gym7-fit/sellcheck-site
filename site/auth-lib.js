@@ -191,7 +191,7 @@
     if (has("rate_limit", "too many")) return { code: "rate", message: "Zu viele Versuche. Bitte warte einen Moment und versuche es erneut." };
     if (has("signup_disabled", "signups not allowed")) return { code: "disabled", message: "Neue Registrierungen sind im Moment nicht möglich." };
     if (status === 0) return { code: "network", message: "Keine Verbindung zum Anmeldedienst. Bitte prüfe deine Internetverbindung." };
-    return { code: "unknown", message: "Das hat leider nicht geklappt. Bitte versuche es später noch einmal." };
+    return { code: "unknown", message: "Die Aktion konnte nicht ausgeführt werden. Bitte versuche es später erneut." };
   }
 
   function createSupabase(opts) {

@@ -49,7 +49,7 @@
     if (state.session && !location.hash) { location.replace(target); return; }
 
     if (params.get("registered") === "1") say("ok", mode === "demo" ? "Dein Konto ist angelegt. Melde dich jetzt an." : "Dein Konto ist angelegt. Melde dich jetzt an.");
-    if (params.get("registered") === "confirm") say("ok", "Fast geschafft: Wir haben dir eine E-Mail geschickt. Bestätige darin deine Adresse und melde dich danach an.");
+    if (params.get("registered") === "confirm") say("ok", "Wir haben dir eine E-Mail gesendet. Bestätige darin deine Adresse und melde dich danach an.");
 
     // Rückkehr über den Link aus einer E-Mail (Bestätigung oder Passwort-Reset).
     let recoverySession = null;
@@ -81,7 +81,7 @@
         if (r.ok) finish(r.session);
         else { say("error", r.message); $("password").value = ""; $("password").focus(); }
       } catch {
-        say("error", "Das hat leider nicht geklappt. Bitte versuche es erneut.");
+        say("error", "Die Aktion konnte nicht ausgeführt werden. Bitte versuche es erneut.");
       } finally {
         busy(loginForm, false);
       }
@@ -91,7 +91,7 @@
     const resetForm = $("reset-form");
     $("reset-toggle").addEventListener("click", () => {
       clear();
-      if (!client) { say("info", "Im Demo-Modus gibt es kein Zurücksetzen per E-Mail. Lege einfach ein neues Demo-Konto mit einer anderen Adresse an."); return; }
+      if (!client) { say("info", "Im Demo-Modus gibt es kein Zurücksetzen per E-Mail. Lege ein neues Demo-Konto mit einer anderen Adresse an."); return; }
       resetForm.hidden = !resetForm.hidden;
       if (!resetForm.hidden) { $("reset-email").value = $("email").value; $("reset-email").focus(); }
     });
@@ -154,7 +154,7 @@
           location.replace("login.html?registered=1");
         }
       } catch {
-        say("error", "Das hat leider nicht geklappt. Bitte versuche es erneut.");
+        say("error", "Die Aktion konnte nicht ausgeführt werden. Bitte versuche es erneut.");
       } finally {
         busy(regForm, false);
       }

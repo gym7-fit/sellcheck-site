@@ -34,7 +34,7 @@ document.querySelectorAll("form.waitlist").forEach((form) => {
     }
     // Honeypot: Menschen sehen das Feld nicht. Bots füllen es und bekommen eine unauffällige "Danke"-Antwort.
     if (form.website.value) {
-      note.textContent = "Danke!";
+      note.textContent = "Vielen Dank.";
       return;
     }
     if (!FORM_ENDPOINT) {
@@ -65,9 +65,9 @@ document.querySelectorAll("form.waitlist").forEach((form) => {
       });
       if (!res.ok) throw new Error(res.status);
       form.reset();
-      note.textContent = "Danke! Bitte bestätige noch den Link in der E-Mail, die wir dir schicken.";
+      note.textContent = "Vielen Dank. Bitte bestätige noch den Link in der E-Mail, die wir dir senden.";
     } catch {
-      note.textContent = "Das hat leider nicht geklappt. Bitte versuche es später noch einmal.";
+      note.textContent = "Die Anmeldung konnte nicht gespeichert werden. Bitte versuche es später erneut.";
     } finally {
       clearTimeout(timer);
     }

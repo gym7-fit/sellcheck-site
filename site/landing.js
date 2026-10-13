@@ -33,7 +33,7 @@
       } else if (level === "yellow") {
         text = ["Gelb: Du näherst dich der Grenze", "Bei diesem Tempo erreichst du die Grenze voraussichtlich bald. Es fehlen noch " + Math.max(0, LIMIT_COUNT - c) + " Verkäufe oder " + eur.format(Math.max(0, LIMIT_SUM - s)) + "."];
       } else {
-        text = ["Grün: Weit entfernt", "Du liegst deutlich unter der Meldegrenze dieser Plattform. Für gelegentliches Ausmisten musst du dir in der Regel keine Sorgen machen."];
+        text = ["Grün: Weit entfernt", "Du liegst deutlich unter der Meldegrenze dieser Plattform. Für gelegentliche Verkäufe besteht in der Regel kein Handlungsbedarf."];
       }
       out.box.className = "ampel " + level;
       out.box.querySelector("strong").textContent = text[0];

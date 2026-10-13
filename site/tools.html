@@ -37,7 +37,7 @@
 <div class="wiz-hero on-dark">
   <div class="wrap">
     <h1>Dein Überblick in sechs Schritten</h1>
-    <p>Wir gehen es gemeinsam durch. Jeder Schritt schaltet den nächsten frei, am Ende prüfst du alles noch einmal.</p>
+    <p>Sechs Schritte von den Grundangaben bis zum Report. Jeder Schritt schaltet den nächsten frei, am Ende prüfst du alles noch einmal.</p>
   </div>
 </div>
 
@@ -61,7 +61,7 @@
       <header class="step-head">
         <span class="step-num" aria-hidden="true">1</span>
         <div class="step-titles">
-          <h2 id="step-1-title" tabindex="-1">Für welches Jahr und wie verkaufst du?</h2>
+          <h2 id="step-1-title" tabindex="-1">Jahr und Verkaufsart</h2>
           <p class="step-sum" id="sum-1"></p>
         </div>
         <span class="step-status" id="status-1"></span>
@@ -106,7 +106,7 @@
       <header class="step-head">
         <span class="step-num" aria-hidden="true">2</span>
         <div class="step-titles">
-          <h2 id="step-2-title" tabindex="-1">Auf welchen Plattformen verkaufst du?</h2>
+          <h2 id="step-2-title" tabindex="-1">Plattformen</h2>
           <p class="step-sum" id="sum-2"></p>
         </div>
         <span class="step-status" id="status-2"></span>
@@ -134,7 +134,7 @@
         <button class="btn secondary small step-edit" type="button" data-edit="3" hidden>Ändern</button>
       </header>
       <div class="step-body" id="body-3">
-        <p class="step-help">Du hast zwei Wege. Eine Datei zu importieren geht schneller, wenn du viele Verkäufe hast. Einzelne Verkäufe trägst du von Hand ein. Du kannst beides kombinieren.</p>
+        <p class="step-help">Du kannst Verkäufe als Datei importieren oder einzeln von Hand eintragen. Der Import ist bei vielen Verkäufen schneller. Beides lässt sich kombinieren.</p>
         <div class="tabs" data-tabs>
           <div class="tab-list" role="tablist" aria-label="Eingabeweg">
             <button type="button" class="tab" role="tab" id="m-import-tab" aria-controls="m-import" aria-selected="true">Datei importieren</button>
@@ -177,7 +177,7 @@
     <p id="i-msg" class="small" role="status" aria-live="polite" style="min-height:1.4em"></p>
 
     <div id="i-panel" hidden>
-      <h3>Das haben wir erkannt</h3>
+      <h3>Erkannte Daten</h3>
       <p id="i-recognized" class="small muted"></p>
 
       <div class="ask" id="i-ask-platform" hidden>
@@ -278,7 +278,7 @@
       </header>
       <div class="step-body" id="body-4">
         <p class="step-help" id="help-4">Damit dein Gewinn stimmt, brauchen wir bei manchen Verkäufen noch eine Angabe.</p>
-        <div class="success-box" id="fix-ok" hidden><span class="check-mark">✓</span><span>Alles vollständig. Hier gibt es nichts mehr zu ergänzen.</span></div>
+        <div class="success-box" id="fix-ok" hidden><span class="check-mark">✓</span><span>Alle Angaben sind vollständig.</span></div>
         <div id="fix-wrap" hidden>
           <div class="bulk" id="fix-bulk"></div>
           <div class="table-scroll"><table class="fix-table"><thead id="fix-head"></thead><tbody id="fix-body"></tbody></table></div>
@@ -375,8 +375,8 @@
     <p class="small muted" style="margin:0">Gezählt werden Transaktionen, nicht einzelne Artikel. Befreit sind nur Verkäufer mit weniger als 30 Verkäufen <em>und</em> weniger als 2.000 €. Sobald eine der beiden Grenzen erreicht ist, wird gemeldet. Prüfe die Schwellen vor wichtigen Entscheidungen im Gesetzestext (Plattformen-Steuertransparenzgesetz).</p>
         </details>
         <div class="step-foot">
-          <span class="step-foot-note">Gelesen? Dann geht es weiter.</span>
-          <button class="btn" id="next-5" type="button" disabled>Verstanden, weiter</button>
+          <span class="step-foot-note">Sobald du die Hinweise gelesen hast, geht es weiter.</span>
+          <button class="btn" id="next-5" type="button" disabled>Weiter</button>
         </div>
       </div>
     </section>
@@ -407,8 +407,8 @@
 
     <div class="wiz-end" id="wiz-end">
       <div>
-        <h2>Fast geschafft</h2>
-        <p class="muted" id="wiz-end-note">Schließe die Schritte ab, dann kannst du alles in Ruhe überprüfen.</p>
+        <h2>Schritte abschließen</h2>
+        <p class="muted" id="wiz-end-note">Sobald alle Schritte erledigt sind, kannst du deine Angaben prüfen.</p>
       </div>
       <button class="btn big" id="to-review" type="button" disabled>Weiter zur Überprüfung</button>
     </div>
@@ -419,7 +419,7 @@
     <div class="review-head">
       <button class="btn secondary small" id="back-wizard" type="button">← Zurück zu den Schritten</button>
       <h2 tabindex="-1" id="review-title">Überprüfe deine Angaben</h2>
-      <p class="muted">Sieh dir alles noch einmal an. Was nicht stimmt, kannst du mit „Ändern“ direkt korrigieren.</p>
+      <p class="muted">Prüfe alle Angaben. Mit „Ändern“ korrigierst du sie direkt.</p>
     </div>
 
     <div class="review-grid">
@@ -461,8 +461,8 @@
     </section>
 
     <section class="review-card wide" aria-labelledby="r-t6">
-      <header><h3 id="r-t6">Wie geht es weiter?</h3></header>
-    <p class="muted" style="margin:0 0 4px">Du reichst nichts über SellCheck ein. Such dir den Weg aus, der zu dir passt.</p>
+      <header><h3 id="r-t6">Abgabe</h3></header>
+    <p class="muted" style="margin:0 0 4px">Du reichst nichts über SellCheck ein. Wähle den Abgabeweg, der zu deiner Situation passt.</p>
     <div class="src-groups" data-tabs>
       <div class="src-group">
         <div class="src-group-label"><span class="dot ok"></span>Dein Abgabeweg</div>
@@ -521,7 +521,7 @@
 
     <section class="review-card wide cta-card">
       <span class="label" style="background:var(--lime);color:var(--ink)">In Vorbereitung</span>
-      <h3 style="margin-top:14px">Mehr Ordnung für Reseller?</h3>
+      <h3 style="margin-top:14px">Für regelmäßige Verkäufer: das Starter-Paket</h3>
       <p class="muted" style="max-width:560px">Ein Starter-Paket mit Guide für alle Plattformen, Google-Sheet-Tracker und EÜR-Übersicht ist in Vorbereitung (9,99 € einmalig). Lass dich zum Start benachrichtigen.</p>
       <form class="waitlist" data-source="tools" novalidate>
         <label for="email-tools">E-Mail</label>
@@ -576,7 +576,6 @@
         <ul>
           <li><a href="index.html">Startseite</a></li>
           <li><a href="tools.html">Gratis-Tools</a></li>
-          <li><a href="brand.html">Marke &amp; Design</a></li>
         </ul>
       </div>
       <div>
