@@ -2003,8 +2003,11 @@ def build_audio(variant, path, with_voice=False, voice_files=None):
         hit(0.0)                                             # Hook: Treffer vor dem ersten Wort
         if variant == "V7":
             thud(at(2, P7_T[5] + 0.7), 0.3)                  # Gewinn steht: tiefer Akzent unter dem Ding
+        if variant == "V6":
+            for i, ft in enumerate(V6_FLIP):                 # Antwortkarten: tiefer Akzent unter jedem Ding, der letzte (Gewinn) am stärksten
+                thud(at(3, ft + 0.4), 0.2 + 0.1 * i)
         if with_voice and voice_files:
-            extra = ("Reseller", "Grenze", "BEIDES")
+            extra = {"V6": ("Eins", "Zwei", "Drei", "Gewinn", "alle"), "V7": ("Reseller", "Grenze", "BEIDES")}.get(variant, ())
             for kt in keyword_times(variant, voice_files, extra):
                 if kt > 0.25:
                     word_pop(kt - 0.03)
@@ -2045,7 +2048,20 @@ def build_audio(variant, path, with_voice=False, voice_files=None):
     peak = max(abs(v) for v in mix) or 1.0
     scale = 0.85 / peak
     if SOUND2:
-        print(f"  Aussteuerung: Spitze {peak:.2f}, Faktor {scale:.2f}", flush=True)
+        # Gleiche mittlere Lautstärke wie die Fassung ohne Zusatzeffekte (RMS 0,097), kurze Spitzen weich begrenzt.
+        r = math.sqrt(sum(v * v for v in mix) / len(mix)) or 1.0
+        scale = 0.097 / r
+        ref = r
+        knee = 0.8
+
+        def soft(v):
+            y = v * scale
+            m = abs(y)
+            if m <= knee:
+                return y
+            return math.copysign(knee + (0.98 - knee) * math.tanh((m - knee) / (0.98 - knee)), y)
+        mix = [soft(v) / scale for v in mix]
+        print(f"  Aussteuerung: Spitze {peak:.2f}, RMS-Bezug {ref:.3f}, Faktor {scale:.2f}", flush=True)
     fade = int(0.35 * SR)
     with wave.open(path, "wb") as w:
         w.setnchannels(2)
