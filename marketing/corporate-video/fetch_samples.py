@@ -1,9 +1,9 @@
-"""Lädt die Auswahl aus VSCO-2-CE (CC0) nach samples/. Liste: samples_list.txt (120 Dateien, ca. 273 MB)."""
+"""Lädt die Auswahl aus VSCO-2-CE (CC0) nach samples/. Liste: samples_list.txt (120 Dateien, ca. 273 MB: gehaltene Streicher, Klavier, Pauke), samples_list_extra.txt (141 Dateien, ca. 69 MB: kurze Streicher, Schlagzeug, Becken)."""
 import os, sys, urllib.parse, urllib.request
 from concurrent.futures import ThreadPoolExecutor
 base="https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/"
 here=os.path.join(os.path.dirname(os.path.abspath(__file__)), "samples")
-paths=[l.strip() for l in open(os.path.join(os.path.dirname(os.path.abspath(__file__)),"samples_list.txt")) if l.strip()]
+paths=[l.strip() for l in open(os.path.join(os.path.dirname(os.path.abspath(__file__)),(sys.argv[1] if len(sys.argv) > 1 else "samples_list.txt"))) if l.strip()]
 def get(p):
     dest=os.path.join(here,p)
     if os.path.exists(dest) and os.path.getsize(dest)>1000: return 0

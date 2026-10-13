@@ -18,3 +18,6 @@ Quelle: VSCO-2-CE (Versilian Studios Chamber Orchestra 2, Community Edition), gi
 Lizenz CC0 1.0 (gemeinfrei, kommerzielle Nutzung ohne Nachweis erlaubt). Verwendet: Cello-, Bratschen- und
 Violinensemble (gehalten, Vibrato), Upright Nr. 1 (mf), Pauke (Hit v3/v4). Abruf: `samples/_fetch.py`, Dateien
 liegen in `samples/` und sind nicht im Repo (.gitignore).
+
+Zusätzlich für corporate_music4.py (samples_list_extra.txt, 141 Dateien, ca. 69 MB, gleiche Quelle und Lizenz):
+Spiccato und Pizzicato (Celli, Bratschen, Violinen), Basstrommel, Snare, Becken-Crash, Becken-Crescendo, Tamburin.
