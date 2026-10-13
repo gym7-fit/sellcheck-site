@@ -524,155 +524,11 @@ SR = 44100
 
 
 def build_audio(path, voice_dir=None):
+    sys.path.insert(0, HERE)
+    import corporate_music as M
     n = int(SR * DUR)
-    buf = [0.0] * n
-    rnd = random.Random(21)
-
-    def add(t0, samples, gain=1.0):
-        s0 = int(t0 * SR)
-        for k, v in enumerate(samples):
-            j = s0 + k
-            if j >= n:
-                break
-            if j >= 0:
-                buf[j] += v * gain
-
-    def sine(f, dur, decay=5.0, attack=0.003, f_end=None, harm=()):
-        m = int(dur * SR)
-        out, ph = [], 0.0
-        for i in range(m):
-            x = i / m
-            ff = f if f_end is None else f + (f_end - f) * x
-            ph += 2 * math.pi * ff / SR
-            env = math.exp(-decay * x) * min(1.0, i / (attack * SR + 1))
-            v = math.sin(ph)
-            for hm, g in harm:
-                v += g * math.sin(ph * hm)
-            out.append(v * env)
-        return out
-
-    def noise(dur, decay=8.0, hp=0.0, lp=1.0):
-        m = int(dur * SR)
-        out, prev_x, prev_y, lpv = [], 0.0, 0.0, 0.0
-        for i in range(m):
-            x = rnd.uniform(-1, 1)
-            y = x - prev_x + hp * prev_y if hp else x
-            prev_x, prev_y = x, y
-            lpv += lp * (y - lpv)
-            out.append(lpv * math.exp(-decay * i / m))
-        return out
-
-    def kick(t0, g=0.9):
-        m = int(0.26 * SR)
-        out, ph = [], 0.0
-        for i in range(m):
-            tt = i / SR
-            f = 46 + 110 * math.exp(-tt / 0.028)
-            ph += 2 * math.pi * f / SR
-            out.append(math.sin(ph) * math.exp(-tt / 0.085) * min(1.0, i / 60))
-        add(t0, out, g)
-        add(t0, noise(0.008, 3.0, 0.5), 0.12)
-
-    def clap(t0, g=0.5):
-        for d in (0.0, 0.011, 0.024):
-            add(t0 + d, noise(0.11, 9.0, 0.6, 0.55), g * 0.6)
-
-    def hat(t0, g=0.14, open_=False):
-        add(t0, noise(0.12 if open_ else 0.04, 6.0 if open_ else 10.0, 0.93), g)
-
-    def bass(t0, f, dur=0.22, g=0.34):
-        add(t0, sine(f, dur, 5.5, 0.004, harm=((2, 0.35), (3, 0.12))), g)
-
-    def pluck(t0, f, g=0.09):
-        add(t0, sine(f, 0.32, 7.0, 0.002, harm=((2, 0.3), (3, 0.1))), g)
-
-    def stab(t0, notes, g=0.07, dur=0.42):
-        for f in notes:
-            add(t0, sine(f, dur, 6.0, 0.004, harm=((2, 0.25),)), g)
-
-    def impact(t0, g=0.75):
-        add(t0, sine(70, 1.1, 3.5, 0.002, 34), g)
-        add(t0, noise(0.9, 4.0, 0.0, 0.18), 0.35)
-
-    def riser(t0, dur, g=0.26):
-        m = int(dur * SR)
-        low = band = 0.0
-        q = 0.4
-        out = []
-        for i in range(m):
-            x = i / m
-            f = 300 + 5200 * x * x
-            a = 2 * math.sin(math.pi * f / SR)
-            v = rnd.uniform(-1, 1)
-            low += a * band
-            high = v - low - q * band
-            band += a * high
-            out.append(band * (x ** 1.5))
-        pk = max(abs(v) for v in out) or 1.0
-        add(t0, [v / pk for v in out], g)
-        add(t0, sine(180, dur, 0.0, 0.01, 1800), g * 0.18)
-
-    # Akkorde Am - F - C - G, je Takt (4 Schläge = 2 s)
-    chords = [
-        ((110.0, 130.81, 164.81, 220.0), 55.0),
-        ((87.31, 110.0, 130.81, 174.61), 43.65),
-        ((130.81, 164.81, 196.0, 261.63), 65.41),
-        ((98.0, 123.47, 146.83, 196.0), 49.0),
-    ]
-    sec = {name: (st, st + ln) for name, st, ln in SCENES}
-
-    def level(t0):
-        """Dichte je Szene: 0 = nur Puls, 1 = voller Beat."""
-        if t0 < sec["problem"][0]:
-            return 0.35
-        if t0 < sec["loesung"][0]:
-            return 0.5
-        if t0 < sec["vertrauen"][0]:
-            return 1.0
-        if t0 < sec["abbinder"][0]:
-            return 0.55
-        return 0.9
-
-    for b in range(int(DUR / BEAT)):
-        t0 = b * BEAT
-        lv = level(t0)
-        chord, root = chords[(b // 4) % 4]
-        bib = b % 4
-        kick(t0, 0.85 if lv < 0.9 else 0.95)
-        hat(t0 + BEAT / 2, 0.13 * (0.6 + 0.4 * lv), open_=True)
-        if lv >= 0.5:
-            hat(t0 + BEAT / 4, 0.07)
-            hat(t0 + BEAT * 3 / 4, 0.07)
-        if lv >= 0.9 and bib in (1, 3):
-            clap(t0, 0.5)
-        if lv >= 0.5:
-            bass(t0 + BEAT / 2, root * (2 if bib == 3 else 1), 0.2, 0.3 * lv)
-            if bib in (0, 2):
-                bass(t0 + BEAT * 0.75, root, 0.14, 0.2 * lv)
-        elif bib in (0, 2):
-            bass(t0 + BEAT / 2, root, 0.2, 0.22)
-        if lv >= 0.9:
-            notes = [chord[0] * 2, chord[1] * 2, chord[2] * 2, chord[3] * 2]
-            for q in range(4):
-                pluck(t0 + q * BEAT / 4, notes[(q + bib) % 4], 0.075)
-        if lv >= 0.9 and bib == 0:
-            stab(t0, chord[:3], 0.06)
-        if lv >= 0.9 and bib == 2:
-            stab(t0 + BEAT * 0.75, chord[:3], 0.045, 0.3)
-
-    for name, st, ln in SCENES[1:]:
-        riser(st - 2.0, 2.0, 0.24)
-        impact(st, 0.6 if name != "abbinder" else 0.8)
-    for tt in (0.0, 1.0, 2.0):
-        impact(tt, 0.5 if tt == 0.0 else 0.35)
-
-    def ding(t0, f, gain=0.2):
-        add(t0, sine(f, 0.7, 4.0, 0.002, harm=((2, 0.3),)), gain)
-
-    for j, f in enumerate((523.25, 659.25, 783.99, 1046.5)):
-        ding(sec["abbinder"][0] + 0.1 + j * 0.12, f, 0.17)
-    ding(sec["loesung"][0] + 0.05, 659.25, 0.22)
-
+    print("  Musik wird synthetisiert (dauert ca. 2 bis 3 Minuten) …", flush=True)
+    ml, mr = M.build_music(DUR, SCENES)
     duck = [1.0] * n
     vo = [0.0] * n
     if voice_dir:
@@ -706,26 +562,32 @@ def build_audio(path, voice_dir=None):
             for j in range(max(0, a), min(n, b)):
                 ramp = min(1.0, (j - a) / (0.1 * SR), (b - j) / (0.25 * SR))
                 duck[j] = min(duck[j], 1.0 - 0.5 * max(0.0, ramp))
-    mix = [buf[k] * duck[k] + vo[k] for k in range(n)]
-    rms = math.sqrt(sum(v * v for v in mix) / n) or 1.0
-    scale = 0.125 / rms
+    # Master: Musik auf feste mittlere Lautstärke, Sprache oben drauf, weiche Begrenzung
+    rms = math.sqrt(sum(v * v for v in ml) / n) or 1.0
+    g = 0.14 / rms
     fade_in, fade_out = int(0.05 * SR), int(0.9 * SR)
     with wave.open(path, "wb") as w:
         w.setnchannels(2)
         w.setsampwidth(2)
         w.setframerate(SR)
         out = bytearray()
-        for k, v in enumerate(mix):
-            y = v * scale
-            m = abs(y)
-            if m > 0.7:
-                y = math.copysign(0.7 + 0.28 * math.tanh((m - 0.7) / 0.28), y)
+        for k in range(n):
+            l = ml[k] * g * duck[k] + vo[k] * 0.9
+            r = mr[k] * g * duck[k] + vo[k] * 0.9
+            for ch in (l, r):
+                pass
+            fl = 1.0
             if k < fade_in:
-                y *= k / fade_in
-            if k > n - fade_out:
-                y *= (n - k) / fade_out
-            sv = int(max(-1.0, min(1.0, y)) * 32767)
-            out += struct.pack("<hh", sv, sv)
+                fl = k / fade_in
+            elif k > n - fade_out:
+                fl = (n - k) / fade_out
+            vals = []
+            for y in (l * fl, r * fl):
+                m = abs(y)
+                if m > 0.72:
+                    y = math.copysign(0.72 + 0.26 * math.tanh((m - 0.72) / 0.26), y)
+                vals.append(int(max(-1.0, min(1.0, y)) * 32767))
+            out += struct.pack("<hh", vals[0], vals[1])
         w.writeframes(bytes(out))
 
 
