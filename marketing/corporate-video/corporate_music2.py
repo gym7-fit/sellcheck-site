@@ -6,7 +6,9 @@ Millisekunde, weil beide aus denselben Zeitpunkten kommen (siehe CUES).
 
 Werkzeuge: numpy/scipy für die Klangerzeugung (Sägezähne mit Überabtastung, Filterhüllkurven,
 additives Klavier, Schlagzeug aus Sinus und Rauschen), Spotifys pedalboard für Hall, Kompressor und
-Begrenzer. Tonart d-Moll, Akkorde Dm – B – F – C, Finale B – C – F (Auflösung nach Dur).
+Begrenzer. Tonart d-Moll, Akkorde Dm – B – Gm – A, Finale B – A – D (Auflösung nach Dur).
+Klangbild: ernst und kinoartig statt verspielt. Tiefe Lage, Klavier und Streicher, trommelartige
+Akzente, ein gerader Achtel-Puls im Bass. Keine Glocken, keine Zupf-Arpeggien.
 
     .venv/bin/python corporate_music2.py out.wav      # rendert 49 s Stereo, 44,1 kHz, 16 Bit
 """
@@ -293,22 +295,64 @@ def bell(f, dur=1.4):
     return y * np.clip(t / 0.002, 0, 1) * 0.5
 
 
+def tom(f, dur=0.5):
+    """Tonale Trommel: Sinus mit Tonhöhenabfall, kurzer Anschlag. Ersetzt Glocken als Akzent."""
+    n = int(dur * SR)
+    t = tarr(n)
+    fr = f * (1 + 0.9 * np.exp(-t / 0.03))
+    x = np.sin(2 * np.pi * np.cumsum(fr) / SR) * np.exp(-t / 0.16)
+    x += hp(rng.uniform(-1, 1, n), 1500) * np.exp(-t / 0.008) * 0.25
+    return np.tanh(1.4 * x) * np.clip((n - np.arange(n)) / (0.02 * SR), 0, 1)
+
+
+def stab_note(notes, dur=0.28):
+    """Kurzer Akkordschlag aus verstimmten Sägezähnen, mittlere Lage, Tiefpass fällt schnell."""
+    n = int((dur + 0.12) * SR)
+    t = tarr(n)
+    L = np.zeros(n)
+    R = np.zeros(n)
+    for m in notes:
+        for k, d in enumerate((-0.01, 0.0, 0.01)):
+            s = saw(np.full(n, mtof(m) * (1 + d)), 2, ph0=rng.random())
+            L += s * (0.7 if k == 0 else 0.4)
+            R += s * (0.7 if k == 2 else 0.4)
+    fc = 500 + 2600 * np.exp(-t / 0.07)
+    L, R = lp_sweep(L, fc), lp_sweep(R, fc)
+    env = np.clip(t / 0.003, 0, 1) * np.where(t < dur, 1.0, np.exp(-(t - dur) / 0.05))
+    return L * env * 0.09, R * env * 0.09
+
+
+def string_note(f, dur, fc=2200.0):
+    """Streicherartig: sechs verstimmte Sägezähne, langsamer Anstieg, leichtes Vibrato."""
+    n = int((dur + 0.5) * SR)
+    t = tarr(n)
+    vf = 1 + 0.003 * np.sin(2 * np.pi * 5.2 * t) * np.clip((t - 0.3) / 0.6, 0, 1)
+    s = np.zeros(n)
+    for d in (-0.008, -0.004, -0.001, 0.002, 0.005, 0.009):
+        s += saw(f * (1 + d) * vf, 2, ph0=rng.random())
+    y = lp(s, fc, 2)
+    env = np.clip(t / 0.18, 0, 1) * np.where(t < dur, 1.0, np.exp(-(t - dur) / 0.25))
+    return y * env * 0.11
+
+
 # ------------------------------------------------------------------ Aufbau
 PROG = {
-    # Name: (Pad/Stab-Töne, Basston, Töne für Plucks, Töne für Leadlinie bleibt in LEAD)
-    "Dm": ((62, 65, 69), 38, (62, 65, 69, 74)),
-    "Bb": ((58, 62, 65), 34, (58, 62, 65, 70)),
-    "F": ((60, 65, 69), 41, (60, 65, 69, 72)),
-    "C": ((60, 64, 67), 36, (60, 64, 67, 72)),
+    # Name: (Akkordtöne mittlere Lage, Basston MIDI)
+    "Dm": ((62, 65, 69), 38),
+    "Bb": ((58, 62, 65), 34),
+    "Gm": ((58, 62, 67), 31),
+    "A": ((57, 61, 64), 33),
+    "D": ((62, 66, 69), 38),
 }
-LOOP = ["Dm", "Bb", "F", "C"]
+LOOP = ["Dm", "Bb", "Gm", "A"]
 
-# Lead-Motiv je Akkord: (Achtel-Position, MIDI-Note, Länge in Achteln)
+# Motiv je Akkord (tiefe Lage, wenige Töne): (Achtel-Position, MIDI-Note, Länge in Achteln)
 LEAD = {
-    "Dm": [(0, 74, 2), (2, 77, 2), (4, 81, 3), (7, 79, 1)],
-    "Bb": [(0, 77, 2), (2, 74, 1), (3, 77, 1), (4, 79, 3), (7, 77, 1)],
-    "F": [(0, 81, 2), (2, 77, 2), (4, 72, 2), (6, 77, 2)],
-    "C": [(0, 79, 2), (2, 76, 2), (4, 72, 2), (6, 76, 1), (7, 79, 1)],
+    "Dm": [(0, 62, 2), (2, 65, 2), (4, 69, 3), (7, 67, 1)],
+    "Bb": [(0, 65, 2), (2, 62, 1), (3, 65, 1), (4, 67, 3), (7, 65, 1)],
+    "Gm": [(0, 70, 2), (2, 67, 2), (4, 62, 2), (6, 67, 2)],
+    "A": [(0, 73, 2), (2, 69, 2), (4, 64, 2), (6, 69, 1), (7, 73, 1)],
+    "D": [(0, 74, 4), (4, 69, 4)],
 }
 
 
@@ -316,16 +360,16 @@ def chord_name(bar):
     if bar == 22:
         return "Bb"
     if bar == 23:
-        return "C"
+        return "A"
     if bar >= 24:
-        return "F"
+        return "D"
     return LOOP[(bar - 6) % 4]
 
 
 def build_stems(dur=DUR):
     n = int((dur + TAIL) * SR)
     kick_s, clap_s, snare_s = make_kick(), make_clap(), make_snare()
-    hat_c, hat_o, hat_s = make_hat(0.025), make_hat(0.16), make_hat(0.012, 0.1)
+    hat_c, hat_o = make_hat(0.03), make_hat(0.17)
     crash_s, impact_s = make_crash(), make_impact()
 
     kicks_st, claps_st, hats_st = Stem(n), Stem(n), Stem(n)
@@ -345,173 +389,174 @@ def build_stems(dur=DUR):
         claps_st.add(t, snare_s, 0.7 * g)
 
     def crash(t, g=1.0):
-        fx_st.add(t, crash_s, 0.55 * g, 0.1)
+        fx_st.add(t, crash_s, 0.5 * g, 0.1)
 
     def impact(t, g=1.0):
         fx_st.add(t, impact_s, 0.95 * g)
 
     def snare_roll(t0, t1, g0=0.25, g1=1.0, step=BEAT / 2):
-        """Wirbel: Achtel, in der zweiten Hälfte Sechzehntel."""
-        k, tt = 0, t0
+        tt = t0
         total = t1 - t0
         while tt < t1 - 1e-6:
             x = (tt - t0) / total
-            st = step if x < 0.5 else step / 2
             snare(tt, g0 + (g1 - g0) * x)
-            tt += st
-            k += 1
+            tt += step if x < 0.5 else step / 2
 
-    def bell_hit(t, midi, g=1.0):
-        spark_st.add(t, bell(mtof(midi)), 0.22 * g, pan=0.25 if int(t * 2) % 2 else -0.25)
+    def tom_hit(t, hz, g=1.0, pan=0.0):
+        spark_st.add(t, tom(hz), 0.9 * g, pan)
 
-    def pluck_hit(t, midi, g=1.0, pan=0.0):
-        pluck_st.add(t, pluck(mtof(midi), 0.32, 1.2), 0.5 * g, pan)
+    def stab(t, name, g=1.0, octave=0, d=0.28):
+        l, r = stab_note([m + 12 * octave for m in PROG[name][0]], d)
+        pluck_st.add_st(t, l, r, g)
 
-    def pad(t, name, d=BAR, fc0=900, fc1=2800, g=1.0, octave=0):
+    def pad(t, name, d=BAR, fc0=900, fc1=2400, g=1.0, octave=0):
         notes = [m + 12 * octave for m in PROG[name][0]]
         l, r = pad_chord(notes, d, fc0, fc1)
         pad_st.add_st(t, l, r, g)
+
+    def strings(t, name, d=BAR, g=1.0, octave=0, fc=2200):
+        for m in PROG[name][0]:
+            x = string_note(mtof(m + 12 * octave), d, fc)
+            lead_st.add(t, x, g * 0.8, pan=-0.35 if m % 2 else 0.35)
 
     def bassline(t_bar, name, mode):
         root = PROG[name][1]
         f = mtof(root)
         if mode == "long":
-            bass_st.add(t_bar, bass_note(f, BAR - 0.05, 0.6), 0.9)
-        elif mode == "tense":  # Achtel auf "und" von 1 und 3
-            for q in (0.5, 2.5):
-                bass_st.add(t_bar + q * BEAT, bass_note(f, BEAT * 0.8, 0.8), 0.9)
-        else:  # treibend: Achtel auf allen "und", Oktave auf Schlag 4
-            for q in range(4):
-                oc = 2.0 if q == 3 else 1.0
-                bass_st.add(t_bar + (q + 0.5) * BEAT, bass_note(f * oc, BEAT * 0.42), 0.85)
-            bass_st.add(t_bar, bass_note(f, BEAT * 0.45), 0.8)
-            bass_st.add(t_bar + 2 * BEAT, bass_note(f, BEAT * 0.45), 0.7)
+            bass_st.add(t_bar, bass_note(f, BAR - 0.05, 0.5), 0.9)
+        elif mode == "tense":  # nur Schlag 1 und 3, tief
+            for q in (0, 2):
+                bass_st.add(t_bar + q * BEAT, bass_note(f, BEAT * 0.9, 0.6), 0.9)
+        else:                  # gerader Achtel-Puls auf dem Grundton, Oktave nur am Taktende
+            for q in range(8):
+                oc = 2.0 if q == 7 else 1.0
+                bass_st.add(t_bar + q * BEAT / 2, bass_note(f * oc, BEAT * 0.44), 0.85 if q % 2 == 0 else 0.7)
 
-    def arp(t_bar, name, density=2, g=0.5, up=0):
-        tones = PROG[name][2]
-        steps = 8 if density == 2 else 16
-        sp = BAR / steps
-        order = [0, 1, 2, 3, 2, 1, 2, 3, 0, 1, 2, 3, 2, 1, 3, 2]
-        for k in range(steps):
-            m = tones[order[k % 16] % 4] + 12 * up + 12
-            pluck_hit(t_bar + k * sp, m, g * (1.0 if k % 2 == 0 else 0.7), pan=-0.4 if k % 2 else 0.4)
+    def pulse(t_bar, name, g=1.0, cutoff=1000.0):
+        """Gerader Achtel-Puls im Mittenbereich (Ostinato): Grundton und Quinte im Wechsel."""
+        root = PROG[name][1] + 24
+        for q in range(8):
+            m = root + (7 if q in (3, 7) else 0)
+            f = mtof(m)
+            nn = int(0.2 * SR)
+            tt = tarr(nn)
+            sig = saw(np.full(nn, f), 4) + saw(np.full(nn, f * 1.006), 4, 0.5)
+            y = lp_sweep(sig, cutoff * (0.5 + 1.6 * np.exp(-tt / 0.06)))
+            y *= np.exp(-tt / 0.11) * np.clip(tt / 0.002, 0, 1) * 0.28
+            pluck_st.add(t_bar + q * BEAT / 2, y, g * (1.0 if q % 2 == 0 else 0.7), pan=0.0)
 
-    def lead(t_bar, name, g=1.0, octave=0):
+    def motif(t_bar, name, g=1.0, doubled=True):
         for pos, m, ln in LEAD[name]:
             t = t_bar + pos * BEAT / 2
             d = ln * BEAT / 2
-            f = mtof(m + 12 * octave)
-            x = lead_note(f, d * 0.95)
-            lead_st.add(t, x, 0.55 * g, 0.0)
-            # Echo (punktierte Achtel)
-            lead_st.add(t + BEAT * 0.75, x, 0.17 * g, 0.5)
-            lead_st.add(t + BEAT * 1.5, x, 0.07 * g, -0.5)
+            piano_st.add(t, piano_note(mtof(m), d * 0.95, 0.85), 0.55 * g, pan=0.0)
+            if doubled:
+                x = string_note(mtof(m + 12), d * 0.9, 1800)
+                lead_st.add(t, x, 0.45 * g, pan=0.2)
 
     def piano_chord(t, name, g=1.0, octave=0, d=1.6, arpeggio=0.0):
-        notes = PROG[name][0]
-        for k, m in enumerate(notes):
+        for k, m in enumerate(PROG[name][0]):
             piano_st.add(t + k * arpeggio, piano_note(mtof(m + 12 * octave), d), 0.5 * g, pan=(k - 1) * 0.25)
-        piano_st.add(t, piano_note(mtof(PROG[name][1] + 24), d), 0.35 * g)
+        piano_st.add(t, piano_note(mtof(PROG[name][1] + 12), d), 0.4 * g)
 
-    def hats(t_bar, level, open_on=3):
+    def hats(t_bar, level):
         for q in range(4):
             tb = t_bar + q * BEAT
-            hats_st.add(tb + BEAT / 2, hat_o if q == open_on else hat_c, 0.22 * level, pan=0.3)
-            if level >= 0.9:
-                hats_st.add(tb + BEAT / 4, hat_s, 0.10, pan=-0.3)
-                hats_st.add(tb + BEAT * 3 / 4, hat_s, 0.12, pan=0.3)
+            hats_st.add(tb, hat_c, 0.10 * level, pan=-0.2)
+            hats_st.add(tb + BEAT / 2, hat_o if q == 3 else hat_c, 0.2 * level, pan=0.25)
 
-    # ---------------------------------------------------- A: Hook 0 bis 4 s (Takt 0, 1)
-    pad(0.0, "F", BAR * 2, 380, 900, 0.8)
-    for tt, gg in zip(CUES["hook_slams"], (0.8, 0.95, 1.1)):
-        kick(tt, gg)
-        impact(tt, 0.55 + 0.25 * CUES["hook_slams"].index(tt))
-    clap(1.0, 0.7)
-    clap(2.0, 1.0)
-    bass_st.add(2.0, bass_note(mtof(PROG["F"][1]), 1.0, 0.7), 1.0)
-    bass_st.add(0.0, bass_note(mtof(PROG["F"][1]), 0.9, 0.6), 0.9)
-    for tt in (0.5, 1.5, 2.5, 3.0, 3.5):
-        hats_st.add(tt, hat_c, 0.14 + 0.03 * tt, pan=0.3)
-    fx_st.add_st(1.0, *make_riser(3.0, 300, 7500), 0.5)
+    # ---------------------------------------------------- A: Hook 0 bis 4 s (Takte 0, 1)
+    pad(0.0, "Gm", BAR, 260, 520, 1.0, octave=-1)
+    pad(2.0, "A", BAR, 320, 900, 1.0, octave=-1)
+    for k, tt in enumerate(CUES["hook_slams"]):
+        kick(tt, (0.85, 0.95, 1.1)[k])
+        impact(tt, (0.7, 0.85, 1.05)[k])
+    clap(1.0, 0.6)
+    clap(2.0, 0.9)
+    stab(2.0, "A", 1.0, octave=-1, d=0.5)
+    bass_st.add(0.0, bass_note(mtof(PROG["Gm"][1]), 1.0, 0.5), 1.0)
+    bass_st.add(2.0, bass_note(mtof(PROG["A"][1]), 1.9, 0.6), 1.0)
+    fx_st.add_st(1.0, *make_riser(3.0, 250, 5200), 0.5)
     snare_roll(3.0, 4.0, 0.3, 1.0, BEAT / 2)
 
     # ---------------------------------------------------- B: Problem 4 bis 12 s (Takte 2 bis 5)
     for b in range(2, 6):
         t_bar = b * BAR
         name = chord_name(b)
-        pad(t_bar, name, BAR, 700 + 250 * (b - 2), 1500 + 600 * (b - 2), 0.8)
+        pad(t_bar, name, BAR, 500 + 200 * (b - 2), 1100 + 350 * (b - 2), 0.9, octave=-1)
+        strings(t_bar, name, BAR, 0.5 + 0.12 * (b - 2), octave=0, fc=1500)
         for q in range(4):
-            kick(t_bar + q * BEAT, 0.85)
-        hats(t_bar, 0.6)
+            kick(t_bar + q * BEAT, 0.7 + 0.04 * (b - 2))
+        hats(t_bar, 0.5)
         bassline(t_bar, name, "tense")
-        arp(t_bar, name, 2, 0.14 + 0.05 * (b - 2))
+        if b >= 4:
+            pulse(t_bar, name, 0.5 + 0.2 * (b - 4), 700)
     impact(4.0, 0.8)
-    crash(4.0, 0.5)
+    crash(4.0, 0.4)
+    stab(4.0, "Dm", 0.9, octave=-1, d=0.45)
     for k, tt in enumerate(CUES["problem_cards"]):
-        bell_hit(tt, (69, 72, 74, 77)[k], 1.0)       # steigende Zählstimme zu den vier Karten
+        tom_hit(tt, (82.4, 98.0, 110.0, 130.8)[k], 1.0)   # steigende Zählstimme zu den vier Karten
     impact(CUES["problem_banner"][0], 0.9)
     claps_st.add(CUES["problem_banner"][0], clap_s, 0.9)
-    bell_hit(CUES["problem_banner"][1], 74, 0.8)
-    fx_st.add_st(9.0, *make_riser(3.0, 400, 10000), 0.7)
+    stab(CUES["problem_banner"][0], "Dm", 1.0, d=0.4)
+    tom_hit(CUES["problem_banner"][1], 98.0, 0.9)
+    fx_st.add_st(9.0, *make_riser(3.0, 300, 8000), 0.7)
     snare_roll(10.0, 11.5, 0.3, 1.0, BEAT / 2)
-    for k in range(6):   # Sechzehntel-Wirbel direkt vor dem Stopp
-        snare(11.0 + k * BEAT / 4 + 0.5 * 0, 0.0)
     mute.append((11.75, 12.0))
 
     # ---------------------------------------------------- C: Lösung 12 bis 22 s (Takte 6 bis 10)
     impact(12.0, 1.1)
-    crash(12.0, 1.0)
+    crash(12.0, 0.9)
     for b in range(6, 11):
         t_bar = b * BAR
         name = chord_name(b)
-        pad(t_bar, name, BAR, 2600, 3600, 1.0)
-        pad(t_bar, name, BAR, 3000, 3400, 0.35, octave=1)
+        pad(t_bar, name, BAR, 1500, 2300, 1.0, octave=-1)
+        strings(t_bar, name, BAR, 0.8, octave=0, fc=2300)
         for q in range(4):
             kick(t_bar + q * BEAT)
             if q in (1, 3):
                 clap(t_bar + q * BEAT, 0.9)
         hats(t_bar, 1.0)
         bassline(t_bar, name, "drive")
-        arp(t_bar, name, 2, 0.30, up=0)
+        pulse(t_bar, name, 0.8, 1100)
         if b <= 9:
-            lead(t_bar, name, 1.0)
+            motif(t_bar, name, 1.0)
     for tt in CUES["loesung_lines"]:
-        crash(tt, 0.55)
-        bell_hit(tt, 81 if tt == 13.0 else 86, 1.1)
-    bell_hit(CUES["loesung_card"], 79, 1.0)
+        crash(tt, 0.5)
+        stab(tt, "Dm", 0.8, d=0.3)
+        tom_hit(tt, 98.0 if tt == 13.0 else 130.8, 1.1)
     crash(CUES["loesung_card"], 0.6)
+    stab(CUES["loesung_card"], "Gm", 0.9, d=0.4)
     for k, tt in enumerate(CUES["loesung_bullets"]):
-        pluck_hit(tt, (74, 77, 81)[k], 1.4)
-        bell_hit(tt, (86, 89, 93)[k], 0.7)
-    # Übergang in die Produktszene
+        tom_hit(tt, (110.0, 130.8, 146.8)[k], 1.1)
     snare_roll(20.5, 22.0, 0.3, 0.9)
-    fx_st.add_st(20.0, *make_riser(2.0, 500, 9000), 0.45)
+    fx_st.add_st(20.0, *make_riser(2.0, 400, 7000), 0.45)
 
     # ---------------------------------------------------- D: Produkt 22 bis 38 s (Takte 11 bis 18)
-    crash(22.0, 0.9)
-    impact(22.0, 0.55)
+    crash(22.0, 0.8)
+    impact(22.0, 0.5)
     for b in range(11, 19):
         t_bar = b * BAR
         name = chord_name(b)
-        pad(t_bar, name, BAR, 1800, 2600, 0.8)
+        pad(t_bar, name, BAR, 1300, 2100, 0.9, octave=-1)
+        strings(t_bar, name, BAR, 0.6 if b < 15 else 0.85, octave=0, fc=2000)
         for q in range(4):
             kick(t_bar + q * BEAT, 0.95)
             if q in (1, 3):
                 clap(t_bar + q * BEAT, 0.8)
-        hats(t_bar, 0.9 if b >= 15 else 0.75)
+        hats(t_bar, 0.8)
         bassline(t_bar, name, "drive")
-        arp(t_bar, name, 2, 0.26, up=0 if b < 15 else 1)
-        if b >= 15 and b <= 17:
-            lead(t_bar, name, 0.9, octave=0)
+        pulse(t_bar, name, 0.7 if b < 15 else 0.85, 1000 if b < 15 else 1300)
+        if b >= 15:
+            motif(t_bar, name, 0.9)
     for tt in CUES["produkt_cuts"][1:]:
-        crash(tt, 0.75)
-        impact(tt, 0.45)
+        crash(tt, 0.7)
+        impact(tt, 0.4)
     for tt in CUES["produkt_callouts"]:
-        bell_hit(tt, 86, 1.1)
-        bell_hit(tt + 0.5, 89, 0.7)
-    # Vorbereitung auf die Pause
+        stab(tt, chord_name(int(tt // BAR)), 0.7, octave=1, d=0.25)
+        tom_hit(tt, 146.8, 0.8)
     snare_roll(35.5, 37.75, 0.25, 1.0)
-    fx_st.add_st(34.0, *make_riser(4.0, 400, 10000), 0.6)
+    fx_st.add_st(34.0, *make_riser(4.0, 300, 8500), 0.6)
     mute.append((37.75, 38.0))
 
     # ---------------------------------------------------- E: Vertrauen 38 bis 44 s (Takte 19 bis 21)
@@ -519,19 +564,20 @@ def build_stems(dur=DUR):
     for b in range(19, 22):
         t_bar = b * BAR
         name = chord_name(b)
-        pad(t_bar, name, BAR, 1200, 1800, 0.9)
+        pad(t_bar, name, BAR, 700, 1300, 0.9, octave=-1)
+        strings(t_bar, name, BAR, 0.7, octave=0, fc=1400)
         bassline(t_bar, name, "long")
-        piano_chord(t_bar, name, 0.8, d=BAR, arpeggio=0.0)
+        piano_chord(t_bar, name, 0.75, d=BAR)
         for k in range(4):
-            piano_st.add(t_bar + (k * 2 + 1) * BEAT / 2 * 1.0, piano_note(mtof(PROG[name][2][(k + 1) % 4] + 12), 0.5, 0.45), 0.3, pan=0.3 if k % 2 else -0.3)
+            piano_st.add(t_bar + (k * 2 + 1) * BEAT / 2, piano_note(mtof(PROG[name][0][(k + 1) % 3] + 12), 0.5, 0.4),
+                         0.3, pan=0.3 if k % 2 else -0.3)
     for tt in CUES["vertrauen_lines"]:
-        piano_chord(tt, chord_name(int(tt // BAR)), 1.0, octave=1, d=1.4)
-        kicks_st.add(tt, kick_s, 0.8)
-        kick_times.append(tt)
-    # Herzschlag im letzten Takt
+        piano_chord(tt, chord_name(int(tt // BAR)), 1.0, octave=-1, d=1.4)
+        tom_hit(tt, 73.4, 1.0)
+        kick(tt, 0.7)
     for tt in (42.0, 43.0, 43.5):
-        kick(tt, 0.6)
-    fx_st.add_st(42.0, *make_riser(2.0, 500, 11000), 0.7)
+        kick(tt, 0.55)
+    fx_st.add_st(42.0, *make_riser(2.0, 400, 9000), 0.7)
     snare_roll(43.0, 44.0, 0.25, 1.0, BEAT / 2)
     mute.append((43.875, 44.0))
 
@@ -540,34 +586,34 @@ def build_stems(dur=DUR):
     crash(44.0, 1.0)
     for b, t_bar in ((22, 44.0), (23, 46.0)):
         name = chord_name(b)
-        pad(t_bar, name, BAR, 3000, 3500, 1.0)
-        pad(t_bar, name, BAR, 3000, 3400, 0.3, octave=1)
+        pad(t_bar, name, BAR, 1800, 2400, 1.0, octave=-1)
+        strings(t_bar, name, BAR, 0.9, octave=0, fc=2400)
         for q in range(4):
             if b == 22 or q in (0, 2):
                 kick(t_bar + q * BEAT, 0.95)
             if b == 22 and q in (1, 3):
                 clap(t_bar + q * BEAT, 0.9)
         if b == 22:
-            hats(t_bar, 0.9)
+            hats(t_bar, 0.8)
         bassline(t_bar, name, "drive" if b == 22 else "long")
-        lead(t_bar, name, 1.0)
+        motif(t_bar, name, 1.0)
     for tt in CUES["abbinder_lines"]:
         crash(tt, 0.5)
-    bell_hit(CUES["abbinder_pill"], 91, 1.2)
-    # Auflösung: F-Dur lang ausklingen
-    pad(48.0, "F", 3.8, 3200, 2400, 1.1)
-    pad(48.0, "F", 3.8, 3200, 2400, 0.4, octave=1)
+        tom_hit(tt, 98.0 if tt == 45.0 else 130.8, 1.2)
+    stab(CUES["abbinder_pill"], "A", 0.9, octave=1, d=0.35)
+    # Auflösung: D-Dur lang ausklingen
+    pad(48.0, "D", 3.8, 2800, 2000, 1.1, octave=-1)
+    strings(48.0, "D", 3.6, 1.0, octave=0, fc=2600)
     kick(48.0, 1.0)
     impact(48.0, 0.9)
-    bass_st.add(48.0, bass_note(mtof(PROG["F"][1]), 2.8, 0.7), 1.0)
-    piano_chord(48.0, "F", 1.1, octave=1, d=2.6, arpeggio=0.04)
-    lead_st.add(48.0, lead_note(mtof(81), 2.4), 0.5)
-    bell_hit(48.0, 93, 1.0)
+    bass_st.add(48.0, bass_note(mtof(PROG["D"][1]), 2.8, 0.6), 1.0)
+    piano_chord(48.0, "D", 1.1, octave=0, d=2.6, arpeggio=0.05)
+    motif(48.0, "D", 1.0)
 
-    # ---------------------------------------------------- Sidechain, Mischung, Hall
+    # ---------------------------------------------------- Sidechain und Stopps
     duck = np.ones(n)
     ln = int(0.30 * SR)
-    prof = 1 - 0.62 * (1 - np.arange(ln) / ln) ** 2
+    prof = 1 - 0.55 * (1 - np.arange(ln) / ln) ** 2
     for tk in kick_times:
         i0 = int(round(tk * SR))
         seg = duck[i0:i0 + ln]
@@ -577,7 +623,6 @@ def build_stems(dur=DUR):
     for a, b in mute:
         ia, ib = int(a * SR), int(b * SR)
         gate[ia:ib] = 0.0
-        # kurze Rampen, damit nichts knackt
         r = int(0.006 * SR)
         gate[max(0, ia - r):ia] = np.linspace(1, 0, ia - max(0, ia - r))
         gate[ib:ib + r] = np.linspace(0, 1, min(r, n - ib))
@@ -588,8 +633,8 @@ def build_stems(dur=DUR):
 
 
 # Pegel der Bausteine (Verhältnis tief zu mittel zu hoch bestimmt, ob die Musik dumpf oder klar klingt)
-GAINS = {"kick": 0.55, "clap": 0.75, "hat": 0.75, "bass": 0.42, "pad": 1.5, "pluck": 0.95, "lead": 1.25,
-         "piano": 1.25, "spark": 0.9, "fx": 0.55}
+GAINS = {"kick": 0.55, "clap": 1.25, "hat": 1.6, "bass": 0.55, "pad": 1.1, "pluck": 1.3, "lead": 1.2,
+         "piano": 1.6, "spark": 1.2, "fx": 0.55}
 # Lautheitsverlauf: (Sekunde, dB). Zwischenwerte werden linear verbunden. Sorgt für Dynamik trotz Begrenzer.
 SECTION_DB = [(0, -4), (3.9, -4), (4.0, -3), (11.7, -1), (12.0, 0), (21.9, 0), (22.0, -1), (37.7, -0.5), (38.0, -6),
               (43.5, -5), (44.0, 0), (47.5, 0), (49.0, -1)]
@@ -610,7 +655,7 @@ def mixdown(parts, g=None, section_db=None, reverb=0.5):
     send = (mix("pad", 0.8) * 0.45 + mix("lead") * 0.5 + mix("piano") * 0.6 + mix("clap") * 0.35 +
             mix("spark") * 0.8 + mix("fx", gated=False) * 0.4 + mix("pluck", 0.5) * 0.4 + mix("hat") * 0.05)
     rev_board = pb.Pedalboard([pb.HighpassFilter(280), pb.LowpassFilter(9500),
-                               pb.Reverb(room_size=0.72, damping=0.45, wet_level=1.0, dry_level=0.0, width=1.0)])
+                               pb.Reverb(room_size=0.82, damping=0.5, wet_level=1.0, dry_level=0.0, width=1.0)])
     rev = rev_board(send.astype(np.float32), SR).astype(np.float64)
     dry = (mix("kick") + mix("clap") + mix("hat") + mix("bass", 0.85) + mix("pad", 0.7) + mix("pluck", 0.5) +
            mix("lead", 0.35) + mix("piano") + mix("spark") + mix("fx", gated=False))
@@ -619,7 +664,7 @@ def mixdown(parts, g=None, section_db=None, reverb=0.5):
         pb.HighpassFilter(32),
         pb.Compressor(threshold_db=-16.0, ratio=2.2, attack_ms=22.0, release_ms=140.0),
         pb.Distortion(drive_db=1.5),
-        pb.HighShelfFilter(cutoff_frequency_hz=7000, gain_db=1.5),
+        pb.HighShelfFilter(cutoff_frequency_hz=7000, gain_db=0.5),
     ])
     out = chain(out.astype(np.float32), SR).astype(np.float64)
     pts = section_db or SECTION_DB
