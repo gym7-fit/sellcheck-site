@@ -618,6 +618,32 @@ def analyze_tempo(left, right):
     return bpm, beat0, beat0 + down * 60.0 / bpm
 
 
+DROP_AT = 12.0  # Sekunde im Video, an der die volle Energie einsetzen soll
+
+
+def find_drop(left, right, bpm, down):
+    """Stärkster Energiesprung auf der Taktgrenze (Sekunden im Original) oder None."""
+    sr = SR
+    bar = 60.0 / bpm * 4
+    mono = [(a + b) * 0.5 for a, b in zip(left, right)]
+    g0 = down % bar
+    nb = int((len(mono) / sr - g0) / bar)
+    e = []
+    for k in range(nb):
+        a, z = int((g0 + k * bar) * sr), int((g0 + (k + 1) * bar) * sr)
+        seg = mono[a:z:8]
+        e.append(10 * math.log10(sum(v * v for v in seg) / max(1, len(seg)) + 1e-12))
+    best, kb = 0.0, None
+    need = int(math.ceil(DROP_AT / bar)) + 1  # davor genug Takte, damit der Start nicht negativ wird
+    for k in range(max(4, need), nb - 4):
+        gain = sum(e[k:k + 4]) / 4 - sum(e[k - 4:k]) / 4
+        if gain > best:
+            best, kb = gain, k
+    if kb is None or best < 3.0:
+        return None
+    return g0 + kb * bar
+
+
 def stretch(x, factor):
     """Einfaches Umsampeln (verändert Tempo und Tonhöhe leicht), factor > 1 = schneller."""
     n = int(len(x) / factor)
@@ -638,13 +664,22 @@ def build_audio(path, voice_dir=None, track=None, offset=None):
         tl, tr = load_track(track)
         bpm, beat0, down = analyze_tempo(tl, tr)
         print(f"  Track: ca. {bpm:.1f} bpm, erster Schlag bei {beat0:.2f} s, Taktanfang bei {down:.2f} s", flush=True)
-        start = down if offset is None else offset
-        factor = 1.0
+        factor = 1.0  # Zeit im Video = Zeit im Original / factor
         if 0.94 <= bpm / BPM <= 1.06 and abs(bpm - BPM) > 0.3:
-            factor = bpm / BPM  # auf 120 bpm ziehen, damit Schnitt und Takt zusammenpassen
+            factor = BPM / bpm  # auf 120 bpm ziehen: bei 122 bpm etwas langsamer abspielen
+        # Startpunkt: Taktanfang aus der Analyse; ohne Angabe wird der stärkste Energiesprung (Drop) auf 12 s gelegt
+        if offset is not None:
+            start = offset
+        else:
+            start = down
+            drop = find_drop(tl, tr, bpm, down)
+            if drop is not None:
+                start = drop - DROP_AT * factor
+                print(f"  Drop im Original bei {drop:.2f} s, Start bei {start:.2f} s (Drop landet bei {DROP_AT:.0f} s im Video)", flush=True)
+        if factor != 1.0:
             tl, tr = stretch(tl, factor), stretch(tr, factor)
             start = start / factor
-            print(f"  Tempo angepasst (Faktor {factor:.3f}), liegt dadurch etwa {abs(1 - factor) * 100:.1f} % neben dem Original", flush=True)
+            print(f"  Tempo angepasst (Faktor {factor:.3f}), etwa {abs(1 - factor) * 100:.1f} % neben dem Original", flush=True)
         elif abs(bpm / BPM - 1) > 0.06:
             print(f"  Hinweis: Tempo weicht stark von 120 bpm ab, Schnitt und Takt passen nicht. Besser einen Track um 120 bpm wählen.", flush=True)
         i0 = int(start * SR)
@@ -695,7 +730,7 @@ def build_audio(path, voice_dir=None, track=None, offset=None):
     # Master: Musik auf feste mittlere Lautstärke, Sprache oben drauf, weiche Begrenzung
     rms = math.sqrt(sum(v * v for v in ml) / n) or 1.0
     g = 0.14 / rms
-    fade_in, fade_out = int(0.05 * SR), int(0.9 * SR)
+    fade_in, fade_out = int(0.05 * SR), int((2.4 if track else 0.9) * SR)
     with wave.open(path, "wb") as w:
         w.setnchannels(2)
         w.setsampwidth(2)
