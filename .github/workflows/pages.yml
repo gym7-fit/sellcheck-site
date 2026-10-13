@@ -23,10 +23,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Tests (Import, Steuerlogik, Anmeldung, Ablauf, Hilfeseiten)
-        run: node --test tests/parse.test.js tests/tax.test.js tests/auth.test.js tests/wizard.test.js tests/help.test.js
+      - name: Tests (Import, Steuerlogik, Konten (geparkt), Ablauf, Hilfeseiten, Freischaltung)
+        run: node --test tests/parse.test.js tests/tax.test.js tests/auth.test.js tests/wizard.test.js tests/help.test.js tests/gate.test.js
       - name: Syntaxprüfung der Skripte
-        run: for f in site/*.js; do node --check "$f"; done
+        run: for f in site/*.js parked/accounts/*.js; do node --check "$f"; done
 
   deploy:
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'

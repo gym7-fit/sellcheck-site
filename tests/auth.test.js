@@ -1,7 +1,7 @@
 // Ausführen: node --test tests/auth.test.js
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const A = require("../site/auth-lib.js");
+const A = require("../parked/accounts/auth-lib.js");
 
 const memStorage = () => {
   const m = new Map();

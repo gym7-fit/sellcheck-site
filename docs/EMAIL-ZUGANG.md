@@ -40,4 +40,4 @@ Solange beide Endpunkte leer sind (Vorabversion), wird **nichts gesendet**. Die 
 - [ ] **Kopplungsverbot** beachten: Die Freischaltung darf nicht von der Einwilligung in „Tipps und Tricks“ abhängen. Der Haken bleibt freiwillig und standardmäßig aus.
 - [ ] Newsletter-Mails: Abmeldelink in jeder Mail, Widerruf jederzeit, Impressum und Absender korrekt.
 - [ ] Beschreibung in der Werbung (TikTok-Ads sagen teils „kostenlos, mit Konto“) auf „kostenlos, ohne Anmeldung“ anpassen.
-- [ ] `login.html` und `register.html` bleiben im Ordner (Konten sind vorbereitet), sind aber nicht mehr verlinkt. Entscheiden, ob sie später für Pro gebraucht werden oder entfernt werden.
+- [ ] Konten sind geparkt (`parked/accounts/`, nicht in `site/`). Zurückholen mit Pro: siehe `parked/accounts/README.md`.

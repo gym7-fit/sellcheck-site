@@ -1,8 +1,8 @@
 # Security-Header für statisches Hosting (Netlify und Cloudflare Pages lesen diese Datei automatisch).
 # Bei Vercel: dieselben Werte in vercel.json unter "headers" eintragen. Bei anderem Hosting im Server einstellen.
 #
-# Anmeldung: connect-src erlaubt https://*.supabase.co. Nach der Einrichtung auf den genauen Host des
-# eigenen Projekts verengen (z. B. https://abcdefgh.supabase.co), siehe docs/AUTH-SETUP.md.
+# Konten sind geparkt (parked/accounts/). Beim Wiedereinschalten den Host des eigenen Supabase-Projekts
+# in connect-src ergänzen, siehe parked/accounts/README.md.
 #
 # Wenn das Wartelisten-Formular angeschlossen wird (waitlist.js, FORM_ENDPOINT):
 # in connect-src den Host des Dienstes ergänzen, z. B.  connect-src 'self' https://api.dein-dienst.eu
@@ -11,7 +11,7 @@
 # Skripte sind ausschließlich eigene Dateien, deshalb gilt script-src 'self' (kein Inline-Skript).
 
 /*
-  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://*.supabase.co; form-action 'none'; base-uri 'none'; frame-ancestors 'none'; object-src 'none'
+  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; base-uri 'none'; frame-ancestors 'none'; object-src 'none'
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: no-referrer
