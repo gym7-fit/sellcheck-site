@@ -1616,6 +1616,7 @@ def render_frame(args):
 SR = 44100
 VOICE = os.environ.get("AD_VOICE", "Anna")          # macOS-Systemstimme (say -v '?' zeigt die Liste)
 VO_RATE = os.environ.get("AD_VOICE_RATE", "165")    # Wörter pro Minute
+SOUND2 = os.environ.get("AD_SOUND") == "2"          # erweitertes Sounddesign (Treffer, Wort-Pops, Whoosh, Akzente)
 
 # Sprechertext je Variante: (absolute Startzeit, Text, spätestes Ende)
 def vo_lines(variant):
@@ -1775,6 +1776,27 @@ def tts(text, name):
     return [v / pk * 0.9 for v in vals]
 
 
+def keyword_times(variant, files, extra=()):
+    """Startzeiten betonter Wörter (GROSS geschrieben oder in extra) aus den gemessenen Sprachclips.
+    Verteilung innerhalb eines Satzes nach Wortlänge, wie bei den Untertiteln von V8."""
+    out, prev_end = [], 0.0
+    for (t0, text, limit), f in zip(vo_lines(variant), files):
+        if not f:
+            continue
+        t0 = max(t0, prev_end + 0.04)
+        dur = len(load_clip(f, f"{variant}kw")) / SR
+        prev_end = t0 + dur
+        toks = [w for w in text.split() if not w.startswith("[")]
+        weights = [len(w.strip(".,?!:")) + 1.5 + (8.0 if w[-1] in ".?!:" else 3.5 if w.endswith(",") else 0.0) for w in toks]
+        tot, tcur = sum(weights), t0
+        for w, wt in zip(toks, weights):
+            core = w.strip(".,?!:")
+            if (core.isupper() and len(core) > 3) or core in extra:
+                out.append(tcur)
+            tcur += dur * wt / tot
+    return out
+
+
 def build_audio(variant, path, with_voice=False, voice_files=None):
     n = int(SR * DUR)
     music = [0.0] * n
@@ -1853,10 +1875,48 @@ def build_audio(variant, path, with_voice=False, voice_files=None):
     def swipe(t0):
         add(sfx, t0, tone(260, 0.28, "sine", 3.5, 520, attack=2000.0), 0.12)
 
+    def whoosh(t0, dur=0.42, up=True, gain=0.2):
+        """Rauschen durch einen wandernden Bandpass: steigt (up) oder fällt, schwillt an und ab."""
+        m = int(dur * SR)
+        low = band = 0.0
+        q = 0.45
+        raw = []
+        for i in range(m):
+            x = i / m
+            f = 350 + 3800 * x if up else 4200 - 3800 * x
+            a = 2 * math.sin(math.pi * f / SR)
+            v = rnd.uniform(-1, 1)
+            low += a * band
+            high = v - low - q * band
+            band += a * high
+            raw.append(band * (math.sin(math.pi * x) ** 1.6))
+        peak = max(abs(v) for v in raw) or 1.0
+        add(sfx, t0, [v / peak for v in raw], gain)
+
+    def hit(t0):
+        """Tiefer Treffer mit kurzem Moll-Akkord: Spannung gleich zu Beginn."""
+        add(sfx, t0, tone(62, 0.5, "sine", 6.0, 38), 0.5)
+        for f in (196.0, 246.94, 329.63):
+            add(sfx, t0, tone(f, 0.36, "saw", 8.0), 0.045)
+
+    def thud(t0, gain=0.42):
+        add(sfx, t0, tone(84, 0.32, "sine", 7.0, 46), gain)
+
+    def word_pop(t0):
+        """Heller, kurzer Klick-Pop auf ein betontes Wort."""
+        add(sfx, t0, tone(1050, 0.07, "sine", 14.0, 1500), 0.26)
+        add(sfx, t0, tone(2600, 0.012, "sine", 120.0), 0.12)
+
     for k in KEYS[1:]:
-        swipe(START[k] - 0.12)
+        if SOUND2:
+            whoosh(START[k] - 0.2, 0.4, up=(k % 2 == 0))
+        else:
+            swipe(START[k] - 0.12)
     if variant != "V6":
-        swipe(at(3, S3_B) - 0.1)
+        if SOUND2:
+            whoosh(at(3, S3_B) - 0.22, 0.38, up=True)
+        else:
+            swipe(at(3, S3_B) - 0.1)
 
     if variant == "A":
         for base in (0.9, 1.25, 1.6):
@@ -1939,6 +1999,18 @@ def build_audio(variant, path, with_voice=False, voice_files=None):
             tick(at(3, 2.0 + DEMO_SHIFT + i * 0.28 + 0.15), 1100 + i * 120)
         blip_down(at(3, 4.15 + DEMO_SHIFT))
         ding(at(3, S3_B + 1.6), 659.25)                                 # Summe ist oben angekommen
+    if SOUND2:
+        hit(0.0)                                             # Hook: Treffer vor dem ersten Wort
+        if variant == "V7":
+            thud(at(2, P7_T[5] + 0.7), 0.3)                  # Gewinn steht: tiefer Akzent unter dem Ding
+        if with_voice and voice_files:
+            extra = ("Reseller", "Grenze", "BEIDES")
+            for kt in keyword_times(variant, voice_files, extra):
+                if kt > 0.25:
+                    word_pop(kt - 0.03)
+        # Endkarte: Klick und Whoosh, wenn die Schaltfläche „Hier unten klicken“ erscheint
+        word_pop(at(4, CTA_T[1] + 0.5))
+        whoosh(at(4, CTA_T[1] + 0.5) - 0.12, 0.3, up=True, gain=0.14)
     if variant not in ("V2", "V3", "V6", "V7", "V8", "V9"):
         for i, f in enumerate((523.25, 659.25, 783.99)):
             ding(at(4, 0.35 + i * 0.4), f)
@@ -1972,6 +2044,8 @@ def build_audio(variant, path, with_voice=False, voice_files=None):
     mix = [music[k] * duck[k] + sfx[k] * (0.7 if with_voice else 1.0) + vo[k] * 1.0 for k in range(n)]
     peak = max(abs(v) for v in mix) or 1.0
     scale = 0.85 / peak
+    if SOUND2:
+        print(f"  Aussteuerung: Spitze {peak:.2f}, Faktor {scale:.2f}", flush=True)
     fade = int(0.35 * SR)
     with wave.open(path, "wb") as w:
         w.setnchannels(2)
@@ -2048,10 +2122,11 @@ def main():
             print("Frames fehlen, rendere zuerst …", flush=True)
             with Pool() as pool:
                 list(pool.imap_unordered(render_frame, [(i, variant) for i in range(NF)], chunksize=8))
-        wav = os.path.join(FRAMES, f"audio_{variant}_mit_Stimme.wav")
+        sfx_tag = "_Sounddesign" if SOUND2 else ""
+        wav = os.path.join(FRAMES, f"audio_{variant}{sfx_tag}_mit_Stimme.wav")
         print("Ton mit Stimme …", flush=True)
         build_audio(variant, wav, True, files)
-        mp4 = os.path.join(OUT, f"sellcheck_tiktok_ad_{variant}_mit_Stimme.mp4")
+        mp4 = os.path.join(OUT, f"sellcheck_tiktok_ad_{variant}{sfx_tag}_mit_Stimme.mp4")
         encode(variant, wav, mp4)
         print("Fertig:", mp4, flush=True)
         return
