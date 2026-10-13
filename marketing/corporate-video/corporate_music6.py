@@ -2,15 +2,14 @@
 
 Idee: Die Fakten fliegen ins Bild, die Person erschrickt. Der Ton ist ein Körper, der darauf reagiert.
 
-  Hook         drei Einblendungen = drei Atemzüge (scharfes Einatmen, jedes höher und lauter), danach Herzschlag
-  Problem      vier Karten = vier hastige Atemstöße, Herzschlag beschleunigt; die Meldegrenze trifft als
-               Schock: großes Einatmen, alles wird abgesaugt, nur ein hohes Klingeln (Tinnitus) bleibt
-               kurz stehen; dann Hecheln, Anstieg, Luft anhalten (kurze Stille vor dem Drop)
-  Lösung       Ausatmen bei 12,0 s (Erleichterung), das Pad blüht auf; Rhythmus aus Atem-Percussion
-               (Herzschlag-Kick, "pff"-Snare, "tss"-Hi-Hat); das Pad atmet im Takt
-  Produkt      gleichmäßiger Atem-Groove, kleine "Aha"-Atemzüge bei den Markierungen
-  Vertrauen    ruhiges, langsames Atmen (4 s je Zug), ein Seufzer je Aussage
-  Abbinder     tiefes Einatmen, dann kräftiges Ausatmen mit vollem Klang; zum Schluss ein letzter, langer Atem
+  Hook         drei Einblendungen = drei kurze Atemzüge (überrascht, nicht unheimlich), danach ein Herzschlag
+  Problem      vier Karten = vier leise Atemstöße; die Meldegrenze kommt als Einatmen mit kurzer Stille;
+               danach wird der Herzschlag dichter, das Pad öffnet sich, dann Luft anhalten vor dem Drop
+  Lösung       Ausatmen bei 12,0 s (Erleichterung), das Pad blüht zu offenem D-Dur auf; Herzschlag auf jedem
+               Schlag, dazu leise Hi-Hats
+  Produkt      ruhiger: Herzschlag nur auf 1 und 3, Pad bleibt stehen, nur ein leises Ausatmen je Schnitt
+  Vertrauen    ruhiger Herzschlag, ein Seufzer je Aussage
+  Abbinder     Ausatmen mit vollem Klang und Herzschlag-Groove, am Ende ein langes Ausatmen
 
 Alle Töne sind synthetisiert: Atem als weicher, vokalartiger Hauch (rosa Rauschen durch Formanten, etwas
 Stimmanteil, nichts über ca. 4 kHz), Herzschlag (Lub-Dub) als rhythmisches Rückgrat, Pad. Kaum Tonhöhen:
@@ -82,14 +81,14 @@ def breath_in(dur=0.3, f0=700.0, f1=3400.0, rasp=0.35):
         e = np.clip(t / (0.45 * d), 0, 1) ** 1.6
         e *= np.where(t < d, 1.0, np.exp(-(t - d) / 0.05))
         return e
-    return _breath(dur, "o", "a", 0.08, 120.0, env, 0.2)
+    return _breath(dur, "a", "i", 0.0, 120.0, env, 0.2)
 
 
 def breath_out(dur=1.3, f0=4200.0, f1=650.0, soft=1.0):
     """Ausatmen ("haaah", Vokal wandert a -> u), weicher Anstieg, langes Ausklingen."""
     def env(t, d):
         return np.clip(t / (0.08 * soft + 0.03), 0, 1) ** 1.3 * np.exp(-t / (d * 0.42))
-    return _breath(dur, "a", "u", 0.12, 105.0, env, 0.1)
+    return _breath(dur, "a", "o", 0.04, 105.0, env, 0.1)
 
 
 def soft_riser(dur):
@@ -172,126 +171,96 @@ def build_stems(dur=DUR):
     def hat(t, g=0.5, pan=0.3):
         st["perc"].add(t, tss_s, 0.4 * g, pan)
 
-    def groove(t_bar, level=1.0, hats=True):
-        """Der Rhythmus ist ein Herzschlag bei 120 bpm: Lub-Dub auf jedem Schlag, Dub etwas leiser."""
+    def groove(t_bar, level=1.0, hats=True, full=True, hat_every=1):
+        """Der Rhythmus ist ein Herzschlag bei 120 bpm (Lub-Dub). full: auf jedem Schlag, sonst nur auf 1 und 3."""
         for q in range(4):
-            heart(t_bar + q * BEAT, (1.0 if q % 2 == 0 else 0.8) * level, 0.16)
-            if q in (1, 3):
-                puff(t_bar + q * BEAT, 0.5 * level)
+            if full or q % 2 == 0:
+                heart(t_bar + q * BEAT, (1.0 if q % 2 == 0 else 0.8) * level, 0.16)
         if hats:
             for q in range(1, 8, 2):
-                hat(t_bar + q * BEAT / 2, 0.5 * level, pan=0.3 if q % 4 == 1 else -0.3)
+                hat(t_bar + q * BEAT / 2, 0.4 * level, pan=0.3 if q % 4 == 1 else -0.3)
 
     # ---------------------------------------------------- A: Hook 0 bis 4 s
-    sub(0.0, 26, 2.5, 0.6, 1.5)
+    # Drei Einblendungen = drei Atemzüge (kurz, hell, überrascht statt unheimlich), dann ein Herzschlag.
+    pad(0.0, [38, 45, 50, 54, 57], 4.0, 350, 1100, 0.7)
+    sub(0.0, 38, 3.9, 0.5, 1.2)
     for k, tt in enumerate(CUES["hook_slams"]):
-        gasp(tt, (0.5, 0.75, 1.05)[k], 700 + 350 * k, 3000 + 900 * k, 0.12 + 0.01 * k)
-        beat_thump(tt, (0.6, 0.8, 1.1)[k])
-    mute.append((2.0, 2.3))
-    st["fx"].add(2.0, ring(0.9, 3200.0), 0.02)
-    for tt in (2.5, 3.0, 3.25, 3.5, 3.625, 3.75, 3.875):
-        heart(tt, 0.6 + 0.25 * (tt - 2.5))
-    st["fx"].add_st(2.0, *soft_riser(2.0), 0.3)
+        gasp(tt, (0.5, 0.65, 0.85)[k], 900 + 300 * k, 3000 + 500 * k, 0.1)
+        beat_thump(tt, (0.6, 0.8, 1.0)[k])
+    for tt in (2.5, 3.0, 3.5):
+        heart(tt, 0.55 + 0.2 * (tt - 2.5))
+    st["fx"].add_st(2.0, *soft_riser(2.0), 0.2)
 
     # ---------------------------------------------------- B: Problem 4 bis 12 s
-    sub(4.0, 38, 7.7, 0.7, 2.0)
-    pad(4.0, [38, 45, 50], 8.0, 400, 1600, 0.5)      # offene Quinte, ohne Terz: Spannung
+    pad(4.0, [38, 45, 50, 54, 57], 8.0, 500, 1800, 0.65)
+    sub(4.0, 38, 7.7, 0.5, 1.5)
     for b in range(2, 6):
-        for q in range(4):
-            heart(b * BAR + q * BEAT, 0.55 + 0.1 * (b - 2))
+        for q in (0, 2):
+            heart(b * BAR + q * BEAT, 0.6 + 0.08 * (b - 2))
     for k, tt in enumerate(CUES["problem_cards"]):
-        gasp(tt - 0.05, 0.7 + 0.08 * k, 900 + 250 * k, 3600 + 500 * k, 0.1)
+        gasp(tt, 0.4 + 0.05 * k, 1000 + 200 * k, 3200, 0.08)
     t8 = CUES["problem_banner"][0]
-    gasp(t8 - 0.28, 1.25, 500, 4200, 0.28)         # das große Einatmen vor dem Schock
-    beat_thump(t8, 1.3, 40.0)
-    st["fx"].add(t8, ring(1.2, 3200.0), 0.035)
-    mute.append((t8 + 0.02, t8 + 0.42))
-    gasp(CUES["problem_banner"][1] - 0.08, 0.6, 900, 3000, 0.1)
-    # Hecheln und Anstieg
-    for b in (4, 5):
-        for q in range(8):
-            tt = 8.9 + (b - 4) * 1.5 + q * BEAT * 0.75
-    t = 8.9
-    k = 0
-    while t < 11.7:
-        x = (t - 8.9) / 2.8
-        if k % 2 == 0:
-            gasp(t, 0.45 + 0.4 * x, 800 + 700 * x, 3000 + 1500 * x, 0.12)
-        else:
-            exhale(t, 0.35 + 0.3 * x, 0.18, 3500, 1200)
-        t += 0.34 - 0.14 * x
-        k += 1
-    st["fx"].add_st(9.0, *soft_riser(3.0), 0.4)
+    gasp(t8 - 0.22, 0.9, 700, 3400, 0.22)          # Einatmen direkt vor der Meldegrenze
+    beat_thump(t8, 1.1, 42.0)
+    mute.append((t8 + 0.02, t8 + 0.3))             # kurzer Moment Stille
+    gasp(CUES["problem_banner"][1], 0.35, 1100, 3000, 0.08)
+    # Anstieg: Herzschlag wird dichter, das Pad öffnet sich
+    for tt in (9.0, 9.5, 10.0, 10.5, 10.75, 11.0, 11.25, 11.5):
+        heart(tt, 0.65 + 0.3 * (tt - 9.0) / 2.5, 0.14)
+    st["fx"].add_st(9.0, *soft_riser(3.0), 0.3)
     mute.append((11.72, 12.0))
 
     # ---------------------------------------------------- C: Lösung 12 bis 22 s
-    exhale(12.0, 1.4, 1.8, 5200, 500)
-    beat_thump(12.0, 1.4, 42.0)
-    sub(12.0, 38, 1.9, 1.2, 0.01)
-    pad(12.0, [50, 57, 62, 66, 69], 10.0, 1200, 3300, 0.7)
-    sub(14.0, 33, 1.9, 0.9)
-    sub(16.0, 35, 1.9, 0.9)
-    sub(18.0, 31, 1.9, 0.9)
-    sub(20.0, 38, 1.9, 0.9)
-    sub(12.0, 38, 1.9, 1.0)
+    exhale(12.0, 0.9, 1.4, 4000, 700)
+    beat_thump(12.0, 1.3, 42.0)
+    sub(12.0, 38, 9.8, 0.9, 0.02)
+    pad(12.0, [50, 57, 62, 66, 69], 10.0, 1400, 3000, 0.75)
     for b in range(6, 11):
-        groove(b * BAR, 1.0)
+        groove(b * BAR, 1.0, hats=True, full=True)
     for tt in CUES["loesung_lines"]:
-        exhale(tt, 0.55, 0.45, 3500, 800)
-    exhale(CUES["loesung_card"], 0.8, 0.9, 4200, 700)
+        exhale(tt, 0.35, 0.4, 3200, 900)
+    exhale(CUES["loesung_card"], 0.45, 0.7, 3600, 800)
     for k, tt in enumerate(CUES["loesung_bullets"]):
-        hat(tt, 1.4 + 0.1 * k, pan=-0.3 + 0.3 * k)
-        gasp(tt - 0.04, 0.35, 1500 + 300 * k, 4500, 0.07)
-    # Atem vor dem nächsten Teil
-    gasp(20.4, 0.8, 600, 3800, 1.5)
+        hat(tt, 1.0 + 0.1 * k, pan=-0.3 + 0.3 * k)
+    st["fx"].add_st(20.0, *soft_riser(2.0), 0.25)
 
-    # ---------------------------------------------------- D: Produkt 22 bis 38 s
-    exhale(22.0, 0.9, 0.9, 4200, 800)
+    # ---------------------------------------------------- D: Produkt 22 bis 38 s (ruhig)
+    pad(22.0, [50, 57, 62, 66, 69], 16.0, 1500, 2600, 0.7)
+    sub(22.0, 38, 15.8, 0.6, 0.5)
     for b in range(11, 19):
-        groove(b * BAR, 0.8 if b < 15 else 0.95, hats=True)
-    pad(22.0, [50, 57, 62, 66, 69], 16.0, 1500, 3000, 0.55)
-    for k, tt in enumerate((22.0, 24.0, 26.0, 28.0, 30.0, 32.0, 34.0, 36.0)):
-        sub(tt, (38, 33, 35, 31, 38, 33, 35, 31)[k], 1.9, 0.8)
-    for tt in CUES["produkt_cuts"][1:]:
-        exhale(tt, 0.6, 0.6, 5200, 900)
+        groove(b * BAR, 0.75 if b < 15 else 0.85, hats=(b % 2 == 1), full=False)
+    for tt in CUES["produkt_cuts"]:
+        exhale(tt, 0.3, 0.5, 3000, 800)
     for tt in CUES["produkt_callouts"]:
-        gasp(tt - 0.14, 0.6, 600, 2600, 0.14)
-        st["perc"].add(tt, tss_s, 0.7, 0.2)
-    gasp(34.2, 0.9, 600, 4200, 3.5)              # langes Einatmen vor der Pause
-    st["fx"].add_st(34.0, *soft_riser(3.7), 0.35)
-    t = 36.0
-    while t < 37.7:
-        heart(t, 0.7 + 0.4 * (t - 36.0) / 1.7)
-        t += 0.5 if t < 37.0 else 0.25
-    mute.append((37.72, 38.0))
+        hat(tt, 1.2, pan=0.2)
+    st["fx"].add_st(35.0, *soft_riser(3.0), 0.25)
+    mute.append((37.78, 38.0))
 
     # ---------------------------------------------------- E: Vertrauen 38 bis 44 s
-    exhale(38.0, 0.9, 1.4, 3600, 600, )
-    pad(38.0, [38, 45, 50, 54, 57], 6.0, 700, 1500, 0.7)
-    sub(38.0, 31, 2.8, 0.8)
-    sub(40.0, 33, 2.8, 0.8)
-    sub(42.0, 35, 1.9, 0.8)
+    exhale(38.0, 0.5, 1.2, 3200, 700)
+    pad(38.0, [38, 45, 50, 54, 57], 6.0, 800, 1500, 0.7)
+    sub(38.0, 38, 5.8, 0.5, 0.5)
     for tt in (38.0, 40.0, 42.0):
-        heart(tt, 0.5)
+        heart(tt, 0.5, 0.2)
     for tt in CUES["vertrauen_lines"][1:]:
-        exhale(tt, 0.7, 1.1, 3200, 600)
-    gasp(42.0, 0.7, 500, 3200, 1.85)
-    mute.append((43.875, 44.0))
+        exhale(tt, 0.35, 0.9, 3000, 700)
+    st["fx"].add_st(42.0, *soft_riser(2.0), 0.2)
+    mute.append((43.9, 44.0))
 
     # ---------------------------------------------------- F: Abbinder 44 bis 49 s
-    exhale(44.0, 1.5, 1.6, 6000, 500)
-    beat_thump(44.0, 1.4, 42.0)
-    sub(44.0, 38, 2.0, 1.3, 0.01)
-    pad(44.0, [50, 57, 62, 66, 69, 74], 5.0, 2000, 3600, 0.85)
-    for b in (22, 23):
-        groove(b * BAR if False else 44.0 + (b - 22) * BAR, 1.0 if b == 22 else 0.7, hats=(b == 22))
-    for k, tt in enumerate(CUES["abbinder_lines"]):
-        exhale(tt, 0.7, 0.7, 4200, 700)
-    st["perc"].add(CUES["abbinder_pill"], tss_s, 0.9, 0.0)
-    sub(46.0, 43, 1.9, 0.9)
-    sub(48.0, 38, 2.9, 1.2, 0.02)
-    exhale(48.0, 1.2, 2.8, 4800, 450)
-    beat_thump(48.0, 1.0, 44.0)
+    exhale(44.0, 0.9, 1.3, 4000, 700)
+    beat_thump(44.0, 1.2, 42.0)
+    sub(44.0, 38, 2.0, 1.0, 0.02)
+    pad(44.0, [50, 57, 62, 66, 69, 74], 5.0, 1800, 3200, 0.8)
+    groove(44.0, 1.0, hats=True, full=True)
+    groove(46.0, 0.7, hats=False, full=False)
+    for tt in CUES["abbinder_lines"]:
+        exhale(tt, 0.3, 0.45, 3200, 900)
+    hat(CUES["abbinder_pill"], 1.0, pan=0.0)
+    sub(46.0, 43, 1.9, 0.7)
+    sub(48.0, 38, 2.9, 1.0, 0.02)
+    exhale(48.0, 0.7, 2.4, 4000, 600)
+    beat_thump(48.0, 0.9, 44.0)
 
     # ---------------------------------------------------- Sidechain, Stopps, Atemmodulation des Pads
     duck = np.ones(n)
@@ -310,16 +279,16 @@ def build_stems(dur=DUR):
         gate[ib:ib + r] = np.linspace(0, 1, min(r, n - ib))
     t = np.arange(n) / SR
     breath = np.ones(n)
-    for a, b, cyc in ((12.0, 38.0, 2.0), (38.0, 44.0, 4.0), (44.0, 48.0, 2.0)):
+    for a, b, cyc in ((12.0, 38.0, 4.0), (38.0, 44.0, 4.0), (44.0, 48.0, 4.0)):
         m = (t >= a) & (t < b)
         ph = ((t[m] - a) % cyc) / cyc
-        breath[m] = 0.55 + 0.45 * np.sin(np.pi * ph) ** 1.4      # Einatmen (Anstieg) und Ausatmen (Abfall)
+        breath[m] = 0.8 + 0.2 * np.sin(np.pi * ph) ** 1.4      # Einatmen (Anstieg) und Ausatmen (Abfall)
     return {"stems": st, "duck": duck, "gate": gate, "breath": breath, "n": n}
 
 
-GAINS = {"air": 2.8, "body": 0.5, "perc": 1.5, "pad": 1.5, "sub": 0.3, "fx": 0.6}
-SECTION_DB = [(0, -3), (3.9, -3), (4.0, -4), (11.7, -2), (12.0, 0), (21.9, 0), (22.0, -1.5), (37.7, -1),
-              (38.0, -4), (43.5, -4), (44.0, 0), (47.5, 0), (49.0, -1)]
+GAINS = {"air": 3.6, "body": 0.5, "perc": 1.5, "pad": 1.8, "sub": 0.25, "fx": 0.6}
+SECTION_DB = [(0, -2), (3.9, -2), (4.0, -2.5), (11.7, -1.5), (12.0, 0), (21.9, 0), (22.0, 0.5), (37.7, 0.5),
+              (38.0, -3), (43.5, -3), (44.0, 0), (47.5, 0), (49.0, -1)]
 
 
 def mixdown(parts, g=None, reverb=0.3):
