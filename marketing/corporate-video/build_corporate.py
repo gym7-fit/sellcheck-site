@@ -11,6 +11,7 @@ Schnitt auf einem 120-bpm-Raster: Schrift schlägt im Beat ein, Wisch-Übergäng
     python3 marketing/corporate-video/build_corporate.py analyze TRACK            # Tempo und Taktanfang eines Tracks bestimmen
     python3 marketing/corporate-video/build_corporate.py music TRACK [OFFSET]    # mit lizenziertem Track statt Synthese
     python3 marketing/corporate-video/build_corporate.py music TRACK [OFFSET] voice DIR   # Track plus Sprecher
+    python3 marketing/corporate-video/build_corporate.py grid WAV [voice DIR]     # eigene Musik auf dem Raster (corporate_music2.py)
 
 Ausgabe: marketing/corporate-video/out/
 Es werden keine Plattform-Logos und keine fremden Markenzeichen verwendet. Alle Zahlen im Video sind
@@ -265,7 +266,7 @@ def scene_problem(c, t):
         a = int(255 * clamp(p * 4))
         off = (1 - clamp(p)) * 120
         c.rrect(140, 760 + off, 1780, 1010 + off, 34, fill=INK + (a,))
-        slam(c, 200, 850 + off, "30 Verkäufe oder 2.000 € im Jahr.", 72, "heavy", PAPER, t, 4.1)
+        slam(c, 200, 850 + off, "30 Verkäufe oder 2.000 € im Jahr.", 72, "heavy", PAPER, t, 4.0)
         slam(c, 200, 935 + off, "Je Plattform. Dann meldet sie an die Steuerbehörden.", 38, "medium", LIME, t, 4.5, pop=0.2)
         p2 = ease_out(prog(t, 5.5, 0.4))
         c.text(200, 985 + off, "Eine Meldung ist keine Steuerforderung.", 28, "medium", MUTED + (int(255 * p2),), "lm")
@@ -658,9 +659,17 @@ def stretch(x, factor):
     return out
 
 
-def build_audio(path, voice_dir=None, track=None, offset=None):
+def build_audio(path, voice_dir=None, track=None, offset=None, grid=False):
     n = int(SR * DUR)
-    if track:
+    if track and grid:
+        # Musik wurde auf das Raster des Videos gerechnet (corporate_music2.py): kein Analysieren, kein Strecken
+        tl, tr = load_track(track)
+        ml = [0.0] * n
+        mr = [0.0] * n
+        m = min(n, len(tl))
+        ml[:m], mr[:m] = tl[:m], tr[:m]
+        print("  Musik auf dem Raster, unverändert übernommen", flush=True)
+    elif track:
         tl, tr = load_track(track)
         bpm, beat0, down = analyze_tempo(tl, tr)
         print(f"  Track: ca. {bpm:.1f} bpm, erster Schlag bei {beat0:.2f} s, Taktanfang bei {down:.2f} s", flush=True)
@@ -730,7 +739,7 @@ def build_audio(path, voice_dir=None, track=None, offset=None):
     # Master: Musik auf feste mittlere Lautstärke, Sprache oben drauf, weiche Begrenzung
     rms = math.sqrt(sum(v * v for v in ml) / n) or 1.0
     g = 0.14 / rms
-    fade_in, fade_out = int(0.05 * SR), int((2.4 if track else 0.9) * SR)
+    fade_in, fade_out = int(0.02 * SR), int((0.5 if grid else 2.4 if track else 0.9) * SR)
     with wave.open(path, "wb") as w:
         w.setnchannels(2)
         w.setsampwidth(2)
@@ -781,8 +790,20 @@ def main():
         print(f"Länge {len(l) / SR:.1f} s, Tempo ca. {bpm:.1f} bpm, erster Schlag {b0:.2f} s, Taktanfang {down:.2f} s")
         print("Hinweis: Wert gegenprüfen (Track im Player anhören, ob der Taktanfang stimmt).")
         return
+    if mode == "frames":
+        print(f"Rendere {NF} Bilder …", flush=True)
+        with Pool() as pool:
+            for k, _ in enumerate(pool.imap_unordered(render_frame, [(i, FRAMES) for i in range(NF)], chunksize=6)):
+                if k % 200 == 0:
+                    print(f"  {k}/{NF}", flush=True)
+        print("Bilder fertig in", FRAMES)
+        return
     track, offset, voice_dir = None, None, None
     args = sys.argv[2:]
+    grid = False
+    if mode == "grid" and args:
+        grid = True
+        track = args.pop(0)
     if mode == "music" and args:
         track = args.pop(0)
         if args and args[0] not in ("voice",):
@@ -791,7 +812,7 @@ def main():
         voice_dir = args[1]
     elif mode == "voice" and args:
         voice_dir = args[0]
-    if mode != "audio" and mode != "music":
+    if mode not in ("audio", "music", "grid"):
         print(f"Rendere {NF} Bilder …", flush=True)
         with Pool() as pool:
             for k, _ in enumerate(pool.imap_unordered(render_frame, [(i, FRAMES) for i in range(NF)], chunksize=6)):
@@ -799,10 +820,10 @@ def main():
                     print(f"  {k}/{NF}", flush=True)
     tag = "mit_Stimme" if voice_dir else "ohne_Sprecher"
     if track:
-        tag += "_Track"
+        tag += "_Raster" if grid else "_Track"
     wav = os.path.join(FRAMES, f"audio_{tag}.wav")
     print("Ton …", flush=True)
-    build_audio(wav, voice_dir, track, offset)
+    build_audio(wav, voice_dir, track, offset, grid)
     mp4 = os.path.join(OUT, f"sellcheck_corporate_16x9_{tag}.mp4")
     encode(wav, mp4)
     print("Fertig:", mp4)
