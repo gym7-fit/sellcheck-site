@@ -48,13 +48,13 @@ V9_TEXTS = {
     "anna1": "Warte, was? Woher weiß ich, ob ich über der Grenze bin?",
     "tim2": "Mit SellCheck:",
     "anna2": "Ahh cool, so eine praktische Website kannte ich gar nicht.",
-    "tim3": "Jap! Und das Beste: kostenlos, mit Konto, und deine Daten bleiben im Browser.",
+    "tim3": "Jap! Und das Beste: kostenlos, ohne Anmeldung, und deine Daten bleiben im Browser.",
     # Tims längere Nachricht: im Banner (abgeschnitten) und später vollständig im Chatverlauf
     "tim_long": "Du lädst einfach deine Verkäufe als CSV hoch, und SellCheck zeigt dir für jede Plattform den Gewinn und wie weit du von der Grenze entfernt bist oder bereits drüber bist.",
 }
 
 
-V9_DUR = {1: 6.20, 2: 3.62, 3: 0.98, 4: 9.35, 5: 4.06, 6: 5.44}   # Dauer der Sprachclips (voice_v9/1..6) in Sekunden
+V9_DUR = {1: 6.20, 2: 3.62, 3: 0.98, 4: 9.35, 5: 4.06, 6: 5.68}   # Dauer der Sprachclips (voice_v9/1..6) in Sekunden
 
 
 def v9_type_times_fit(text, t0, dur):
@@ -85,8 +85,8 @@ def v9_schedule():
     d["a2_ts"], e = v9_type_times_fit(V9_TEXTS["anna2"], d["a2_start"], V9_DUR[5])
     d["a2_send"] = d["a2_start"] + V9_DUR[5] + 0.1
     d["tim_type2"] = d["a2_send"] + 0.15
-    d["tim3"] = d["tim_type2"] + 0.4
-    d["end3"] = d["tim3"] + 0.1 + V9_DUR[6] + 0.1
+    d["tim3"] = d["tim_type2"] + 0.35
+    d["end3"] = d["tim3"] + 0.1 + V9_DUR[6] + 0.05
     return d
 
 
@@ -108,12 +108,12 @@ elif VAR == "V3":
     SLOW = {k: TARGET[k] / BASE[k] for k in KEYS}
 elif VAR == "V9":
     KEYS = (1, 2, 3, 4)
-    BASE = {1: round(V9S["end1"], 2), 2: 13.8, 3: round(V9S["end3"], 2), 4: 5.0}  # Chat 1, Webseite, Chat 2, Endkarte (Sekunden, SLOW = 1)
+    BASE = {1: round(V9S["end1"], 2), 2: 13.8, 3: round(V9S["end3"], 2), 4: 4.9}  # Chat 1, Webseite, Chat 2, Endkarte (Sekunden, SLOW = 1)
     TARGET = dict(BASE)
     SLOW = {k: 1.0 for k in KEYS}
 elif VAR == "V8":
     KEYS = (1, 2, 3, 4, 5)
-    BASE = {1: 9.05, 2: 5.9, 3: 10.3, 4: 8.7, 5: 5.8}  # Meldegrenze, Upload und Anleitungen, Ergebnis, Steuer-Übersicht, Endkarte (Sekunden, SLOW = 1; Clips 8,9 / 5,7 / 10,0 / 8,6 / 5,3 s)
+    BASE = {1: 9.05, 2: 5.9, 3: 10.3, 4: 10.0, 5: 5.8}  # Meldegrenze, Upload und Anleitungen, Ergebnis, Steuer-Übersicht, Endkarte (Sekunden, SLOW = 1; Clips 8,9 / 5,7 / 10,0 / 8,6 / 5,3 s)
     TARGET = dict(BASE)
     SLOW = {k: 1.0 for k in KEYS}
 elif VAR == "V6":
@@ -509,7 +509,7 @@ def scene_cta_v2like(L, t):
     if VAR in ("V8", "V9"):
         pop_text(L, 540, 760, "Check, was", 92, "heavy", PAPER, t, CTA_T[0])
         pop_text(L, 540, 860, "wirklich bleibt.", 92, "heavy", LIME, t, CTA_T[0] + 0.12)
-        for k, label in enumerate(("Kostenlos mit Konto", "Daten bleiben im Browser", "Übersicht für die Steuererklärung")):
+        for k, label in enumerate(("Kostenlos, ohne Anmeldung", "Daten bleiben im Browser", "Übersicht für die Steuererklärung")):
             pp0 = prog(t, CTA_T[1] + k * 0.35, 0.3)
             if pp0 <= 0:
                 continue
@@ -1634,7 +1634,7 @@ def vo_lines(variant):
             (at(1, 0.05), "Wusstest du, dass Vinted, eBay und Kleinanzeigen deine Verkäufe an die Steuerbehörde melden, sobald du eine bestimmte Grenze erreichst? Ich zeig dir kurz, wo du stehst.", START[2]),
             (at(2, 0.05), "Dafür lädst du einfach die Datei mit deinen Verkäufen hoch. Wo du die bei deiner Plattform findest, zeigt dir SellCheck.", START[3]),
             (at(3, 0.05), "Dann siehst du pro Plattform, wie nah du an der Grenze bist. Gelb heißt: fast erreicht. Rot heißt: erreicht, so wie hier bei Etsy. Und in jeder Karte siehst du auch deinen Gewinn.", START[4]),
-            (at(4, 0.05), "Und daraus macht SellCheck dir die Übersicht für deine Steuererklärung, oder für deinen Steuerberater. Kostenlos mit Konto, und deine Daten bleiben in deinem Browser.", START[5]),
+            (at(4, 0.05), "Und daraus macht SellCheck dir die Übersicht für deine Steuererklärung, oder für deinen Steuerberater. Kostenlos und ohne Anmeldung, und deine Daten bleiben in deinem Browser.", START[5]),
             (at(5, -0.10), "SellCheck. Check, was wirklich bleibt. Unten klicken, Datei hochladen, fertig.", DUR - 0.05),
         ]
     if variant == "V6":
