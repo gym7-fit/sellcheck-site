@@ -1,6 +1,6 @@
 # Corporate-Video
 
-16:9, 1920×1080, 30 fps, ca. 60 s. Erklärfilm für Website und Social.
+16:9, 1920×1080, 30 fps, 49 s. Erklärfilm für Website und Social, geschnitten auf 120 bpm.
 
 ```bash
 python3 marketing/corporate-video/build_corporate.py             # Bild und Musik
@@ -14,4 +14,4 @@ Ausgabe: `out/sellcheck_corporate_16x9_ohne_Sprecher.mp4` bzw. `_mit_Stimme.mp4`
 - `assets/`: Aufnahmen der echten Oberfläche (1440×900 @2x), neu aufnehmen mit der aktuellen Seite
 - `SPRECHERTEXT.md`: Text mit Zeitfenstern
 
-Szenen: Hook (0 s), Problem (6,5 s), Lösung (17,5 s), Produkt (28,5 s), Vertrauen (46,5 s), Abbinder (54,5 s).
+Szenen: Hook (0 s), Problem (4 s), Lösung (12 s), Produkt (22 s), Vertrauen (38 s), Abbinder (44 s). Übergänge als Lime-Wisch auf dem Takt.
