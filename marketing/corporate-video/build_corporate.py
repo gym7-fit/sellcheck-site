@@ -738,7 +738,7 @@ def build_audio(path, voice_dir=None, track=None, offset=None, grid=False):
                 duck[j] = min(duck[j], 1.0 - 0.5 * max(0.0, ramp))
     # Master: Musik auf feste mittlere Lautstärke, Sprache oben drauf, weiche Begrenzung
     rms = math.sqrt(sum(v * v for v in ml) / n) or 1.0
-    g = 0.14 / rms
+    g = (0.09 if grid else 0.14) / rms
     fade_in, fade_out = int(0.02 * SR), int((0.5 if grid else 2.4 if track else 0.9) * SR)
     with wave.open(path, "wb") as w:
         w.setnchannels(2)
