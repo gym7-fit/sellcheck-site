@@ -10,7 +10,7 @@ Die Tools sind ohne Anmeldung nutzbar. **Ergebnis, Report und Downloads** zeigt 
 | Bereich | Verhalten ohne Freischaltung |
 | --- | --- |
 | „Ergebnis ansehen“ (Überprüfung mit Ergebnis, Meldegrenzen, Report-Link) | Formular erscheint, danach geht es weiter |
-| CSV-Downloads (Journal, Summen, Anlage SO, Sicherung) | Formular erscheint, danach startet der Download |
+| Downloads (Report als HTML-Datei, CSV: Journal, Summen, Anlage SO, Sicherung) | Formular erscheint, danach startet der Download |
 | `report.html` (druckbarer Report) | Weiterleitung auf `tools.html#review`, dort erscheint das Formular |
 | Schritte 1 bis 6 (Eingabe, Import, Zwischensummen, Meldegrenzen-Check) | frei zugänglich |
 
@@ -27,7 +27,7 @@ Die Freischaltung steht im Browser unter `sellcheck.lead.v1` (localStorage). „
 ## Was gesendet wird, wenn Endpunkte eingetragen sind
 
 - `leadEndpoint` (POST, JSON): `{ email, source: "tools-gate", consents: { tips: {given, text, at}, report: {given, text, at} } }`. Keine Verkaufsdaten.
-- `reportEndpoint` (POST, JSON), nur bei Haken oder Klick auf „Report per E-Mail senden“: `{ email, type: "report", year, mode, summary, files: [{ name, csv }] }`. Hier verlassen Verkaufsdaten das Gerät. Das ist im Formular offengelegt und im Datenschutz-Entwurf beschrieben.
+- `reportEndpoint` (POST, JSON), nur bei Haken oder Klick auf „Report per E-Mail senden“: `{ email, type: "report", year, mode, summary, files: [{ name, type, content }] }` (Report als HTML-Datei plus CSV-Dateien). Hier verlassen Verkaufsdaten das Gerät. Das ist im Formular offengelegt und im Datenschutz-Entwurf beschrieben.
 
 Solange beide Endpunkte leer sind (Vorabversion), wird **nichts gesendet**. Die Adresse schaltet nur lokal frei, und der Report lässt sich per `mailto:`-Link an die eigene Adresse vorbereiten.
 

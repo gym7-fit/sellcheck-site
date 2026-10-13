@@ -617,6 +617,12 @@
     }
     $("x-msg").textContent = "Datei erstellt. Sie liegt in deinem Download-Ordner.";
   }
+  $("x-report-dl").addEventListener("click", gated(async () => {
+    const html = await window.SCReport.buildHtml(state.year);
+    if (!html) { $("x-msg").textContent = "Für dieses Jahr gibt es keine Daten für einen Report."; return; }
+    SC.download(html, `sellcheck-report-${state.year}.html`, "text/html;charset=utf-8");
+    $("x-msg").textContent = "Report erstellt. Die Datei liegt in deinem Download-Ordner und lässt sich im Browser öffnen und drucken.";
+  }));
   $("x-journal").addEventListener("click", gated(() => run("journal")));
   $("x-summary").addEventListener("click", gated(() => run("summary")));
   $("x-private").addEventListener("click", gated(() => run("private")));
@@ -644,16 +650,18 @@
     return L.join("\n");
   }
 
-  function mailPayload(lead) {
+  async function mailPayload(lead) {
     const year = state.year;
     const business = state.mode === "business";
     const files = [];
     if (business) {
       const r = T.computeEuer(SC.sales, { year, vat: state.vat || "small", rate: state.rate });
-      files.push({ name: `sellcheck-journal-${year}.csv`, csv: T.journalCsv(r) }, { name: `sellcheck-summen-${year}.csv`, csv: T.summaryCsv(r) });
+      files.push({ name: `sellcheck-journal-${year}.csv`, type: "text/csv", content: T.journalCsv(r) }, { name: `sellcheck-summen-${year}.csv`, type: "text/csv", content: T.summaryCsv(r) });
     } else {
-      files.push({ name: `sellcheck-anlage-so-${year}.csv`, csv: T.privateCsv(T.computePrivate(SC.sales, { year })) });
+      files.push({ name: `sellcheck-anlage-so-${year}.csv`, type: "text/csv", content: T.privateCsv(T.computePrivate(SC.sales, { year })) });
     }
+    const html = await window.SCReport.buildHtml(year);
+    if (html) files.unshift({ name: `sellcheck-report-${year}.html`, type: "text/html", content: html });
     return { email: lead.email, type: "report", year, mode: state.mode, summary: summaryText(), files };
   }
 
@@ -676,7 +684,7 @@
       return;
     }
     msg.textContent = "Report wird gesendet …";
-    const res = await window.SCGate.sendReport(mailPayload(lead));
+    const res = await window.SCGate.sendReport(await mailPayload(lead));
     if (res.ok) {
       window.SCGate.markReportSent();
       msg.textContent = `Der Report wurde an ${lead.email} gesendet.`;

@@ -384,12 +384,12 @@ $("t-export").addEventListener("click", () => {
   download(T.toCsv(head, body), `sellcheck-verkaeufe-${currentYear()}.csv`);
 });
 
-function download(text, filename) {
+function download(text, filename, type = "text/csv;charset=utf-8") {
   if (window.SCGate && !window.SCGate.unlocked()) {
-    window.SCGate.require(() => download(text, filename));
+    window.SCGate.require(() => download(text, filename, type));
     return;
   }
-  const blob = new Blob([text], { type: "text/csv;charset=utf-8" });
+  const blob = new Blob([text], { type });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = filename;
