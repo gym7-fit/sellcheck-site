@@ -8,6 +8,9 @@ Schnitt auf einem 120-bpm-Raster: Schrift schlägt im Beat ein, Wisch-Übergäng
     python3 marketing/corporate-video/build_corporate.py voice DIR    # mit Sprachclips aus DIR (1.mp3 ... 6.mp3)
     python3 marketing/corporate-video/build_corporate.py poster 3,12  # Einzelbilder zum Prüfen
     python3 marketing/corporate-video/build_corporate.py audio        # nur Ton neu, Bilder bleiben
+    python3 marketing/corporate-video/build_corporate.py analyze TRACK            # Tempo und Taktanfang eines Tracks bestimmen
+    python3 marketing/corporate-video/build_corporate.py music TRACK [OFFSET]    # mit lizenziertem Track statt Synthese
+    python3 marketing/corporate-video/build_corporate.py music TRACK [OFFSET] voice DIR   # Track plus Sprecher
 
 Ausgabe: marketing/corporate-video/out/
 Es werden keine Plattform-Logos und keine fremden Markenzeichen verwendet. Alle Zahlen im Video sind
@@ -523,12 +526,139 @@ def render_frame(args):
 SR = 44100
 
 
-def build_audio(path, voice_dir=None):
-    sys.path.insert(0, HERE)
-    import corporate_music as M
+def load_track(path):
+    """Beliebige Audiodatei als Stereo-Listen (44,1 kHz) laden (macOS afconvert)."""
+    wav = os.path.join(FRAMES, "track_in.wav")
+    subprocess.run(["afconvert", "-f", "WAVE", "-d", "LEI16@44100", "-c", "2", path, wav], check=True)
+    with wave.open(wav) as w:
+        raw = w.readframes(w.getnframes())
+    v = struct.unpack("<" + "h" * (len(raw) // 2), raw)
+    return [x / 32768 for x in v[0::2]], [x / 32768 for x in v[1::2]]
+
+
+def analyze_tempo(left, right):
+    """Grobe Tempo- und Taktanfang-Bestimmung: Onset-Hüllkurve, Kamm über Tempo und Phase.
+    Liefert (bpm, erster_Schlag_s, Taktanfang_s). Für Tracks mit klarem Puls ausreichend, immer gegenprüfen."""
+    sr = SR
+    mono = [(a + b) * 0.5 for a, b in zip(left, right)]
+    hop = 441  # 10 ms
+    env = []
+    low = []
+    y = 0.0
+    a_lp = 1 - math.exp(-2 * math.pi * 150 / sr)
+    for i in range(0, len(mono) - hop, hop):
+        seg = mono[i:i + hop]
+        env.append(sum(v * v for v in seg) / hop)
+        e = 0.0
+        for v in seg:
+            y += a_lp * (v - y)
+            e += y * y
+        low.append(e / hop)
+    env = [math.sqrt(v) for v in env]
+    low = [math.sqrt(v) for v in low]
+    on = [max(0.0, env[i] - env[i - 1]) for i in range(1, len(env))]
+    onl = [max(0.0, low[i] - low[i - 1]) for i in range(1, len(low))]
+    N = len(on)
+
+    def ac(lag):
+        if lag >= N - 1:
+            return 0.0
+        return sum(on[i] * on[i + lag] for i in range(0, N - lag)) / (N - lag)
+
+    # Autokorrelation mit Vorliebe für übliche Tempi (um 120 bpm), Vielfache stützen den Kandidaten
+    cache = {}
+
+    def acc(lag):
+        if lag not in cache:
+            cache[lag] = ac(lag)
+        return cache[lag]
+
+    best = (-1.0, 120.0)
+    for lag in range(30, 101):           # 60 bis 200 bpm
+        bpm_c = 6000.0 / lag
+        prior = math.exp(-0.5 * (math.log2(bpm_c / 120.0) / 0.55) ** 2)
+        sc = (acc(lag) + 0.5 * acc(2 * lag) + 0.25 * acc(4 * lag)) * prior
+        if sc > best[0]:
+            best = (sc, bpm_c)
+    bpm = best[1]
+    # Verfeinern: Kamm über Tempo ±3 % in 0,1-%-Schritten
+    ref = (-1.0, bpm)
+    f = 0.97
+    while f <= 1.03:
+        period = 6000.0 / (bpm * f)
+        sc, pos = 0.0, 0.0
+        while pos < N - 1:
+            sc += on[int(pos)]
+            pos += period
+        sc *= 1.0
+        if sc / max(1.0, (N / period)) > ref[0]:
+            ref = (sc / max(1.0, (N / period)), bpm * f)
+        f += 0.001
+    bpm = ref[1]
+    period = 6000.0 / bpm
+    best_ph, best_sc = 0.0, -1.0
+    ph = 0.0
+    while ph < period:
+        sc, pos = 0.0, ph
+        while pos < N - 1:
+            sc += on[int(pos)]
+            pos += period
+        if sc > best_sc:
+            best_ph, best_sc = ph, sc
+        ph += 1.0
+    # Taktanfang: Schlag (1 von 4) mit der stärksten tiefen Energie
+    sums = [0.0] * 4
+    k, pos = 0, best_ph
+    while pos < len(onl) - 1:
+        sums[k % 4] += onl[int(pos)]
+        pos += period
+        k += 1
+    down = max(range(4), key=lambda i: sums[i])
+    beat0 = best_ph / 100.0
+    return bpm, beat0, beat0 + down * 60.0 / bpm
+
+
+def stretch(x, factor):
+    """Einfaches Umsampeln (verändert Tempo und Tonhöhe leicht), factor > 1 = schneller."""
+    n = int(len(x) / factor)
+    out = []
+    for i in range(n):
+        p = i * factor
+        j = int(p)
+        f = p - j
+        a = x[j]
+        b = x[j + 1] if j + 1 < len(x) else a
+        out.append(a + (b - a) * f)
+    return out
+
+
+def build_audio(path, voice_dir=None, track=None, offset=None):
     n = int(SR * DUR)
-    print("  Musik wird synthetisiert (dauert ca. 2 bis 3 Minuten) …", flush=True)
-    ml, mr = M.build_music(DUR, SCENES)
+    if track:
+        tl, tr = load_track(track)
+        bpm, beat0, down = analyze_tempo(tl, tr)
+        print(f"  Track: ca. {bpm:.1f} bpm, erster Schlag bei {beat0:.2f} s, Taktanfang bei {down:.2f} s", flush=True)
+        start = down if offset is None else offset
+        factor = 1.0
+        if 0.94 <= bpm / BPM <= 1.06 and abs(bpm - BPM) > 0.3:
+            factor = bpm / BPM  # auf 120 bpm ziehen, damit Schnitt und Takt zusammenpassen
+            tl, tr = stretch(tl, factor), stretch(tr, factor)
+            start = start / factor
+            print(f"  Tempo angepasst (Faktor {factor:.3f}), liegt dadurch etwa {abs(1 - factor) * 100:.1f} % neben dem Original", flush=True)
+        elif abs(bpm / BPM - 1) > 0.06:
+            print(f"  Hinweis: Tempo weicht stark von 120 bpm ab, Schnitt und Takt passen nicht. Besser einen Track um 120 bpm wählen.", flush=True)
+        i0 = int(start * SR)
+        ml = [0.0] * n
+        mr = [0.0] * n
+        for k in range(n):
+            j = i0 + k
+            if 0 <= j < len(tl):
+                ml[k], mr[k] = tl[j], tr[j]
+    else:
+        sys.path.insert(0, HERE)
+        import corporate_music as M
+        print("  Musik wird synthetisiert …", flush=True)
+        ml, mr = M.build_music(DUR, SCENES)
     duck = [1.0] * n
     vo = [0.0] * n
     if voice_dir:
@@ -610,17 +740,34 @@ def main():
             render_frame((int(s * FPS), FRAMES))
         print("Testbilder in", FRAMES)
         return
-    voice_dir = sys.argv[2] if mode == "voice" and len(sys.argv) > 2 else None
-    if mode != "audio":
+    if mode == "analyze":
+        l, r = load_track(sys.argv[2])
+        bpm, b0, down = analyze_tempo(l, r)
+        print(f"Länge {len(l) / SR:.1f} s, Tempo ca. {bpm:.1f} bpm, erster Schlag {b0:.2f} s, Taktanfang {down:.2f} s")
+        print("Hinweis: Wert gegenprüfen (Track im Player anhören, ob der Taktanfang stimmt).")
+        return
+    track, offset, voice_dir = None, None, None
+    args = sys.argv[2:]
+    if mode == "music" and args:
+        track = args.pop(0)
+        if args and args[0] not in ("voice",):
+            offset = float(args.pop(0).replace(",", "."))
+    if args and args[0] == "voice" and len(args) > 1:
+        voice_dir = args[1]
+    elif mode == "voice" and args:
+        voice_dir = args[0]
+    if mode != "audio" and mode != "music":
         print(f"Rendere {NF} Bilder …", flush=True)
         with Pool() as pool:
             for k, _ in enumerate(pool.imap_unordered(render_frame, [(i, FRAMES) for i in range(NF)], chunksize=6)):
                 if k % 200 == 0:
                     print(f"  {k}/{NF}", flush=True)
     tag = "mit_Stimme" if voice_dir else "ohne_Sprecher"
+    if track:
+        tag += "_Track"
     wav = os.path.join(FRAMES, f"audio_{tag}.wav")
     print("Ton …", flush=True)
-    build_audio(wav, voice_dir)
+    build_audio(wav, voice_dir, track, offset)
     mp4 = os.path.join(OUT, f"sellcheck_corporate_16x9_{tag}.mp4")
     encode(wav, mp4)
     print("Fertig:", mp4)
