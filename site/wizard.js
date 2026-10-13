@@ -554,6 +554,7 @@
     }
     if (p.incomplete.length && state.ack[4] === String(state.year)) checks.append(item("warn", `${p.incomplete.length} Verkäufe haben noch fehlende Angaben. Das Ergebnis ist deshalb vorläufig.`));
 
+    updateGateStatus();
     $("x-report").href = "report.html?y=" + encodeURIComponent(state.year);
     $("x-journal").hidden = !business;
     $("x-summary").hidden = !business;
@@ -566,6 +567,10 @@
   function showReview() {
     const p = W.progress(state, SC.sales);
     if (!p.canReview) return;
+    if (window.SCGate && !window.SCGate.unlocked()) {
+      window.SCGate.require(showReview); // Formular, danach geht es hier weiter
+      return;
+    }
     view = "review";
     $("view-wizard").hidden = true;
     $("view-review").hidden = false;
@@ -600,6 +605,8 @@
   window.addEventListener("popstate", () => { if (location.hash === "#review") showReview(); else showWizard(); });
 
   /* ---------- Exporte ---------- */
+  const gated = (fn) => () => (window.SCGate ? window.SCGate.require(fn) : fn());
+
   function run(kind) {
     const year = state.year;
     const settings = T.sanitizeSettings({ mode: state.mode, vat: state.vat, rate: state.rate });
@@ -610,10 +617,92 @@
     }
     $("x-msg").textContent = "Datei erstellt. Sie liegt in deinem Download-Ordner.";
   }
-  $("x-journal").addEventListener("click", () => run("journal"));
-  $("x-summary").addEventListener("click", () => run("summary"));
-  $("x-private").addEventListener("click", () => run("private"));
-  $("x-backup").addEventListener("click", () => { $("t-export").click(); $("x-msg").textContent = "Sicherung erstellt. Sie liegt in deinem Download-Ordner."; });
+  $("x-journal").addEventListener("click", gated(() => run("journal")));
+  $("x-summary").addEventListener("click", gated(() => run("summary")));
+  $("x-private").addEventListener("click", gated(() => run("private")));
+  $("x-backup").addEventListener("click", gated(() => { $("t-export").click(); $("x-msg").textContent = "Sicherung erstellt. Sie liegt in deinem Download-Ordner."; }));
+
+  /* ---------- Report per E-Mail ---------- */
+  function summaryText() {
+    const year = state.year;
+    const business = state.mode === "business";
+    const L = [`SellCheck: Zusammenfassung ${year}`, `Art: ${business ? "Gewerblich (Anlage EÜR)" : "Privat (Anlage SO prüfen)"}`, ""];
+    const r = T.computeEuer(SC.sales, { year, vat: state.vat || "small", rate: state.rate });
+    if (business) {
+      L.push(`${state.vat === "regular" ? "Einnahmen netto" : "Betriebseinnahmen"}: ${money(r.revenueNet)}`, `Betriebsausgaben: ${money(r.expensesTotal)}`, `Gewinn / Verlust: ${money(r.profit)}`);
+    } else {
+      const pr = T.computePrivate(SC.sales, { year });
+      L.push(`Nicht steuerbar: ${pr.freeCount}`, `Zu prüfen (höchstens 1 Jahr): ${pr.relevantCount}`, `Gewinn dieser Verkäufe: ${money(pr.totalProfit)}`);
+    }
+    L.push("", "Plattformen und Meldegrenze:");
+    r.byPlatform.forEach((x) => {
+      const ratio = Math.max(x.count / T.MELDE_COUNT, x.revenue / (T.MELDE_SUM * 100));
+      const txt = !x.reported ? "keine Meldung" : ratio >= 1 ? "Grenze erreicht" : ratio >= 0.6 ? "nähert sich" : "weit entfernt";
+      L.push(`- ${x.platform}: ${x.count} Verkäufe, ${money(x.revenue)}, ${txt}`);
+    });
+    L.push("", "Orientierung, keine Steuer- oder Rechtsberatung. Alle Angaben ohne Gewähr.");
+    return L.join("\n");
+  }
+
+  function mailPayload(lead) {
+    const year = state.year;
+    const business = state.mode === "business";
+    const files = [];
+    if (business) {
+      const r = T.computeEuer(SC.sales, { year, vat: state.vat || "small", rate: state.rate });
+      files.push({ name: `sellcheck-journal-${year}.csv`, csv: T.journalCsv(r) }, { name: `sellcheck-summen-${year}.csv`, csv: T.summaryCsv(r) });
+    } else {
+      files.push({ name: `sellcheck-anlage-so-${year}.csv`, csv: T.privateCsv(T.computePrivate(SC.sales, { year })) });
+    }
+    return { email: lead.email, type: "report", year, mode: state.mode, summary: summaryText(), files };
+  }
+
+  function prepareMailto() {
+    const lead = window.SCGate && window.SCGate.lead();
+    const a = $("x-mailto");
+    if (!lead) { a.hidden = true; return; }
+    a.href = window.SCGateLib.mailtoHref(lead.email, `SellCheck: Zusammenfassung ${state.year}`, summaryText());
+    a.hidden = !a.href;
+  }
+
+  async function sendReportMail(auto) {
+    const lead = window.SCGate && window.SCGate.lead();
+    if (!lead) return;
+    const cfg = window.SCGate.config();
+    const msg = $("x-msg");
+    if (!cfg.reportEndpoint) {
+      prepareMailto();
+      msg.textContent = "Der automatische Versand ist in dieser Vorabversion noch nicht eingerichtet. Mit „Zusammenfassung im Mailprogramm öffnen“ erstellst du die Nachricht an deine Adresse selbst.";
+      return;
+    }
+    msg.textContent = "Report wird gesendet …";
+    const res = await window.SCGate.sendReport(mailPayload(lead));
+    if (res.ok) {
+      window.SCGate.markReportSent();
+      msg.textContent = `Der Report wurde an ${lead.email} gesendet.`;
+    } else {
+      msg.textContent = "Der Report konnte nicht gesendet werden. Du kannst ihn weiterhin hier ansehen und herunterladen.";
+    }
+  }
+  $("x-mail").addEventListener("click", () => sendReportMail(false));
+
+  let autoTried = false; // Versand aus dem Formular höchstens einmal je Seitenaufruf anstoßen
+
+  function updateGateStatus() {
+    const note = $("gate-status");
+    const lead = window.SCGate && window.SCGate.lead();
+    note.replaceChildren();
+    prepareMailto();
+    if (!lead) return;
+    note.append(document.createTextNode(`Freigeschaltet für ${lead.email}. `));
+    const change = el("button", "Adresse ändern", "linklike");
+    change.type = "button";
+    change.addEventListener("click", () => { window.SCGate.clear(); showWizard(); scrollToStep(7, false); });
+    note.append(change);
+    if (lead.delivery === "demo") note.append(document.createTextNode(" Vorabversion: Die Adresse wurde nicht gespeichert oder gesendet."));
+    else if (lead.delivery === "failed") note.append(document.createTextNode(" Die Adresse konnte nicht übermittelt werden. Das Ergebnis bleibt freigeschaltet."));
+    if (lead.report && !lead.reportSent && view === "review" && !autoTried) { autoTried = true; sendReportMail(true); }
+  }
 
   /* ---------- Start ---------- */
   fillYears();

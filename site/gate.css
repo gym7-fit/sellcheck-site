@@ -1,0 +1,17 @@
+/* Freischaltung per E-Mail-Adresse: Dialog und Statuszeile */
+.gate-dialog { width: min(520px, calc(100vw - 24px)); }
+.gate-dialog h2 { font-size: 1.6rem; margin-bottom: .3em; }
+.gate-dialog::backdrop { background: rgba(8, 10, 14, .62); backdrop-filter: blur(3px); }
+.gate-dialog input[type="email"] { margin-bottom: 18px; }
+.gate-check { display: grid; grid-template-columns: 22px 1fr; gap: 12px; align-items: start; font-weight: 600; font-size: .98rem; margin: 0 0 14px; cursor: pointer; }
+.gate-check input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--ink); }
+.gate-check small { display: block; font-weight: 400; color: var(--muted); font-size: .84rem; line-height: 1.45; margin-top: 3px; }
+.gate-privacy { margin: 18px 0 6px; }
+.gate-note { min-height: 1.4em; margin: 0 0 6px; color: var(--red); font-weight: 600; font-size: .92rem; }
+.gate-dialog .toolbar { margin-top: 10px; }
+.gate-status { margin: 6px 0 0; }
+.gate-status .linklike { font-size: inherit; }
+@media (prefers-reduced-motion: no-preference) {
+  .gate-dialog[open] { animation: gate-in .28s cubic-bezier(.23, 1, .32, 1); }
+  @keyframes gate-in { from { opacity: 0; transform: translateY(12px) scale(.98); } }
+}

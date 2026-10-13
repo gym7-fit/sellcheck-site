@@ -1,8 +1,8 @@
 // Anmeldung: Einstellungen. Diese Datei darf öffentlich sein (der Anon-Key ist kein Geheimnis).
 // Mehr dazu: docs/AUTH-SETUP.md
 window.SC_AUTH = {
-  // true: Tools und Report nur nach Anmeldung. false: alles frei nutzbar, Anmeldung bleibt optional.
-  required: true,
+  // true: Tools und Report nur nach Anmeldung. false: alles frei nutzbar (aktueller Stand: Freischaltung per E-Mail, siehe gate-config.js).
+  required: false,
 
   // Echte Konten über Supabase Auth. Beides ausfüllen, dann ist der Demo-Modus aus.
   // WICHTIG: ein EIGENES Supabase-Projekt für SellCheck verwenden, NICHT das der VITARO-Seiten.

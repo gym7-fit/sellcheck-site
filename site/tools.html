@@ -14,6 +14,9 @@
   <script src="auth-lib.js"></script>
   <script src="auth.js"></script>
   <link rel="stylesheet" href="wizard.css">
+  <link rel="stylesheet" href="gate.css">
+  <script src="gate-config.js"></script>
+  <script src="gate-lib.js"></script>
 </head>
 <body>
 <a class="skip" href="#main">Zum Inhalt springen</a>
@@ -26,10 +29,6 @@
     <nav class="nav" aria-label="Hauptnavigation">
       <a class="hide-sm" href="index.html">Startseite</a>
       <a class="hide-sm" href="tools.html" aria-current="page">Tools</a>
-    <a class="auth-guest" href="login.html">Anmelden</a>
-      <a class="btn small auth-guest" href="register.html">Registrieren</a>
-      <a class="auth-user" href="tools.html" hidden>Zu den Tools</a>
-      <button class="btn small secondary auth-user" id="logout-btn" type="button" hidden>Abmelden</button>
     </nav>
   </div>
 </header>
@@ -37,7 +36,7 @@
 <div class="wiz-hero on-dark">
   <div class="wrap">
     <h1>Dein Überblick in sechs Schritten</h1>
-    <p>Sechs Schritte von den Grundangaben bis zum Report. Jeder Schritt schaltet den nächsten frei, am Ende prüfst du alles noch einmal.</p>
+    <p>Sechs Schritte von den Grundangaben bis zum Report. Jeder Schritt schaltet den nächsten frei. Ergebnis, Report und Downloads schaltest du am Ende mit deiner E-Mail-Adresse frei.</p>
   </div>
 </div>
 
@@ -410,7 +409,7 @@
         <h2>Schritte abschließen</h2>
         <p class="muted" id="wiz-end-note">Sobald alle Schritte erledigt sind, kannst du deine Angaben prüfen.</p>
       </div>
-      <button class="btn big" id="to-review" type="button" disabled>Weiter zur Überprüfung</button>
+      <button class="btn big" id="to-review" type="button" disabled>Ergebnis ansehen</button>
     </div>
   </div>
 
@@ -420,6 +419,7 @@
       <button class="btn secondary small" id="back-wizard" type="button">← Zurück zu den Schritten</button>
       <h2 tabindex="-1" id="review-title">Überprüfe deine Angaben</h2>
       <p class="muted">Prüfe alle Angaben. Mit „Ändern“ korrigierst du sie direkt.</p>
+      <p class="small muted gate-status" id="gate-status" role="status" aria-live="polite"></p>
     </div>
 
     <div class="review-grid">
@@ -456,6 +456,10 @@
         <button class="btn secondary" id="x-summary" type="button">Summen (CSV)</button>
         <button class="btn secondary" id="x-private" type="button" hidden>Private Verkäufe, Anlage SO (CSV)</button>
         <button class="btn secondary" id="x-backup" type="button">Sicherung aller Einträge (CSV)</button>
+      </div>
+      <div class="toolbar">
+        <button class="btn secondary" id="x-mail" type="button">Report per E-Mail senden</button>
+        <a class="btn secondary" id="x-mailto" href="#" hidden>Zusammenfassung im Mailprogramm öffnen</a>
       </div>
       <p id="x-msg" class="small muted" role="status" aria-live="polite" style="min-height:1.4em"></p>
     </section>
@@ -593,8 +597,31 @@
   </div>
 </footer>
 
+
+<!-- Freischaltung per E-Mail-Adresse -->
+<dialog class="edit-dialog gate-dialog" id="gate-dialog" aria-labelledby="gate-title">
+  <form id="gate-form" method="dialog" novalidate>
+    <h2 id="gate-title">Ergebnis freischalten</h2>
+    <p class="muted">Gib deine E-Mail-Adresse ein, um Ergebnis, Report und Downloads zu sehen. Deine Eingaben bleiben auf deinem Gerät.</p>
+    <label for="gate-email">E-Mail-Adresse</label>
+    <input id="gate-email" name="email" type="email" autocomplete="email" inputmode="email" required placeholder="du@beispiel.de">
+    <label class="gate-check"><input type="checkbox" name="report">
+      <span><span id="gate-report-text"></span><small id="gate-report-hint"></small></span></label>
+    <label class="gate-check"><input type="checkbox" name="tips">
+      <span><span id="gate-tips-text"></span><small id="gate-tips-hint"></small></span></label>
+    <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <p class="small muted gate-privacy">Wir nutzen deine Adresse für die Freischaltung und für das, was du hier ankreuzt. Mehr in der <a href="datenschutz.html">Datenschutzerklärung</a>.</p>
+    <p class="gate-note" id="gate-note" role="alert"></p>
+    <div class="toolbar">
+      <button class="btn" type="submit">Ergebnis anzeigen</button>
+      <button class="btn secondary" type="button" id="gate-cancel">Abbrechen</button>
+    </div>
+  </form>
+</dialog>
+
 <script src="tax-lib.js"></script>
 <script src="wizard-lib.js"></script>
+<script src="gate.js"></script>
 <script src="tools.js"></script>
 <script src="parse-lib.js"></script>
 <script src="import.js"></script>

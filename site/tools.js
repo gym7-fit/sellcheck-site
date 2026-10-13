@@ -385,6 +385,10 @@ $("t-export").addEventListener("click", () => {
 });
 
 function download(text, filename) {
+  if (window.SCGate && !window.SCGate.unlocked()) {
+    window.SCGate.require(() => download(text, filename));
+    return;
+  }
   const blob = new Blob([text], { type: "text/csv;charset=utf-8" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);

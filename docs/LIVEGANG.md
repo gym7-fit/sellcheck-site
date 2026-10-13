@@ -23,6 +23,10 @@ Die Seiten sind statisch (HTML, CSS, JS, kein Build-Schritt) und liegen im Ordne
 
 Bis dahin läuft das Formular im Demo-Modus und speichert nichts.
 
+## 2b. Freischaltung per E-Mail-Adresse
+
+Die Tools laufen ohne Anmeldung, Ergebnis, Report und Downloads werden nach Eingabe einer E-Mail-Adresse freigeschaltet (optional: Report per E-Mail, Tipps und Tricks). Einrichtung und rechtliche Punkte: [`EMAIL-ZUGANG.md`](EMAIL-ZUGANG.md).
+
 ## 3a. GitHub Pages (Vorabansicht)
 
 Der Workflow `.github/workflows/pages.yml` testet und veröffentlicht `site/`. Unter Settings → Pages muss „GitHub Actions“ als Quelle gewählt sein. Vor dem echten Livegang entfernen: `<meta name="robots" content="noindex, nofollow">` in allen Seiten (bei Rechtstexten und Marken-Seite je nach Wunsch; bei den Hilfeseiten unter `site/hilfe/` steht er im Generator `scripts/build-hilfe.py`, danach `python3 scripts/build-hilfe.py` ausführen) und `site/robots.txt`. GitHub Pages setzt keine eigenen Header: Die CSP steht als Meta-Tag in den Seiten, `frame-ancestors` und die übrigen Header aus `_headers` greifen nur bei Hosts mit Header-Unterstützung.
