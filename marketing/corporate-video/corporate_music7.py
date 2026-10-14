@@ -91,29 +91,19 @@ def build_stems(dur=DUR):
         heart(tt, (0.6, 0.8, 1.0)[k], 0.15)
 
     # ---------------------------------------------------- Angst: Problem 4 bis 12 s
-    # erst ein Schlag pro Sekunde, ab 6 s auf jedem Schlag; die Karten bekommen keine eigenen Geräusche mehr
+    # gleichmäßig und langsam: ein Herzschlag pro Sekunde, nach dem Schock (8 s) unverändert, dann Stille
     t = 4.0
-    while t < 6.0 - 1e-6:
-        heart(t, 0.7 + 0.1 * (t - 4.0) / 2.0, 0.15)
+    while t < 11.0 + 1e-6:
+        if abs(t - CUES["problem_banner"][0]) > 1e-6:
+            heart(t, 0.7 + 0.2 * (t - 4.0) / 7.0, 0.15)
         t += 1.0
-    while t < 8.0 - 1e-6:
-        heart(t, 0.85, 0.14)
-        t += 0.5
     t8 = CUES["problem_banner"][0]
-    gasp(t8 - 0.24, 0.8, 0.24)                    # Einatmen vor dem Schock
-    heart(t8, 1.2, 0.13)                          # ein harter Doppelschlag
-    mute.append((t8 + 0.34, t8 + 0.56))          # kurzer Aussetzer
-    # danach wird das Herzklopfen schneller, aber nie hektisch (Abstand 0,5 s bis 0,3 s)
-    t, step = 8.6, 0.5
-    while t < 11.72:
-        heart(t, 0.85 + 0.12 * (t - 8.6) / 3.0, 0.14)
-        t += step
-        step = max(0.3, step - 0.04)
-    mute.append((11.72, 12.0))                    # Luft anhalten
+    heart(t8, 1.15, 0.14)                         # der Schock: ein kräftigerer Schlag
+    sub(t8, 38, 0.5, 0.8, 0.01)                   # dazu ein kurzer tiefer Grundton
+    mute.append((11.5, 12.0))                     # Luft anhalten: eine halbe Sekunde Stille vor SellCheck
 
     # ---------------------------------------------------- Aha: 12 bis 22 s
     # Aufklaren: Ausatmen, das Pad geht gleich hell auf, ein hoher weicher Akkord wie ein Lichtblick
-    exhale(12.0, 0.8, 1.9)
     pad(12.0, NOTES["D"], 10.0, 1800, 2500, 1.0, fade_in=0.5)
     pad(12.0, [62, 69, 74, 78], 6.0, 2600, 2200, 0.35, fade_in=0.4)
     sub(12.0, 38, 9.6, 0.8, 0.8)
@@ -139,7 +129,6 @@ def build_stems(dur=DUR):
         piano_chord(b * BAR, LOOP[(b - 6) % 4], 0.3, 3.0, 0.8)
 
     # ---------------------------------------------------- Abbinder 44 bis 51 s (abrunden und ausklingen)
-    exhale(44.0, 0.7, 1.6)
     pad(44.0, NOTES["D"] + [74], 4.0, 1400, 2800, 1.0, fade_in=0.3)
     sub(44.0, 38, 3.9, 0.9, 0.2)
     piano_chord(44.0, "G", 0.5, 2.0, 1.0)
@@ -150,7 +139,6 @@ def build_stems(dur=DUR):
     for k, m in enumerate((50, 57, 62, 66, 69, 74)):
         x = lib["piano"].note(m, 3.4, 0.5, 1.2, 0.0, rr=k)
         st["piano"].add_st(48.0 + k * 0.11, x[0], x[1], 0.95 if k < 5 else 0.75)
-    exhale(48.0, 0.5, 2.6)
     for k, m in enumerate((81, 86)):
         x = lib["piano"].note(m, 2.0, 0.28, 1.2, 0.0, rr=k)
         st["piano"].add_st(48.9 + k * 0.5, x[0], x[1], 0.45)
