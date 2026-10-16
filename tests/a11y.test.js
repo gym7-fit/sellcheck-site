@@ -77,7 +77,7 @@ test("Farben: Textfarben erreichen 4,5:1 auf ihren Flächen (hell)", () => {
   };
   const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
   const grounds = ["bg", "surface", "surface-2"].map((n) => [n, v(n)]);
-  for (const [fg, soft] of [["green", "green-soft"], ["yellow", "yellow-soft"]]) {
+  for (const [fg, soft] of [["green", "green-soft"], ["yellow", "yellow-soft"], ["red", "red-soft"]]) {
     for (const [gn, g] of [...grounds, [soft, v(soft)]]) {
       const r = ratio(v(fg), g);
       assert.ok(r >= 4.5, `--${fg} auf --${gn}: ${r.toFixed(2)}:1`);
@@ -102,4 +102,26 @@ test("Datenschutz: keine Drittanbieter-Einbindungen (Skripte, Schriften, Bilder,
     assert.ok(!/url\(["']?https?:\/\//.test(s) || rel.endsWith(".js"), `${rel}: url() von außen`);
     if (rel.endsWith(".js")) assert.ok(!/\b(fetch|XMLHttpRequest|sendBeacon)\b[^;\n]*https?:\/\//.test(s), `${rel}: Netzwerkaufruf nach außen`);
   }
+});
+
+test("Texte: Knöpfe sagen, was passiert (kein nacktes „Weiter“, „Absenden“, „Speichern“)", () => {
+  const vague = /^(weiter|absenden|speichern|submit|ok|senden|details|einlesen|übernehmen)$/i;
+  for (const { name, html } of PAGES) {
+    for (const m of strip(html).matchAll(/<button\b[^>]*>([\s\S]*?)<\/button>/g)) {
+      const text = m[1].replace(/<[^>]+>/g, "").trim();
+      assert.ok(!vague.test(text), `${name}: unklarer Knopf „${text}“`);
+    }
+  }
+});
+
+test("Fehler: Formulare zeigen Fehler am Feld (fielderr.js eingebunden, SCField genutzt)", () => {
+  for (const page of ["index.html", "tools.html"]) {
+    assert.match(fs.readFileSync(path.join(SITE, page), "utf8"), /<script src="fielderr\.js"><\/script>/, `${page}: fielderr.js fehlt`);
+  }
+  for (const f of ["waitlist.js", "gate.js", "tools.js"]) {
+    assert.match(fs.readFileSync(path.join(SITE, f), "utf8"), /SCField\.show\(/, `${f}: Fehler nicht am Feld`);
+  }
+  const css = fs.readFileSync(path.join(SITE, "style.css"), "utf8");
+  assert.match(css, /\.field-error\b/);
+  assert.match(css, /\[aria-invalid="true"\]/);
 });

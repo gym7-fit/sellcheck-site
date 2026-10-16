@@ -23,13 +23,14 @@ document.querySelectorAll("form.waitlist").forEach((form) => {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const note = form.querySelector(".form-note");
+    note.textContent = "";
     const email = form.email.value.trim();
     if (email.length > 254 || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-      note.textContent = "Bitte gib eine gültige E-Mail-Adresse ein.";
+      SCField.show(form.email, "Das ist keine gültige E-Mail-Adresse. Beispiel: du@beispiel.de");
       return;
     }
     if (!form.consent.checked) {
-      note.textContent = "Bitte bestätige zuerst deine Einwilligung.";
+      SCField.show(form.consent, "Bitte hake die Einwilligung an, damit wir dich benachrichtigen dürfen.");
       return;
     }
     // Honeypot: Menschen sehen das Feld nicht. Bots füllen es und bekommen eine unauffällige "Danke"-Antwort.
