@@ -140,8 +140,8 @@ p { margin: 0 0 1em; }
 .mock-list li { display: flex; justify-content: space-between; gap: 10px; padding: 10px 2px; border-top: 1px solid var(--line); font-size: .9rem; }
 .mock-list span:first-child { font-weight: 600; }
 .mock-list small { display: block; color: var(--muted); font-weight: 400; font-size: .75rem; }
-.mock-list .win { color: var(--green); font-weight: 700; }
-.mock-list .lose { color: var(--red); font-weight: 700; }
+.mock-list .win { color: var(--green); font-weight: 700; white-space: nowrap; }
+.mock-list .lose { color: var(--red); font-weight: 700; white-space: nowrap; }
 @keyframes grow { from { width: 0; } }
 
 /* ---------- Sections ---------- */

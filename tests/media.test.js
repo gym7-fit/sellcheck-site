@@ -17,6 +17,11 @@ test("Film: Video hat Bedienelemente, startet nicht von selbst und lädt erst au
   assert.ok(!/\bautoplay\b/.test(film), "Autoplay ist nicht erlaubt");
 });
 
+test("Film: Untertitel sind verfügbar, aber nicht standardmäßig an (sie würden Bildtexte im unteren Drittel überdecken)", () => {
+  assert.match(film, /<track[^>]*kind="subtitles"[^>]*srclang="de"/);
+  assert.ok(!/<track[^>]*\bdefault\b/.test(film));
+});
+
 test("Film: alle verlinkten Dateien liegen im Ordner site/", () => {
   const refs = [...film.matchAll(/(?:src|poster|href)="(media\/[^"]+)"/g)].map((m) => m[1]);
   assert.ok(refs.length >= 4, "Quelle, Poster, Untertitel und Download-Link erwartet");
