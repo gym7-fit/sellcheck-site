@@ -1,4 +1,6 @@
-# Livegang-Checkliste SellCheck (Stand 9. Oktober 2026)
+# Livegang-Checkliste SellCheck (Stand 16. Oktober 2026)
+
+Zu den Rechtstexten (Impressum, Datenschutz) gibt es eine eigene Liste mit allen Platzhaltern, Entscheidungen und dem Faktenblatt für die Prüfung: [`RECHTSTEXTE.md`](RECHTSTEXTE.md).
 
 Die Seiten sind statisch (HTML, CSS, JS, kein Build-Schritt) und liegen im Ordner `site/`. Zum Testen mit Server: `npm start` (oder `python3 -m http.server 8000 --directory site`).
 
