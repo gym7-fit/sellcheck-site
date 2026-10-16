@@ -18,8 +18,8 @@
   --line: #e2dfd4;
   --link: #1e6b3a;
 
-  --green: #1e8e4f;   --green-soft: #e2f4e8;
-  --yellow: #a96b00;  --yellow-soft: #fdf1d3;
+  --green: #177a42;   --green-soft: #e2f4e8;
+  --yellow: #8a5a00;  --yellow-soft: #fdf1d3;
   --red: #c23a3a;     --red-soft: #fbe5e5;
 
   --radius: 18px;
@@ -324,7 +324,7 @@ td.num, th.num { text-align: right; }
 /* ---------- Footer ---------- */
 footer { padding: 56px 0 64px; font-size: .9rem; }
 footer .cols { display: grid; gap: 32px; grid-template-columns: 1.4fr 1fr 1fr; margin-bottom: 32px; }
-footer h4 { margin: 0 0 10px; font-size: .8rem; letter-spacing: .1em; text-transform: uppercase; color: var(--lime); }
+footer h3 { margin: 0 0 10px; font-size: .8rem; letter-spacing: .1em; text-transform: uppercase; color: var(--lime); }
 footer ul { list-style: none; padding: 0; margin: 0; }
 footer li { margin-bottom: 6px; }
 footer a { color: #c5cad3; text-decoration: none; }
