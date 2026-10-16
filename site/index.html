@@ -5,15 +5,15 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self'; font-src 'self'; connect-src 'self'; form-action 'none'; base-uri 'none'; object-src 'none'">
   <meta name="robots" content="noindex, nofollow">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SellCheck – Alle Plattformen. Ein Überblick.</title>
-  <meta name="description" content="Gewinn, Meldegrenze pro Plattform und Bestand für Verkäufer auf Vinted, Kleinanzeigen, eBay und mehr. Gratis-Tools, ohne Zugriff auf deine Konten.">
+  <title>SellCheck – Meldegrenze prüfen. Gewinn im Blick.</title>
+  <meta name="description" content="Prüfe kostenlos, wie nah du auf Vinted, Kleinanzeigen, eBay und mehr an der Meldegrenze bist: 30 Verkäufe oder 2.000 € im Jahr, je Plattform. Dazu Gewinn und Bestand, ohne Zugriff auf deine Konten.">
   <link rel="canonical" href="https://gym7-fit.github.io/sellcheck-site/">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <meta property="og:site_name" content="SellCheck">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="de_DE">
-  <meta property="og:title" content="SellCheck – Alle Plattformen. Ein Überblick.">
-  <meta property="og:description" content="Gewinn, Meldegrenze pro Plattform und Bestand für Verkäufer auf Vinted, Kleinanzeigen, eBay und mehr. Gratis-Tools, ohne Zugriff auf deine Konten.">
+  <meta property="og:title" content="SellCheck – Meldegrenze prüfen. Gewinn im Blick.">
+  <meta property="og:description" content="Prüfe kostenlos, wie nah du auf Vinted, Kleinanzeigen, eBay und mehr an der Meldegrenze bist: 30 Verkäufe oder 2.000 € im Jahr, je Plattform. Dazu Gewinn und Bestand, ohne Zugriff auf deine Konten.">
   <meta property="og:url" content="https://gym7-fit.github.io/sellcheck-site/">
   <meta property="og:image" content="https://gym7-fit.github.io/sellcheck-site/social/og-image.png">
   <meta property="og:image:width" content="1200">
@@ -35,6 +35,7 @@
       <span>Sell<b>Check</b></span>
     </a>
     <nav class="nav" aria-label="Hauptnavigation">
+      <a class="hide-sm" href="#demo">Meldegrenze</a>
       <a class="hide-sm" href="#tools">Tools</a>
       <a class="hide-sm" href="#angebot">Angebot</a>
       <a class="hide-sm" href="#faq">FAQ</a>
@@ -49,15 +50,15 @@
     <div class="wrap hero-grid">
       <div class="hero-copy">
         <h1>Check, was <em>wirklich bleibt.</em></h1>
-        <p class="lead">Alle Plattformen in einem Überblick: Gewinn pro Artikel, Meldegrenze pro Plattform und Bestand. Ohne Tabellenpflege und ohne Zugriff auf deine Konten.</p>
+        <p class="lead">Wie nah bist du an der Meldegrenze? SellCheck zeigt es für jede Plattform, dazu Gewinn pro Artikel und Bestand. Ohne Tabellenpflege und ohne Zugriff auf deine Konten.</p>
         <div class="cta">
-          <a class="btn" href="tools.html">Kostenlos starten
-            <svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-          <a class="btn secondary" href="#demo">Meldegrenze prüfen</a>
+          <a class="btn" href="#demo">Meldegrenze prüfen
+            <svg class="ico" viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></svg></a>
+          <a class="btn secondary" href="tools.html">Kostenlos starten</a>
         </div>
         <ul class="pills">
+          <li><svg class="ico" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Meldegrenze für jede Plattform</li>
           <li><svg class="ico" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Kostenlos, ohne Anmeldung</li>
-          <li><svg class="ico" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Kein Login bei Plattformen</li>
           <li><svg class="ico" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Daten bleiben bei dir</li>
         </ul>
       </div>
@@ -67,6 +68,7 @@
         <div class="mock-top"><span>Gewinn 2026 · alle Plattformen</span><span class="chip">Beispieldaten</span></div>
         <div class="mock-big"><span data-count="842.5">842,50 €</span><small>nach Kosten</small></div>
         <div class="mock-gauge">
+          <div class="mock-sub">Meldegrenze je Plattform: 30 Verkäufe oder 2.000 €</div>
           <div class="plat"><div class="row"><span>Vinted</span><span>21 von 30</span></div><div class="bar"><i style="width:70%;background:#e5a93a"></i></div></div>
           <div class="plat"><div class="row"><span>Kleinanzeigen</span><span>8 von 30</span></div><div class="bar"><i style="width:27%;background:#4cc27f"></i></div></div>
           <div class="plat"><div class="row"><span>eBay</span><span>2 von 30</span></div><div class="bar"><i style="width:7%;background:#4cc27f"></i></div></div>
@@ -94,14 +96,18 @@
   <!-- DEMO -->
   <section id="demo" class="demo">
     <div class="wrap demo-grid">
-      <div>
+      <div class="demo-intro">
         <h2>Meldegrenze prüfen.</h2>
-        <p class="demo-lead">Trage Verkäufe und Umsatz einer Plattform ein. Die Ampel zeigt, wie nah du an der Meldegrenze liegst: 30 Verkäufe oder 2.000 € im Jahr, je Plattform.</p>
-        <p class="small muted">Die Eingaben werden weder gespeichert noch gesendet. Alle Plattformen zusammen siehst du im Überblick der Tools.</p>
-        <a class="btn" href="tools.html">Alle Plattformen im Überblick
-          <svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <p class="demo-lead">Wähle eine Plattform und trage Verkäufe und Umsatz ein. Die Ampel zeigt, wie nah du an der Meldegrenze liegst. Jede Plattform zählt für sich.</p>
       </div>
       <div class="demo-card" aria-label="Meldegrenzen-Ampel zum Ausprobieren">
+        <fieldset class="demo-plats">
+          <legend class="sr-only">Plattform wählen</legend>
+          <label><input type="radio" name="d-plat" value="vinted" checked><span><i></i>Vinted</span></label>
+          <label><input type="radio" name="d-plat" value="kleinanzeigen"><span><i></i>Kleinanzeigen</span></label>
+          <label><input type="radio" name="d-plat" value="ebay"><span><i></i>eBay</span></label>
+          <label><input type="radio" name="d-plat" value="etsy"><span><i></i>Etsy</span></label>
+        </fieldset>
         <div class="demo-row"><label for="d-count">Verkäufe in diesem Jahr</label><output id="d-count-out" for="d-count">21</output></div>
         <input id="d-count" type="range" min="0" max="45" step="1" value="21">
         <div class="demo-row"><label for="d-sum">Umsatz in diesem Jahr</label><output id="d-sum-out" for="d-sum">1.280 €</output></div>
@@ -111,7 +117,17 @@
           <strong>Gelb: Du näherst dich der Grenze</strong>
           <div>Bei diesem Tempo erreichst du die Grenze voraussichtlich bald. Es fehlen noch 9 Verkäufe oder 720 €.</div>
         </div>
-        <p class="small muted demo-note">Orientierung, keine Steuerberatung. Die Meldung einer Plattform ist keine Steuerforderung.</p>
+        <p class="small muted demo-note">Die Punkte an den Plattformen zeigen jeweils die Ampel. Orientierung, keine Steuerberatung.</p>
+      </div>
+      <div class="demo-more">
+        <ul class="facts">
+          <li><b>Je Plattform und Jahr.</b> Verkäufe auf verschiedenen Plattformen werden nicht zusammengezählt.</li>
+          <li><b>Eine Grenze genügt.</b> Ab 30 Verkäufen oder 2.000 € Einnahmen wirst du in der Regel gemeldet. Gezählt werden abgeschlossene Verkäufe, nicht Artikel.</li>
+          <li><b>Meldung ist keine Steuerforderung.</b> Ob Steuern anfallen, entscheidet das Finanzamt.</li>
+        </ul>
+        <p class="small muted demo-src">Quelle: <a href="https://www.finanzamt.nrw.de/steuerinfos/unternehmen/plattformen-steuertransparenzgesetz" target="_blank" rel="noopener noreferrer">Finanzamt NRW</a>. Die Eingaben hier werden weder gespeichert noch gesendet.</p>
+        <a class="btn" href="tools.html">Alle Plattformen im Überblick
+          <svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </div>
     </div>
   </section>
@@ -342,6 +358,10 @@
         <p>Nein. Das Plattformen-Steuertransparenzgesetz knüpft an die Tätigkeit an, etwa den Verkauf von Waren, und nicht an einen einzelnen Anbieter. Gemeldet wird, sobald auf einer Plattform 30 Verkäufe oder 2.000 € Einnahmen im Jahr erreicht sind. Die Grenzen zählen pro Plattform.</p>
       </details>
       <details>
+        <summary>Was zählt als Verkauf?</summary>
+        <p>Gezählt werden abgeschlossene Verkäufe, also die Kaufverträge, nicht die einzelnen Artikel. Ein Kauf mit mehreren Artikeln ist ein Verkauf. Wer auf einer Plattform sowohl unter 30 Verkäufen als auch unter 2.000 € Einnahmen im Jahr bleibt, wird in der Regel nicht gemeldet. Erreichst du eine der beiden Grenzen, meldet die Plattform. Eine Ausnahme von der Meldung heißt nicht, dass Einnahmen steuerfrei sind. Quelle: <a href="https://www.finanzamt.nrw.de/steuerinfos/unternehmen/plattformen-steuertransparenzgesetz" target="_blank" rel="noopener noreferrer">Finanzamt NRW</a>.</p>
+      </details>
+      <details>
         <summary>Wie ist das bei Kleinanzeigen?</summary>
         <p>Kleinanzeigen meldet nach eigener Auskunft nur Verkäufe, die über sein Bezahlsystem abgeschlossen wurden. Bar bezahlte oder außerhalb abgewickelte Verkäufe sieht die Plattform nicht. Für dich selbst und deine Einordnung als privat oder gewerblich zählen sie trotzdem.</p>
       </details>
@@ -383,9 +403,9 @@
   <!-- ABSCHLUSS -->
   <section class="on-dark" style="text-align:center">
     <div class="wrap">
-      <h2 style="max-width:760px;margin:0 auto .4em">Behalte Gewinn und Meldegrenze im Blick.</h2>
-      <p class="muted" style="margin-bottom:28px">Kostenlos und ohne Anmeldung. Das Ergebnis schaltest du mit deiner E-Mail-Adresse frei.</p>
-      <a class="btn" href="tools.html">Kostenlos starten
+      <h2 style="max-width:760px;margin:0 auto .4em">Weißt du, wie nah du an der Meldegrenze bist?</h2>
+      <p class="muted" style="margin-bottom:28px">Prüfe es für jede Plattform. Kostenlos und ohne Anmeldung, das Ergebnis schaltest du mit deiner E-Mail-Adresse frei.</p>
+      <a class="btn" href="tools.html">Meldegrenze für alle Plattformen prüfen
         <svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     </div>
   </section>
@@ -424,6 +444,7 @@
 </footer>
 
 <script src="waitlist.js"></script>
+<script src="tax-lib.js"></script>
 <script src="landing.js"></script>
 </body>
 </html>
