@@ -43,6 +43,7 @@
   </div>
 </header>
 
+<main id="main">
 <div class="wiz-hero on-dark">
   <div class="wrap">
     <h1>Dein Überblick in sechs Schritten</h1>
@@ -58,7 +59,7 @@
   </div>
 </div>
 
-<main id="main" class="wrap wiz-main">
+<div class="wrap wiz-main">
   <div id="sr-live" class="sr-only" role="status" aria-live="polite"></div>
 
   <!-- ==================== ABLAUF ==================== -->
@@ -490,46 +491,46 @@
         </div>
       </div>
       <div class="src-panels">
-        <article class="src-panel" role="tabpanel" id="tx-elster" aria-labelledby="tab-elster">
+        <div class="src-panel" role="tabpanel" id="tx-elster" aria-labelledby="tab-elster">
           <header><h4>Selbst in Mein ELSTER eintragen</h4><span class="tag ok">Möglich</span></header>
           <dl class="src-facts">
             <div><dt>Wo</dt><dd>Nach Ratgeberangaben: Mein ELSTER → Formulare &amp; Leistungen → Alle Formulare → Gewinnermittlung → Anlage EÜR. Die Oberfläche kann abweichen.</dd></div>
             <div><dt>So geht's</dt><dd>Die Beträge aus dem Report trägst du per Hand ein. Ordne sie über die Bezeichnung zu, nicht über Zeilennummern, denn die ändern sich von Jahr zu Jahr. Nicht betroffene Felder bleiben leer.</dd></div>
             <div><dt>Danach</dt><dd>Den Gewinn übernimmst du in die Anlage G (Einkünfte aus Gewerbebetrieb). Pro Betrieb gibt es eine Anlage EÜR.</dd></div>
           </dl>
-        </article>
-        <article class="src-panel" role="tabpanel" id="tx-software" aria-labelledby="tab-software">
+        </div>
+        <div class="src-panel" role="tabpanel" id="tx-software" aria-labelledby="tab-software">
           <header><h4>Steuersoftware (WISO, smartsteuer, Taxfix …)</h4><span class="tag no">Kein CSV-Import belegt</span></header>
           <dl class="src-facts">
             <div><dt>Stand</dt><dd>Für diese Programme haben wir keinen Import von Einnahmen und Ausgaben als CSV gefunden.</dd></div>
             <div><dt>So geht's</dt><dd>WISO Steuer fragt die Beträge in Feldern ab und übermittelt über die ELSTER-Schnittstelle. Nimm dafür die Summen aus dem Report.</dd></div>
             <div><dt>Gut zu wissen</dt><dd>Prüfe den aktuellen Funktionsumfang beim Anbieter.</dd></div>
           </dl>
-        </article>
-        <article class="src-panel" role="tabpanel" id="tx-berater" aria-labelledby="tab-berater">
+        </div>
+        <div class="src-panel" role="tabpanel" id="tx-berater" aria-labelledby="tab-berater">
           <header><h4>Steuerberater</h4><span class="tag ok">Empfohlen ab Gewerbe</span></header>
           <dl class="src-facts">
             <div><dt>Du gibst</dt><dd>Den Report als PDF und das Journal als CSV (eine Zeile je Buchung, mit Kategorie und Belegnummer).</dd></div>
             <div><dt>Format</dt><dd>Das DATEV-Format erzeugen wir bewusst nicht: Es braucht Kontenrahmen und Beraternummer, und ein fehlerhafter Import wäre schlimmer als keiner.</dd></div>
             <div><dt>Gut zu wissen</dt><dd>Dein Steuerberater kann das Journal übernehmen.</dd></div>
           </dl>
-        </article>
-        <article class="src-panel" role="tabpanel" id="tx-papier" aria-labelledby="tab-papier">
+        </div>
+        <div class="src-panel" role="tabpanel" id="tx-papier" aria-labelledby="tab-papier">
           <header><h4>Auf Papier einreichen</h4><span class="tag no">Nur im Härtefall</span></header>
           <dl class="src-facts">
             <div><dt>Regel</dt><dd>Die Anlage EÜR ist grundsätzlich elektronisch zu übermitteln. Papier ist nur auf Antrag in Härtefällen möglich (§ 150 Abs. 8 AO).</dd></div>
             <div><dt>Formlos?</dt><dd>Eine formlose Gewinnermittlung unter 17.500 € Einnahmen gibt es laut aktuellen Quellen seit 2017 nicht mehr. Ältere Ratgeber nennen sie noch.</dd></div>
             <div><dt>Der Report</dt><dd>Er taugt als Beleg und Anlage, ersetzt aber die Anlage EÜR nicht.</dd></div>
           </dl>
-        </article>
-        <article class="src-panel" role="tabpanel" id="tx-so" aria-labelledby="tab-so">
+        </div>
+        <div class="src-panel" role="tabpanel" id="tx-so" aria-labelledby="tab-so">
           <header><h4>Privat verkauft (Anlage SO)</h4><span class="tag ok">Nur wenige Fälle</span></header>
           <dl class="src-facts">
             <div><dt>Regel</dt><dd>Gebrauchsgegenstände wie Kleidung sind nicht steuerbar. Steuerbar können andere Gegenstände sein, die du innerhalb eines Jahres nach dem Kauf verkaufst, und nur, wenn der Gesamtgewinn im Jahr mindestens 1.000 € erreicht (§ 23 EStG, früher 600 €).</dd></div>
             <div><dt>Hier</dt><dd>Der Modus „privat“ listet deine Verkäufe dafür auf.</dd></div>
             <div><dt>Gut zu wissen</dt><dd>Einordnung und Eintrag in die Anlage SO prüfst du selbst oder mit Beratung.</dd></div>
           </dl>
-        </article>
+        </div>
       </div>
     </div>
     </section>
@@ -550,6 +551,7 @@
       </form>
     </section>
   </div>
+</div>
 </main>
 
 <dialog id="e-dialog" class="edit-dialog" aria-labelledby="e-title">
@@ -587,14 +589,14 @@
         <p style="margin-top:14px;color:#8a909b">Check, was wirklich bleibt.</p>
       </div>
       <div>
-        <h4>Seiten</h4>
+        <h3>Seiten</h3>
         <ul>
           <li><a href="index.html">Startseite</a></li>
           <li><a href="tools.html">Gratis-Tools</a></li>
         </ul>
       </div>
       <div>
-        <h4>Rechtliches</h4>
+        <h3>Rechtliches</h3>
         <ul>
           <li><a href="impressum.html">Impressum</a></li>
           <li><a href="datenschutz.html">Datenschutz</a></li>

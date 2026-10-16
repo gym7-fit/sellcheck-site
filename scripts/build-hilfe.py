@@ -407,7 +407,8 @@ def platform_page(d):
             f'<li><a href="{e(u)}" target="_blank" rel="noopener noreferrer">{e(t)}</a></li>' for t, u in d["sources"]) + "</ul></section>")
     tag = ('<span class="tag ok">Export vorhanden</span>' if d["kind"] == "export"
            else '<span class="tag no">Kein Verkaufsexport belegt</span>')
-    body = f"""<div class="help-hero on-dark">
+    body = f"""<main id="main">
+<div class="help-hero on-dark">
   <div class="wrap">
     <a class="help-back" href="index.html">← Alle Datenquellen</a>
     <span class="eyebrow">Hilfe · Datei besorgen</span>
@@ -415,7 +416,7 @@ def platform_page(d):
     <p>{e(d["lead"])}</p>
   </div>
 </div>
-<main id="main" class="wrap help-main">
+<div class="wrap help-main">
   <div class="help-top">
     <dl class="help-facts">{facts}</dl>
     <div class="help-tag">{tag}</div>
@@ -434,6 +435,7 @@ def platform_page(d):
   <section class="help-good"><h2>Gut zu wissen</h2><ul>{good}</ul></section>
   {alt}
   {src}
+</div>
 </main>"""
     return page_shell(d["headline"], d["lead"], body, d["slug"] + ".html")
 
@@ -447,14 +449,15 @@ def hub_page():
             f'<a class="help-card" href="{d["slug"]}.html"><span class="mono" aria-hidden="true">{e(d["mono"])}</span>'
             f'<span><b>{e(d["name"])}</b><span class="t">{e(d["teaser"])}</span>'
             f'<span class="tag {cls}">{tag}</span></span></a>')
-    body = f"""<div class="help-hero on-dark">
+    body = f"""<main id="main">
+<div class="help-hero on-dark">
   <div class="wrap">
     <span class="eyebrow">Hilfe · Datei besorgen</span>
     <h1>Wo finde ich meine Exportdatei?</h1>
     <p>Wähle deine Plattform. Du bekommst eine Schritt-für-Schritt-Anleitung, wo die Datei liegt und was du danach in SellCheck tust.</p>
   </div>
 </div>
-<main id="main" class="wrap help-main">
+<div class="wrap help-main">
   <p class="help-note">Stand der Beschreibungen: {STAND}. Sie stammen aus den Hilfeseiten der Anbieter. Anbieter ändern ihre Oberfläche gelegentlich, Menünamen können deshalb abweichen.</p>
   <div class="help-cards">{"".join(cards)}</div>
   <section class="help-next">
@@ -467,6 +470,7 @@ def hub_page():
     </ul>
     <p><a class="btn" href="../tools.html">Zurück zu den Tools</a></p>
   </section>
+</div>
 </main>"""
     return page_shell("Wo finde ich meine Exportdatei?", "Anleitungen für den Export deiner Verkaufsdaten bei eBay, Etsy, Amazon, PayPal, Vinted, Kleinanzeigen und deiner Bank.", body, "")
 

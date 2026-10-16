@@ -24,6 +24,7 @@
   // Weiche Trennstellen in langen Spaltenköpfen (Veräußerungs|preis), damit nichts über den Rand läuft
   const shy = (x) => String(x).replace(/ungs(?=[a-zß]{4,})/g, "ungs\u00AD").replace(/Waren(?=einkauf)/g, "Waren\u00AD");
   // widths: Spaltenbreiten in Prozent (Summe 100). Mit Breiten ist das Layout fest und die Tabelle bleibt im Blatt.
+  let tableCount = 0;
   const table = (headers, rows, numCols, widths) => {
     const t = h("table", undefined, headers.length >= 6 ? "wide" : "");
     if (widths && widths.length === headers.length) {
@@ -40,6 +41,9 @@
     rows.forEach((r) => tb.append(r));
     t.append(thead, tb);
     const wrap = h("div", undefined, "tablewrap");
+    wrap.tabIndex = 0;
+    wrap.setAttribute("role", "region");
+    wrap.setAttribute("aria-label", `Tabelle ${++tableCount}, seitlich scrollbar`);
     wrap.append(t);
     return wrap;
   };
