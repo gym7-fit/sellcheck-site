@@ -10,6 +10,11 @@
   const SETTINGS_KEY = "sellcheck.settings.v1"; // vom Report gelesen
   const eur = new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" });
   const money = (c) => eur.format(c / 100);
+
+  // Tastaturbedienung merken: Der Fokusring auf den Schritt-Überschriften soll nur nach Tastatureingaben erscheinen.
+  // Safari zeigt :focus-visible sonst auch nach einem Fingertipp, wenn der Fokus nach dem Weiterspringen verschoben wird.
+  document.addEventListener("keydown", () => document.documentElement.classList.add("kb"), true);
+  document.addEventListener("pointerdown", () => document.documentElement.classList.remove("kb"), true);
   const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const platformNames = SC.PLATFORMS.map((p) => p.name);
   const el = (tag, text, cls) => {

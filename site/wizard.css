@@ -35,7 +35,7 @@
 .step-num { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; background: var(--ink); color: var(--lime); }
 .step-titles h2 { font-size: 1.25rem; margin: 0; letter-spacing: -.02em; }
 .step-titles h2:focus { outline: none; }
-.step-titles h2:focus-visible { outline: 3px solid var(--lime-strong); outline-offset: 4px; border-radius: 6px; }
+.kb .step-titles h2:focus-visible { outline: 3px solid var(--lime-strong); outline-offset: 4px; border-radius: 6px; }
 .step-sum { margin: 2px 0 0; color: var(--muted); font-size: .92rem; min-height: 0; }
 .step-sum:empty { display: none; }
 .step-status { font-size: .74rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; padding: 5px 11px; border-radius: 99px; background: var(--surface-2); color: var(--muted); white-space: nowrap; }
