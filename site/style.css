@@ -20,7 +20,7 @@
 
   --green: #177a42;   --green-soft: #e2f4e8;
   --yellow: #8a5a00;  --yellow-soft: #fdf1d3;
-  --red: #c23a3a;     --red-soft: #fbe5e5;
+  --red: #b3261e;     --red-soft: #fbe5e5;
 
   --radius: 18px;
   --radius-sm: 12px;
@@ -353,6 +353,12 @@ footer .legal { border-top: 1px solid #262b33; padding-top: 22px; color: #8a909b
 }
 
 /* ---------- Formular-Zusatz ---------- */
+.field-error { display: flex; gap: 6px; align-items: flex-start; margin: 6px 0 0; font-size: .88rem; font-weight: 600; color: var(--red); }
+.field-error[hidden] { display: none; }
+.field-error::before { content: "!"; flex: none; width: 18px; height: 18px; border-radius: 50%; background: var(--red); color: var(--bg); font-size: .75rem; line-height: 18px; text-align: center; font-weight: 800; margin-top: 1px; }
+.on-dark .field-error, .plan.featured .field-error, .tool-wide .field-error, .trust-main .field-error { color: #ff9d9d; }
+.on-dark .field-error::before, .plan.featured .field-error::before, .tool-wide .field-error::before, .trust-main .field-error::before { background: #ff9d9d; color: #111318; }
+input[aria-invalid="true"], select[aria-invalid="true"] { border-color: var(--red); box-shadow: 0 0 0 1px var(--red); }
 .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 .consent { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; font-size: .85rem; margin: 12px 0 0; cursor: pointer; }
 .consent input { width: 18px; height: 18px; margin: 2px 0 0; flex: none; accent-color: var(--lime-strong); }

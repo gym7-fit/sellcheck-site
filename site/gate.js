@@ -71,8 +71,7 @@
       note.textContent = "";
       const value = email.value.trim();
       if (!G.validEmail(value)) {
-        note.textContent = "Bitte gib eine gültige E-Mail-Adresse ein.";
-        email.focus();
+        SCField.show(email, "Das ist keine gültige E-Mail-Adresse. Beispiel: du@beispiel.de");
         return;
       }
       if (form.website.value) { // Honeypot: Bots füllen das unsichtbare Feld

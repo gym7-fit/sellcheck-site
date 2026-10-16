@@ -341,10 +341,9 @@ $("t-form").addEventListener("submit", (e) => {
   e.preventDefault();
   const name = $("t-name").value.trim();
   const date = $("t-date").value;
-  if (!name || !date) {
-    $("t-msg").textContent = "Bitte Artikel und Datum angeben.";
-    return;
-  }
+  $("t-msg").textContent = "";
+  if (!name) { SCField.show($("t-name"), "Wie heißt der Artikel? Der Name hilft dir später beim Wiederfinden."); return; }
+  if (!date) { SCField.show($("t-date"), "Wann wurde verkauft oder gekauft? Bitte ein Datum wählen."); return; }
   const status = $("t-status").value;
   sales.push({
     id: Date.now() + Math.random().toString(36).slice(2, 6),
@@ -439,10 +438,10 @@ $("e-form").addEventListener("submit", (ev) => {
   ev.preventDefault();
   const name = $("e-name").value.trim();
   const date = $("e-date").value;
-  if (!editing || !name || !SCTax.validIso(date)) {
-    $("e-msg").textContent = "Bitte Artikel und ein gültiges Datum angeben.";
-    return;
-  }
+  $("e-msg").textContent = "";
+  if (!editing) return;
+  if (!name) { SCField.show($("e-name"), "Wie heißt der Artikel?"); return; }
+  if (!SCTax.validIso(date)) { SCField.show($("e-date"), "Bitte ein gültiges Datum wählen."); return; }
   const status = $("e-status").value;
   const updated = {
     ...editing,

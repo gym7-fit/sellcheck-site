@@ -75,7 +75,7 @@
           <p class="step-sum" id="sum-1"></p>
         </div>
         <span class="step-status" id="status-1"></span>
-        <button class="btn secondary small step-edit" type="button" data-edit="1" hidden>Ändern</button>
+        <button class="btn secondary small step-edit" type="button" data-edit="1" aria-label="Schritt 1 ändern" hidden>Ändern</button>
       </header>
       <div class="step-body" id="body-1">
         <div class="field-row" style="max-width:300px">
@@ -120,14 +120,14 @@
           <p class="step-sum" id="sum-2"></p>
         </div>
         <span class="step-status" id="status-2"></span>
-        <button class="btn secondary small step-edit" type="button" data-edit="2" hidden>Ändern</button>
+        <button class="btn secondary small step-edit" type="button" data-edit="2" aria-label="Schritt 2 ändern" hidden>Ändern</button>
       </header>
       <div class="step-body" id="body-2">
         <p class="step-help">Wähle alle Plattformen, auf denen du im Jahr verkauft hast. Mehrere sind möglich. Jede Plattform hat ihre eigene Meldegrenze.</p>
         <div class="chips-select" id="w-platforms" role="group" aria-label="Plattformen"></div>
         <div class="step-foot">
           <span class="step-foot-note" id="note-2">Wähle mindestens eine Plattform.</span>
-          <button class="btn" id="next-2" type="button" disabled>Weiter</button>
+          <button class="btn" id="next-2" type="button" disabled>Weiter: Verkäufe erfassen</button>
         </div>
       </div>
     </section>
@@ -141,7 +141,7 @@
           <p class="step-sum" id="sum-3"></p>
         </div>
         <span class="step-status" id="status-3"></span>
-        <button class="btn secondary small step-edit" type="button" data-edit="3" hidden>Ändern</button>
+        <button class="btn secondary small step-edit" type="button" data-edit="3" aria-label="Schritt 3 ändern" hidden>Ändern</button>
       </header>
       <div class="step-body" id="body-3">
         <p class="step-help">Du kannst Verkäufe als Datei importieren oder einzeln von Hand eintragen. Der Import ist bei vielen Verkäufen schneller. Beides lässt sich kombinieren.</p>
@@ -179,7 +179,7 @@
         <div>
           <label for="i-paste">Zeilen aus Excel, Google Sheets oder einer Webseite (mit Kopfzeile)</label>
           <textarea id="i-paste" rows="5"></textarea>
-          <div class="toolbar"><button class="btn secondary small" id="i-paste-go" type="button">Einlesen</button></div>
+          <div class="toolbar"><button class="btn secondary small" id="i-paste-go" type="button">Eingefügten Text einlesen</button></div>
         </div>
       </div>
     </details>
@@ -262,7 +262,7 @@
               <p class="live-profit" id="t-live" aria-live="polite"></p>
               <div class="add-toast" id="add-toast" role="status" aria-live="polite" hidden>
                 <span id="add-toast-text"></span>
-                <span class="add-toast-actions"><button class="btn small" type="button" id="toast-now">Jetzt weiter</button><button class="btn secondary small" type="button" id="toast-more">Noch einen eintragen</button></span>
+                <span class="add-toast-actions"><button class="btn small" type="button" id="toast-now">Weiter: Angaben vervollständigen</button><button class="btn secondary small" type="button" id="toast-more">Noch einen eintragen</button></span>
               </div>
             </div>
           </div>
@@ -270,7 +270,7 @@
         <div class="year-hint notice" id="year-hint" hidden></div>
         <div class="step-foot">
           <span class="step-foot-note" id="note-3">Noch keine Verkäufe für das gewählte Jahr.</span>
-          <button class="btn" id="next-3" type="button" disabled>Weiter</button>
+          <button class="btn" id="next-3" type="button" disabled>Weiter: Angaben vervollständigen</button>
         </div>
       </div>
     </section>
@@ -284,7 +284,7 @@
           <p class="step-sum" id="sum-4"></p>
         </div>
         <span class="step-status" id="status-4"></span>
-        <button class="btn secondary small step-edit" type="button" data-edit="4" hidden>Ändern</button>
+        <button class="btn secondary small step-edit" type="button" data-edit="4" aria-label="Schritt 4 ändern" hidden>Ändern</button>
       </header>
       <div class="step-body" id="body-4">
         <p class="step-help" id="help-4">Damit dein Gewinn stimmt, brauchen wir bei manchen Verkäufen noch eine Angabe.</p>
@@ -321,7 +321,7 @@
           <span class="step-foot-note" id="note-4"></span>
           <span class="step-foot-actions">
             <button class="btn secondary" id="skip-4" type="button" hidden>Ohne Ergänzung fortfahren</button>
-            <button class="btn" id="next-4" type="button" disabled>Weiter</button>
+            <button class="btn" id="next-4" type="button" disabled>Weiter: Meldegrenzen prüfen</button>
           </span>
         </div>
       </div>
@@ -336,7 +336,7 @@
           <p class="step-sum" id="sum-5"></p>
         </div>
         <span class="step-status" id="status-5"></span>
-        <button class="btn secondary small step-edit" type="button" data-edit="5" hidden>Ändern</button>
+        <button class="btn secondary small step-edit" type="button" data-edit="5" aria-label="Schritt 5 ändern" hidden>Ändern</button>
       </header>
       <div class="step-body" id="body-5">
         <p class="step-help">Plattformen melden Verkäufer ans Bundeszentralamt für Steuern, wenn sie im Jahr <strong>30 Verkäufe</strong> oder <strong>2.000 € Einnahmen</strong> pro Plattform erreichen. Eine Meldung ist keine Steuerforderung. Hier siehst du, wo du stehst.</p>
@@ -368,7 +368,7 @@
           </div>
         </div>
         <label for="a-platform" style="margin-top:4px">Werte aus meinem Tracker übernehmen für</label>
-        <div class="inline-form"><select id="a-platform" style="flex:1 1 180px"></select><button class="btn secondary small" id="a-from-tracker" type="button">Übernehmen</button></div>
+        <div class="inline-form"><select id="a-platform" style="flex:1 1 180px"></select><button class="btn secondary small" id="a-from-tracker" type="button">Aus meinen Einträgen übernehmen</button></div>
       </div>
     </div>
 
@@ -386,7 +386,7 @@
         </details>
         <div class="step-foot">
           <span class="step-foot-note">Sobald du die Hinweise gelesen hast, geht es weiter.</span>
-          <button class="btn" id="next-5" type="button" disabled>Weiter</button>
+          <button class="btn" id="next-5" type="button" disabled>Weiter: Angaben für den Report</button>
         </div>
       </div>
     </section>
@@ -400,7 +400,7 @@
           <p class="step-sum" id="sum-6"></p>
         </div>
         <span class="step-status" id="status-6"></span>
-        <button class="btn secondary small step-edit" type="button" data-edit="6" hidden>Ändern</button>
+        <button class="btn secondary small step-edit" type="button" data-edit="6" aria-label="Schritt 6 ändern" hidden>Ändern</button>
       </header>
       <div class="step-body" id="body-6">
         <p class="step-help">Name und Steuernummer erscheinen auf dem gedruckten Report. Sie werden nur in deinem Browser gespeichert. Wenn du sie nicht drucken möchtest, lass die Felder leer.</p>
@@ -410,7 +410,7 @@
         </div>
         <div class="step-foot">
           <span class="step-foot-note">Beides ist freiwillig.</span>
-          <button class="btn" id="next-6" type="button" disabled>Weiter</button>
+          <button class="btn" id="next-6" type="button" disabled>Weiter zum Ergebnis</button>
         </div>
       </div>
     </section>
@@ -439,7 +439,7 @@
         <dl class="review-list" id="r-basics"></dl>
       </section>
       <section class="review-card" aria-labelledby="r-t2">
-        <header><h3 id="r-t2">Deine Daten</h3><button class="linklike" type="button" data-goto="3">Ändern</button></header>
+        <header><h3 id="r-t2">Deine Daten</h3><button class="linklike" type="button" aria-label="Angaben ändern" data-goto="3">Ändern</button></header>
         <div class="stats" id="r-stats"></div>
         <ul class="plain-list" id="r-platforms"></ul>
       </section>
@@ -452,7 +452,7 @@
     </section>
 
     <section class="review-card wide" aria-labelledby="r-t4">
-      <header><h3 id="r-t4">Meldegrenzen</h3><button class="linklike" type="button" data-goto="5">Details</button></header>
+      <header><h3 id="r-t4">Meldegrenzen</h3><button class="linklike" type="button" data-goto="5">Meldegrenzen ansehen</button></header>
       <div id="r-limits" class="limit-chips"></div>
     </section>
 
@@ -543,7 +543,7 @@
         <label for="email-tools">E-Mail</label>
         <div class="inline-form" style="max-width:520px">
           <input id="email-tools" name="email" type="email" required autocomplete="email" placeholder="du@beispiel.de">
-          <button class="btn" type="submit">Vormerken</button>
+          <button class="btn" type="submit">Benachrichtigt werden</button>
         </div>
         <label class="consent"><input type="checkbox" name="consent" required> <span>Ich möchte per E-Mail über den Start informiert werden. Abmeldung jederzeit möglich. Mehr in der <a href="datenschutz.html">Datenschutzerklärung</a>.</span></label>
         <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
@@ -574,7 +574,7 @@
       <div><label for="e-kind">Gegenstandsart (nur privat)</label><select id="e-kind"><option value="">– nicht angegeben –</option><option value="everyday">Gebrauchsgegenstand</option><option value="other">Sonstiges</option></select></div>
     </div>
     <p id="e-msg" class="small neg" role="alert" style="min-height:1.2em"></p>
-    <div class="toolbar" style="margin-top:0"><button class="btn" type="submit">Speichern</button><button class="btn secondary" id="e-cancel" type="button">Abbrechen</button></div>
+    <div class="toolbar" style="margin-top:0"><button class="btn" type="submit">Änderungen speichern</button><button class="btn secondary" id="e-cancel" type="button">Abbrechen</button></div>
   </form>
 </dialog>
 
@@ -635,6 +635,7 @@
 <script src="tax-lib.js"></script>
 <script src="report.js"></script>
 <script src="wizard-lib.js"></script>
+<script src="fielderr.js"></script>
 <script src="gate.js"></script>
 <script src="tools.js"></script>
 <script src="parse-lib.js"></script>
