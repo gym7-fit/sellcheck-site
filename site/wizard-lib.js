@@ -10,7 +10,7 @@
   "use strict";
 
   const STEPS = [
-    { n: 1, key: "basis", title: "Jahr und Art", short: "Jahr & Art" },
+    { n: 1, key: "basis", title: "Jahr und Verkaufsart", short: "Jahr & Art" },
     { n: 2, key: "platforms", title: "Plattformen", short: "Plattformen" },
     { n: 3, key: "data", title: "Verkäufe erfassen", short: "Verkäufe" },
     { n: 4, key: "complete", title: "Angaben vervollständigen", short: "Vervollständigen" },

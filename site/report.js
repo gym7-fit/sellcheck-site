@@ -218,18 +218,57 @@
     return frag;
   }
 
-  /* ---------- Start ---------- */
-  const { sales, settings } = load();
+  /* ---------- Aufbau und Datei ---------- */
+  function buildFor(year) {
+    const { sales, settings } = load();
+    if (!sales.some((e) => e.date.startsWith(String(year)))) return null;
+    return settings.mode === "private" ? privateReport(sales, settings, year) : businessReport(sales, settings, year);
+  }
+
+  const escapeHtml = (x) => String(x).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+  // Eigenständige HTML-Datei (Stil eingebettet, keine Skripte), lässt sich offline öffnen und drucken.
+  async function buildHtml(year) {
+    const node = buildFor(year);
+    if (!node) return null;
+    let css = "";
+    try {
+      const res = await fetch("report.css", { credentials: "omit" });
+      if (res.ok) css = await res.text();
+    } catch { /* ohne Stil trotzdem lesbar */ }
+    const box = document.createElement("div");
+    box.append(node);
+    const title = `Steuer-Report ${year} – SellCheck`;
+    return `<!doctype html>\n<html lang="de">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<meta name="color-scheme" content="light">\n<meta name="robots" content="noindex">\n<title>${escapeHtml(title)}</title>\n<style>\n${css}\n</style>\n</head>\n<body>\n<main class="sheet">\n${box.innerHTML}\n</main>\n</body>\n</html>\n`;
+  }
+
+  window.SCReport = { buildHtml };
+
+  /* ---------- Start (nur auf der Report-Seite) ---------- */
+  if (!root) return;
   const q = new URLSearchParams(location.search);
   let year = Number(q.get("y"));
   if (!Number.isInteger(year) || year < 2000 || year > 2100) year = new Date().getFullYear();
 
   root.replaceChildren();
-  if (!sales.some((e) => e.date.startsWith(String(year)))) {
+  const built = buildFor(year);
+  if (!built) {
     root.append(h("h1", "Keine Daten"), h("p", `Für ${year} gibt es keine Einträge im Tracker. Öffne die Tools-Seite im selben Browser, in dem du deine Daten erfasst hast.`));
   } else {
-    root.append(settings.mode === "private" ? privateReport(sales, settings, year) : businessReport(sales, settings, year));
+    root.append(built);
   }
   document.title = `Steuer-Report ${year} – SellCheck`;
   document.getElementById("print").addEventListener("click", () => window.print());
+  const dl = document.getElementById("download");
+  if (dl) {
+    dl.addEventListener("click", async () => {
+      const html = await buildHtml(year);
+      if (!html) return;
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([html], { type: "text/html;charset=utf-8" }));
+      a.download = `sellcheck-report-${year}.html`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    });
+  }
 })();

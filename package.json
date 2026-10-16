@@ -4,8 +4,8 @@
   "private": true,
   "description": "SellCheck (Arbeitstitel): Überblick, Meldegrenze und Steuer-Export für Verkäufer auf mehreren Plattformen. Statische Website, alles läuft im Browser.",
   "scripts": {
-    "test": "node --test tests/parse.test.js tests/tax.test.js tests/auth.test.js tests/wizard.test.js tests/help.test.js",
-    "check": "for f in site/*.js; do node --check \"$f\"; done",
+    "test": "node --test tests/parse.test.js tests/tax.test.js tests/auth.test.js tests/wizard.test.js tests/help.test.js tests/gate.test.js tests/media.test.js tests/seo.test.js",
+    "check": "for f in site/*.js parked/accounts/*.js; do node --check \"$f\"; done",
     "start": "python3 -m http.server 8000 --directory site"
   },
   "engines": { "node": ">=20" }

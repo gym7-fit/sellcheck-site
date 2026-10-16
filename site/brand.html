@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://*.supabase.co; form-action 'none'; base-uri 'none'; object-src 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; base-uri 'none'; object-src 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Marke &amp; Design – SellCheck</title>
   <meta name="description" content="Logo, Farben, Schrift und Tonalität der Marke SellCheck.">
@@ -10,9 +10,6 @@
   <meta name="robots" content="noindex">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
-  <script src="auth-config.js"></script>
-  <script src="auth-lib.js"></script>
-  <script src="auth.js"></script>
 </head>
 <body>
 <a class="skip" href="#main">Zum Inhalt springen</a>
@@ -26,10 +23,6 @@
     <nav class="nav" aria-label="Hauptnavigation">
       <a class="hide-sm" href="index.html">Startseite</a>
       <a href="tools.html">Tools</a>
-    <a class="auth-guest" href="login.html">Anmelden</a>
-      <a class="btn small auth-guest" href="register.html">Registrieren</a>
-      <a class="auth-user" href="tools.html" hidden>Zu den Tools</a>
-      <button class="btn small secondary auth-user" id="logout-btn" type="button" hidden>Abmelden</button>
     </nav>
   </div>
 </header>
@@ -54,7 +47,7 @@
       <div class="grid cols-3">
         <div class="card"><h3>Name</h3><p class="muted">SellCheck (Arbeitstitel, vorher VintCheck). Der Name ist neutral und passt zu allen Plattformen. Er ist ein Platzhalter: Vor dem Livegang Marke, Domain und App-Namen bei DPMA und EUIPO prüfen.</p></div>
         <div class="card"><h3>Claim</h3><p class="muted"><strong style="color:var(--text)">Check, was wirklich bleibt.</strong><br>Kurz, ehrlich, mit Doppelbedeutung: Gewinn und Gewissheit.</p></div>
-        <div class="card"><h3>Persönlichkeit</h3><p class="muted">Klar, ruhig, auf Augenhöhe. Ein cleverer Kumpel, der sich mit Zahlen auskennt. Kein Behördendeutsch, kein Alarm.</p></div>
+        <div class="card"><h3>Persönlichkeit</h3><p class="muted">Klar, ruhig, auf Augenhöhe. Sachkundig und konkret, ohne Behördendeutsch und ohne Alarm.</p></div>
       </div>
     </div>
   </section>
@@ -132,7 +125,7 @@
             <li>Du-Ansprache, kurze Sätze, konkrete Zahlen.</li>
             <li>Entwarnung geben, wenn es nichts zu tun gibt.</li>
             <li>Immer klarmachen: Das ist keine Steuerberatung.</li>
-            <li>Beispiel: „Du liegst bei 21 von 30. Noch entspannt.“</li>
+            <li>Beispiel: „Du liegst bei 21 von 30 Verkäufen. Die Ampel steht auf Gelb.“</li>
           </ul>
         </div>
         <div class="card">

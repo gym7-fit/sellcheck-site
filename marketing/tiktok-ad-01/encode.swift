@@ -1,5 +1,5 @@
 // Baut aus einer JPEG-Bildfolge (f_00000.jpg ...) und einer WAV-Datei ein MP4 (H.264 + AAC).
-// Aufruf: encode <frames-dir> <fps> <frame-count> <audio.wav> <out.mp4>
+// Aufruf: encode <frames-dir> <fps> <frame-count> <audio.wav> <out.mp4> [breite hoehe]
 import AVFoundation
 import CoreGraphics
 import CoreVideo
@@ -7,25 +7,26 @@ import Foundation
 import ImageIO
 
 let args = CommandLine.arguments
-guard args.count == 6, let fps = Int32(args[2]), let count = Int(args[3]) else {
-    print("Aufruf: encode <frames-dir> <fps> <frame-count> <audio.wav> <out.mp4>")
+guard args.count == 6 || args.count == 8, let fps = Int32(args[2]), let count = Int(args[3]) else {
+    print("Aufruf: encode <frames-dir> <fps> <frame-count> <audio.wav> <out.mp4> [breite hoehe]")
     exit(2)
 }
 let dir = args[1]
 let wavPath = args[4]
 let outPath = args[5]
-let width = 1080
-let height = 1920
+let width = args.count == 8 ? (Int(args[6]) ?? 1080) : 1080
+let height = args.count == 8 ? (Int(args[7]) ?? 1920) : 1920
 
 try? FileManager.default.removeItem(atPath: outPath)
 let writer = try AVAssetWriter(outputURL: URL(fileURLWithPath: outPath), fileType: .mp4)
+writer.shouldOptimizeForNetworkUse = true  // moov-Atom an den Dateianfang: Video startet beim Laden im Browser sofort
 
 let videoSettings: [String: Any] = [
     AVVideoCodecKey: AVVideoCodecType.h264,
     AVVideoWidthKey: width,
     AVVideoHeightKey: height,
     AVVideoCompressionPropertiesKey: [
-        AVVideoAverageBitRateKey: 10_000_000,
+        AVVideoAverageBitRateKey: Int(ProcessInfo.processInfo.environment["VIDEO_BITRATE"] ?? "") ?? 10_000_000,
         AVVideoProfileLevelKey: AVVideoProfileLevelH264HighAutoLevel,
         AVVideoMaxKeyFrameIntervalKey: Int(fps) * 2,
     ],

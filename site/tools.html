@@ -1,19 +1,32 @@
 <!doctype html>
-<html lang="de" data-auth="required">
+<html lang="de">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://*.supabase.co; form-action 'none'; base-uri 'none'; object-src 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; base-uri 'none'; object-src 'none'">
   <meta name="robots" content="noindex, nofollow">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Dein Steuer-Überblick – SellCheck</title>
   <meta name="description" content="Geführter Überblick in sechs Schritten: Verkäufe erfassen oder importieren, Meldegrenzen prüfen und die Steuer-Aufstellung erzeugen.">
+  <link rel="canonical" href="https://gym7-fit.github.io/sellcheck-site/tools.html">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta property="og:site_name" content="SellCheck">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="de_DE">
+  <meta property="og:title" content="Dein Steuer-Überblick – SellCheck">
+  <meta property="og:description" content="Geführter Überblick in sechs Schritten: Verkäufe erfassen oder importieren, Meldegrenzen prüfen und die Steuer-Aufstellung erzeugen.">
+  <meta property="og:url" content="https://gym7-fit.github.io/sellcheck-site/tools.html">
+  <meta property="og:image" content="https://gym7-fit.github.io/sellcheck-site/social/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="SellCheck: Check, was wirklich bleibt.">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#0e1116">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
-  <script src="auth-config.js"></script>
-  <script src="auth-lib.js"></script>
-  <script src="auth.js"></script>
   <link rel="stylesheet" href="wizard.css">
+  <link rel="stylesheet" href="gate.css">
+  <script src="gate-config.js"></script>
+  <script src="gate-lib.js"></script>
 </head>
 <body>
 <a class="skip" href="#main">Zum Inhalt springen</a>
@@ -26,10 +39,6 @@
     <nav class="nav" aria-label="Hauptnavigation">
       <a class="hide-sm" href="index.html">Startseite</a>
       <a class="hide-sm" href="tools.html" aria-current="page">Tools</a>
-    <a class="auth-guest" href="login.html">Anmelden</a>
-      <a class="btn small auth-guest" href="register.html">Registrieren</a>
-      <a class="auth-user" href="tools.html" hidden>Zu den Tools</a>
-      <button class="btn small secondary auth-user" id="logout-btn" type="button" hidden>Abmelden</button>
     </nav>
   </div>
 </header>
@@ -37,7 +46,7 @@
 <div class="wiz-hero on-dark">
   <div class="wrap">
     <h1>Dein Überblick in sechs Schritten</h1>
-    <p>Wir gehen es gemeinsam durch. Jeder Schritt schaltet den nächsten frei, am Ende prüfst du alles noch einmal.</p>
+    <p>Sechs Schritte von den Grundangaben bis zum Report. Jeder Schritt schaltet den nächsten frei. Ergebnis, Report und Downloads schaltest du am Ende mit deiner E-Mail-Adresse frei.</p>
   </div>
 </div>
 
@@ -61,7 +70,7 @@
       <header class="step-head">
         <span class="step-num" aria-hidden="true">1</span>
         <div class="step-titles">
-          <h2 id="step-1-title" tabindex="-1">Für welches Jahr und wie verkaufst du?</h2>
+          <h2 id="step-1-title" tabindex="-1">Jahr und Verkaufsart</h2>
           <p class="step-sum" id="sum-1"></p>
         </div>
         <span class="step-status" id="status-1"></span>
@@ -106,7 +115,7 @@
       <header class="step-head">
         <span class="step-num" aria-hidden="true">2</span>
         <div class="step-titles">
-          <h2 id="step-2-title" tabindex="-1">Auf welchen Plattformen verkaufst du?</h2>
+          <h2 id="step-2-title" tabindex="-1">Plattformen</h2>
           <p class="step-sum" id="sum-2"></p>
         </div>
         <span class="step-status" id="status-2"></span>
@@ -134,7 +143,7 @@
         <button class="btn secondary small step-edit" type="button" data-edit="3" hidden>Ändern</button>
       </header>
       <div class="step-body" id="body-3">
-        <p class="step-help">Du hast zwei Wege. Eine Datei zu importieren geht schneller, wenn du viele Verkäufe hast. Einzelne Verkäufe trägst du von Hand ein. Du kannst beides kombinieren.</p>
+        <p class="step-help">Du kannst Verkäufe als Datei importieren oder einzeln von Hand eintragen. Der Import ist bei vielen Verkäufen schneller. Beides lässt sich kombinieren.</p>
         <div class="tabs" data-tabs>
           <div class="tab-list" role="tablist" aria-label="Eingabeweg">
             <button type="button" class="tab" role="tab" id="m-import-tab" aria-controls="m-import" aria-selected="true">Datei importieren</button>
@@ -177,7 +186,7 @@
     <p id="i-msg" class="small" role="status" aria-live="polite" style="min-height:1.4em"></p>
 
     <div id="i-panel" hidden>
-      <h3>Das haben wir erkannt</h3>
+      <h3>Erkannte Daten</h3>
       <p id="i-recognized" class="small muted"></p>
 
       <div class="ask" id="i-ask-platform" hidden>
@@ -278,7 +287,7 @@
       </header>
       <div class="step-body" id="body-4">
         <p class="step-help" id="help-4">Damit dein Gewinn stimmt, brauchen wir bei manchen Verkäufen noch eine Angabe.</p>
-        <div class="success-box" id="fix-ok" hidden><span class="check-mark">✓</span><span>Alles vollständig. Hier gibt es nichts mehr zu ergänzen.</span></div>
+        <div class="success-box" id="fix-ok" hidden><span class="check-mark">✓</span><span>Alle Angaben sind vollständig.</span></div>
         <div id="fix-wrap" hidden>
           <div class="bulk" id="fix-bulk"></div>
           <div class="table-scroll"><table class="fix-table"><thead id="fix-head"></thead><tbody id="fix-body"></tbody></table></div>
@@ -375,8 +384,8 @@
     <p class="small muted" style="margin:0">Gezählt werden Transaktionen, nicht einzelne Artikel. Befreit sind nur Verkäufer mit weniger als 30 Verkäufen <em>und</em> weniger als 2.000 €. Sobald eine der beiden Grenzen erreicht ist, wird gemeldet. Prüfe die Schwellen vor wichtigen Entscheidungen im Gesetzestext (Plattformen-Steuertransparenzgesetz).</p>
         </details>
         <div class="step-foot">
-          <span class="step-foot-note">Gelesen? Dann geht es weiter.</span>
-          <button class="btn" id="next-5" type="button" disabled>Verstanden, weiter</button>
+          <span class="step-foot-note">Sobald du die Hinweise gelesen hast, geht es weiter.</span>
+          <button class="btn" id="next-5" type="button" disabled>Weiter</button>
         </div>
       </div>
     </section>
@@ -407,10 +416,10 @@
 
     <div class="wiz-end" id="wiz-end">
       <div>
-        <h2>Fast geschafft</h2>
-        <p class="muted" id="wiz-end-note">Schließe die Schritte ab, dann kannst du alles in Ruhe überprüfen.</p>
+        <h2>Schritte abschließen</h2>
+        <p class="muted" id="wiz-end-note">Sobald alle Schritte erledigt sind, kannst du deine Angaben prüfen.</p>
       </div>
-      <button class="btn big" id="to-review" type="button" disabled>Weiter zur Überprüfung</button>
+      <button class="btn big" id="to-review" type="button" disabled>Ergebnis ansehen</button>
     </div>
   </div>
 
@@ -419,7 +428,8 @@
     <div class="review-head">
       <button class="btn secondary small" id="back-wizard" type="button">← Zurück zu den Schritten</button>
       <h2 tabindex="-1" id="review-title">Überprüfe deine Angaben</h2>
-      <p class="muted">Sieh dir alles noch einmal an. Was nicht stimmt, kannst du mit „Ändern“ direkt korrigieren.</p>
+      <p class="muted">Prüfe alle Angaben. Mit „Ändern“ korrigierst du sie direkt.</p>
+      <p class="small muted gate-status" id="gate-status" role="status" aria-live="polite"></p>
     </div>
 
     <div class="review-grid">
@@ -449,7 +459,8 @@
       <header><h3 id="r-t5">Report und Dateien erzeugen</h3></header>
       <p class="muted" id="r-export-note"></p>
       <div class="toolbar" style="margin-top:0">
-        <a class="btn big" id="x-report" href="report.html" target="_blank" rel="noopener">Report ansehen und drucken</a>
+        <button class="btn big" id="x-report-dl" type="button">Report herunterladen</button>
+        <a class="btn secondary big" id="x-report" href="report.html" target="_blank" rel="noopener">Report ansehen und drucken</a>
       </div>
       <div class="toolbar">
         <button class="btn secondary" id="x-journal" type="button">Journal (CSV)</button>
@@ -457,12 +468,16 @@
         <button class="btn secondary" id="x-private" type="button" hidden>Private Verkäufe, Anlage SO (CSV)</button>
         <button class="btn secondary" id="x-backup" type="button">Sicherung aller Einträge (CSV)</button>
       </div>
+      <div class="toolbar">
+        <button class="btn secondary" id="x-mail" type="button">Report per E-Mail senden</button>
+        <a class="btn secondary" id="x-mailto" href="#" hidden>Zusammenfassung im Mailprogramm öffnen</a>
+      </div>
       <p id="x-msg" class="small muted" role="status" aria-live="polite" style="min-height:1.4em"></p>
     </section>
 
     <section class="review-card wide" aria-labelledby="r-t6">
-      <header><h3 id="r-t6">Wie geht es weiter?</h3></header>
-    <p class="muted" style="margin:0 0 4px">Du reichst nichts über SellCheck ein. Such dir den Weg aus, der zu dir passt.</p>
+      <header><h3 id="r-t6">Abgabe</h3></header>
+    <p class="muted" style="margin:0 0 4px">Du reichst nichts über SellCheck ein. Wähle den Abgabeweg, der zu deiner Situation passt.</p>
     <div class="src-groups" data-tabs>
       <div class="src-group">
         <div class="src-group-label"><span class="dot ok"></span>Dein Abgabeweg</div>
@@ -521,7 +536,7 @@
 
     <section class="review-card wide cta-card">
       <span class="label" style="background:var(--lime);color:var(--ink)">In Vorbereitung</span>
-      <h3 style="margin-top:14px">Mehr Ordnung für Reseller?</h3>
+      <h3 style="margin-top:14px">Für regelmäßige Verkäufer: das Starter-Paket</h3>
       <p class="muted" style="max-width:560px">Ein Starter-Paket mit Guide für alle Plattformen, Google-Sheet-Tracker und EÜR-Übersicht ist in Vorbereitung (9,99 € einmalig). Lass dich zum Start benachrichtigen.</p>
       <form class="waitlist" data-source="tools" novalidate>
         <label for="email-tools">E-Mail</label>
@@ -576,7 +591,6 @@
         <ul>
           <li><a href="index.html">Startseite</a></li>
           <li><a href="tools.html">Gratis-Tools</a></li>
-          <li><a href="brand.html">Marke &amp; Design</a></li>
         </ul>
       </div>
       <div>
@@ -594,8 +608,32 @@
   </div>
 </footer>
 
+
+<!-- Freischaltung per E-Mail-Adresse -->
+<dialog class="edit-dialog gate-dialog" id="gate-dialog" aria-labelledby="gate-title">
+  <form id="gate-form" method="dialog" novalidate>
+    <h2 id="gate-title">Ergebnis freischalten</h2>
+    <p class="muted">Gib deine E-Mail-Adresse ein, um Ergebnis, Report und Downloads zu sehen. Deine Eingaben bleiben auf deinem Gerät.</p>
+    <label for="gate-email">E-Mail-Adresse</label>
+    <input id="gate-email" name="email" type="email" autocomplete="email" inputmode="email" required placeholder="du@beispiel.de">
+    <label class="gate-check"><input type="checkbox" name="report">
+      <span><span id="gate-report-text"></span><small id="gate-report-hint"></small></span></label>
+    <label class="gate-check"><input type="checkbox" name="tips">
+      <span><span id="gate-tips-text"></span><small id="gate-tips-hint"></small></span></label>
+    <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <p class="small muted gate-privacy">Wir nutzen deine Adresse für die Freischaltung und für das, was du hier ankreuzt. Mehr in der <a href="datenschutz.html">Datenschutzerklärung</a>.</p>
+    <p class="gate-note" id="gate-note" role="alert"></p>
+    <div class="toolbar">
+      <button class="btn" type="submit">Ergebnis anzeigen</button>
+      <button class="btn secondary" type="button" id="gate-cancel">Abbrechen</button>
+    </div>
+  </form>
+</dialog>
+
 <script src="tax-lib.js"></script>
+<script src="report.js"></script>
 <script src="wizard-lib.js"></script>
+<script src="gate.js"></script>
 <script src="tools.js"></script>
 <script src="parse-lib.js"></script>
 <script src="import.js"></script>

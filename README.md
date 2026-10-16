@@ -26,8 +26,8 @@ Online: nach dem ersten Push über GitHub Pages (siehe unten).
 | `tests/` | Automatische Tests (`node --test`) |
 | `docs/STEUER-EXPORT.md` | Recherche und Entscheidungen zum Steuer-Export |
 | `docs/LIVEGANG.md` | Checkliste vor dem Livegang |
-| `docs/AUTH-SETUP.md` | Anmeldung einrichten (Supabase), Demo-Modus erklärt |
-| `site/auth-config.js` | Einstellungen der Anmeldung |
+| `docs/EMAIL-ZUGANG.md` | Freischaltung per E-Mail-Adresse, Endpunkte, Livegang-Punkte |
+| `parked/accounts/` | Konten (Anmeldung, Registrierung) vorerst stillgelegt, kommen mit Pro zurück |
 | `.github/workflows/pages.yml` | Tests und Veröffentlichung über GitHub Pages |
 
 ## Tests

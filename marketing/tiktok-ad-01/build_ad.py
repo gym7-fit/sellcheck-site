@@ -30,7 +30,7 @@ import sellcheck_logo as LOGO  # echtes SellCheck-Logo (Variante 6B)
 W, H, FPS, S = 1080, 1920, 30, 2          # S = Supersampling-Faktor
 
 
-def v9_type_times(text, t0, cps=17.0):
+def v9_type_times(text, t0, cps=21.0):
     """Zeitpunkte der Tastenanschläge beim 'Tippen' (mit leichten Schwankungen und Pausen bei Satzzeichen)."""
     rnd = random.Random(len(text) * 7 + 3)
     ts, t = [], t0
@@ -44,33 +44,49 @@ def v9_type_times(text, t0, cps=17.0):
 
 
 V9_TEXTS = {
-    "tim1": "Hey Anna, wusstest du, dass Plattformen deine Verkäufe an die Steuerbehörde melden?",
+    "tim1": "Hey Anna, wusstest du, dass Plattformen deine Verkäufe ab einer bestimmten Grenze an die Steuerbehörde melden?",
     "anna1": "Warte, was? Woher weiß ich, ob ich über der Grenze bin?",
     "tim2": "Mit SellCheck:",
     "anna2": "Ahh cool, so eine praktische Website kannte ich gar nicht.",
-    "tim3": "Jap! Und das Beste: kostenlos, mit Konto, und deine Daten bleiben im Browser.",
+    "tim3": "Jap! Und das Beste: kostenlos, ohne Anmeldung, und deine Daten bleiben im Browser.",
     # Tims längere Nachricht: im Banner (abgeschnitten) und später vollständig im Chatverlauf
-    "tim_long": "Du lädst einfach deine Verkäufe als CSV hoch, und SellCheck zeigt dir pro Plattform, wo du stehst. Dazu bekommst du deinen Gewinn und eine Übersicht für die Steuererklärung.",
+    "tim_long": "Du lädst einfach deine Verkäufe als CSV hoch, und SellCheck zeigt dir für jede Plattform den Gewinn und wie weit du von der Grenze entfernt bist oder bereits drüber bist.",
 }
 
 
+V9_DUR = {1: 6.20, 2: 3.62, 3: 0.98, 4: 9.35, 5: 4.06, 6: 5.68}   # Dauer der Sprachclips (voice_v9/1..6) in Sekunden
+
+
+def v9_type_times_fit(text, t0, dur):
+    """Tastenanschläge so verteilt, dass das Tippen genau so lange dauert wie die gesprochene Nachricht."""
+    rnd = random.Random(len(text) * 7 + 3)
+    w = [rnd.uniform(0.75, 1.35) + (2.2 if ch in ",.?!:" else 0.0) for ch in text]
+    tot = sum(w)
+    ts, t = [], t0
+    for x in w:
+        ts.append(t)
+        t += (dur - 0.25) * x / tot
+    return ts, t
+
+
 def v9_schedule():
-    """Zeitplan der beiden Chat-Szenen (Sekunden ab Szenenstart): erst lesen lassen, dann tippen, dann senden."""
+    """Zeitplan der beiden Chat-Szenen (Sekunden ab Szenenstart). Jede Nachricht wird genau dann gesprochen, wenn sie
+    erscheint (Tim) bzw. getippt wird (Anna); das Tippen läuft so lang wie ihr Satz."""
     d = {}
-    d["tim1"] = 0.7
-    d["a1_start"] = d["tim1"] + 1.8          # Nachricht in Ruhe lesen lassen
-    d["a1_ts"], e = v9_type_times(V9_TEXTS["anna1"], d["a1_start"])
-    d["a1_send"] = e + 0.35
-    d["tim_type1"] = d["a1_send"] + 0.6
-    d["tim2"] = d["tim_type1"] + 1.1
-    d["tap_link"] = d["tim2"] + 1.5
-    d["end1"] = d["tap_link"] + 0.6
-    d["a2_start"] = 1.4
-    d["a2_ts"], e = v9_type_times(V9_TEXTS["anna2"], d["a2_start"])
-    d["a2_send"] = e + 0.35
-    d["tim_type2"] = d["a2_send"] + 0.6
-    d["tim3"] = d["tim_type2"] + 1.2
-    d["end3"] = d["tim3"] + 3.2
+    d["tim1"] = 0.3
+    d["a1_start"] = d["tim1"] + 0.15 + V9_DUR[1] + 0.1
+    d["a1_ts"], e = v9_type_times_fit(V9_TEXTS["anna1"], d["a1_start"], V9_DUR[2])
+    d["a1_send"] = d["a1_start"] + V9_DUR[2] + 0.1
+    d["tim_type1"] = d["a1_send"] + 0.15
+    d["tim2"] = d["tim_type1"] + 0.45
+    d["tap_link"] = d["tim2"] + 0.1 + V9_DUR[3] + 0.15
+    d["end1"] = d["tap_link"] + 0.2
+    d["a2_start"] = 0.3
+    d["a2_ts"], e = v9_type_times_fit(V9_TEXTS["anna2"], d["a2_start"], V9_DUR[5])
+    d["a2_send"] = d["a2_start"] + V9_DUR[5] + 0.1
+    d["tim_type2"] = d["a2_send"] + 0.15
+    d["tim3"] = d["tim_type2"] + 0.35
+    d["end3"] = d["tim3"] + 0.1 + V9_DUR[6] + 0.05
     return d
 
 
@@ -92,12 +108,12 @@ elif VAR == "V3":
     SLOW = {k: TARGET[k] / BASE[k] for k in KEYS}
 elif VAR == "V9":
     KEYS = (1, 2, 3, 4)
-    BASE = {1: round(V9S["end1"], 2), 2: 14.9, 3: round(V9S["end3"], 2), 4: 5.8}  # Chat 1, Webseite, Chat 2, Endkarte (Sekunden, SLOW = 1)
+    BASE = {1: round(V9S["end1"], 2), 2: 13.8, 3: round(V9S["end3"], 2), 4: 4.9}  # Chat 1, Webseite, Chat 2, Endkarte (Sekunden, SLOW = 1)
     TARGET = dict(BASE)
     SLOW = {k: 1.0 for k in KEYS}
 elif VAR == "V8":
     KEYS = (1, 2, 3, 4, 5)
-    BASE = {1: 9.05, 2: 5.9, 3: 10.3, 4: 8.7, 5: 5.8}  # Meldegrenze, Upload und Anleitungen, Ergebnis, Steuer-Übersicht, Endkarte (Sekunden, SLOW = 1; Clips 8,9 / 5,7 / 10,0 / 8,6 / 5,3 s)
+    BASE = {1: 9.05, 2: 5.9, 3: 10.3, 4: 10.0, 5: 5.8}  # Meldegrenze, Upload und Anleitungen, Ergebnis, Steuer-Übersicht, Endkarte (Sekunden, SLOW = 1; Clips 8,9 / 5,7 / 10,0 / 8,6 / 5,3 s)
     TARGET = dict(BASE)
     SLOW = {k: 1.0 for k in KEYS}
 elif VAR == "V6":
@@ -493,7 +509,7 @@ def scene_cta_v2like(L, t):
     if VAR in ("V8", "V9"):
         pop_text(L, 540, 760, "Check, was", 92, "heavy", PAPER, t, CTA_T[0])
         pop_text(L, 540, 860, "wirklich bleibt.", 92, "heavy", LIME, t, CTA_T[0] + 0.12)
-        for k, label in enumerate(("Kostenlos mit Konto", "Daten bleiben im Browser", "Übersicht für die Steuererklärung")):
+        for k, label in enumerate(("Kostenlos, ohne Anmeldung", "Daten bleiben im Browser", "Übersicht für die Steuererklärung")):
             pp0 = prog(t, CTA_T[1] + k * 0.35, 0.3)
             if pp0 <= 0:
                 continue
@@ -1075,9 +1091,10 @@ V9_CHAT2 = [
     ("tim", V9_TEXTS["tim3"], V9S["tim3"], "text"),
 ]
 V9_T = {"tap_link": V9S["tap_link"], "link_y": 640,
-        "scroll0": 0.6, "scroll1": 5.7, "banner_in": 2.3, "banner_out": 8.6,
-        "up_tap": 6.5, "go_scroll": 7.3, "go_tap": 9.1, "res_switch": 9.6,
-        "res_scroll1": 10.3, "res_scroll2": 12.1, "res_hl": 13.3}
+        "scroll0": 0.4, "scroll1": 5.0, "banner_in": 1.3, "banner_out": 4.9,
+        "up_tap": 5.2, "sheet_in": 5.55, "file_tap": 6.5, "sheet_out": 6.85,
+        "go_scroll": 7.0, "go_dur": 2.0, "go_tap": 9.15, "res_switch": 9.55,
+        "res_scroll1": 9.75, "res_dur": 3.0, "res_hl": 12.9}
 V9_BANNER = V9_TEXTS["tim_long"]
 
 
@@ -1250,20 +1267,26 @@ def v9_glass(L, x0, y0, x1, y1, radius, tint=(250, 250, 252), alpha=150):
     L.im.paste(reg, (cx0, cy0), m)
 
 
+def v9_statusbar(L, ink):
+    """iPhone-Statusleiste: Uhrzeit links, Mobilfunk, WLAN links neben dem Akku."""
+    ink4 = tuple(ink) + (255,)
+    hn_text(L, 44, 30, "9:41", 40, ink, True, anchor="lm")                        # Uhrzeit links
+    for i, hgt in enumerate((14, 22, 30, 38)):                                         # Mobilfunk-Balken
+        L.rrect(768 + i * 14, 46 - hgt, 768 + i * 14 + 8, 46, 2, fill=ink4)
+    wx, wy = 880, 42                                                                  # WLAN-Symbol links neben dem Akku
+    L.circle(wx, wy - 2, 4.5, ink4)
+    for rr in (13, 22, 31):
+        L.d.arc([(wx - rr) * S, (wy - 2 - rr) * S, (wx + rr) * S, (wy - 2 + rr) * S], 228, 312, fill=ink4, width=int(5 * S))
+    L.rrect(930, 12, 1006, 44, 9, outline=ink4, width=3)                    # Akku
+    L.rrect(935, 17, 990, 39, 5, fill=ink4)
+    L.rrect(1010, 22, 1017, 34, 3, fill=ink4)
+
+
 def v9_header(L, status):
     """iPhone-SE-Proportionen: Statusleiste 20 pt, Navigationsleiste 44 pt (2,88 px je pt)."""
     L.d.rectangle([0, 0, W * S, 188 * S], fill=CH_HEAD + (255,))
     L.d.rectangle([0, 188 * S, W * S, 190 * S], fill=(218, 218, 218, 255))
-    hn_text(L, 44, 30, "9:41", 40, (0, 0, 0), True, anchor="lm")                        # Uhrzeit links
-    for i, hgt in enumerate((14, 22, 30, 38)):                                         # Mobilfunk-Balken
-        L.rrect(768 + i * 14, 46 - hgt, 768 + i * 14 + 8, 46, 2, fill=(0, 0, 0, 255))
-    wx, wy = 880, 42                                                                  # WLAN-Symbol links neben dem Akku
-    L.circle(wx, wy - 2, 4.5, (0, 0, 0, 255))
-    for rr in (13, 22, 31):
-        L.d.arc([(wx - rr) * S, (wy - 2 - rr) * S, (wx + rr) * S, (wy - 2 + rr) * S], 228, 312, fill=(0, 0, 0, 255), width=int(5 * S))
-    L.rrect(930, 12, 1006, 44, 9, outline=(0, 0, 0, 255), width=3)                    # Akku
-    L.rrect(935, 17, 990, 39, 5, fill=(0, 0, 0, 255))
-    L.rrect(1010, 22, 1017, 34, 3, fill=(0, 0, 0, 255))
+    v9_statusbar(L, (0, 0, 0))
     # Navigationsleiste
     L.line([(48, 92), (26, 126), (48, 160)], CH_GREEN + (255,), 8)
     v9_memoji(L, 132, 126, 46)
@@ -1383,31 +1406,118 @@ def v9_top_window(L, Y):
         ui_window(L, "v9_top.jpg", "header_step3.jpg", Y + 150)
 
 
+def v9_file_icon(L, x, y, kind):
+    """Kleines Dokument-Symbol (CSV, PDF, Bild, Numbers) wie in der Dateien-App."""
+    if kind == "png":
+        L.rrect(x, y + 6, x + 84, y + 100, 10, fill=(125, 178, 220, 255))
+        L.poly([(x, y + 100), (x + 34, y + 54), (x + 58, y + 80), (x + 72, y + 64), (x + 84, y + 100)], (92, 150, 110, 255))
+        L.circle(x + 62, y + 30, 9, (255, 236, 160, 255))
+        return
+    L.rrect(x + 6, y, x + 78, y + 104, 8, fill=(255, 255, 255, 255), outline=(200, 200, 205, 255), width=2)
+    L.poly([(x + 58, y), (x + 78, y + 20), (x + 58, y + 20)], (226, 226, 232, 255))
+    lab, colr = {"csv": ("CSV", (60, 150, 90, 255)), "pdf": ("PDF", (222, 64, 56, 255)), "num": ("NUM", (40, 160, 90, 255))}[kind]
+    L.rrect(x + 14, y + 70, x + 70, y + 94, 6, fill=colr)
+    hn_text(L, x + 42, y + 82, lab, 20, (255, 255, 255), True, anchor="mm")
+    for k in range(3):
+        L.rrect(x + 18, y + 26 + k * 12, x + 66 - (k == 2) * 18, y + 31 + k * 12, 2, fill=(214, 214, 220, 255))
+
+
+V9_FILES = [
+    ("Vinted_Verkäufe_2026.csv", "Heute, 09:38 · 6 KB", "csv"),
+    ("Rechnung_Oktober.pdf", "Gestern, 18:12 · 128 KB", "pdf"),
+    ("Versandetikett_Vinted.pdf", "10.10.2026 · 54 KB", "pdf"),
+    ("IMG_4821.png", "09.10.2026 · 2,1 MB", "png"),
+    ("Einkaufsliste.numbers", "07.10.2026 · 38 KB", "num"),
+]
+
+
+V9_SB = 56  # Höhe des dunklen Statusstreifens über der Seite (px)
+
+
+def v9_sheet_progress(t, pin, pout):
+    return ease_out(prog(t, pin, 0.45)) - ease_out(prog(t, pout, 0.38))
+
+
+def v9_picker(L, t, pin, pout, file_tap):
+    """Dateiauswahl des iPhones: Blatt fährt von unten herein, oben dunkles Abblenden der Seite dahinter."""
+    sp = v9_sheet_progress(t, pin, pout)
+    if sp <= 0.001:
+        return
+    top = 170 + (1 - sp) * (H - 170)
+    v8_blend(L, Image.new("RGBA", (int(W * S), int(H * S)), (0, 0, 0, int(105 * sp))), 0, 0)
+    L.rrect(0, top, W, H + 60, 36, fill=(242, 242, 247, 255))
+    # Navigationsleiste des Blatts
+    hn_text(L, 44, top + 62, "Abbrechen", 46, (0, 122, 255), anchor="lm")
+    hn_text(L, 540, top + 62, "Zuletzt benutzt", 46, (0, 0, 0), True, anchor="mm")
+    # Suchfeld
+    L.rrect(32, top + 118, W - 32, top + 206, 24, fill=(226, 226, 232, 255))
+    L.d.ellipse([(76 - 14) * S, (top + 162 - 14) * S, (76 + 10) * S, (top + 162 + 10) * S], outline=(138, 138, 144, 255), width=int(4 * S))
+    L.line([(70, top + 168), (86, top + 184)], (138, 138, 144, 255), 5)
+    hn_text(L, 120, top + 162, "Suchen", 44, (138, 138, 144), anchor="lm")
+    # Dateiliste
+    ly = top + 244
+    L.rrect(24, ly, W - 24, ly + len(V9_FILES) * 150, 22, fill=(255, 255, 255, 255))
+    selected = file_tap is not None and t >= file_tap
+    for i, (name, sub, kind) in enumerate(V9_FILES):
+        ry = ly + i * 150
+        if i == 0 and selected:
+            L.rrect(24, ry, W - 24, ry + 150, 22 if i == 0 else 0, fill=(214, 214, 220, 255))
+        v9_file_icon(L, 52, ry + 23, kind)
+        hn_text(L, 168, ry + 54, name, 44, (0, 0, 0), anchor="lm")
+        hn_text(L, 168, ry + 102, sub, 33, (120, 120, 128), anchor="lm")
+        if i < len(V9_FILES) - 1:
+            L.d.rectangle([168 * S, (ry + 149) * S, (W - 24) * S, (ry + 151) * S], fill=(220, 220, 226, 255))
+    # Tab-Leiste unten (fährt mit dem Blatt)
+    tb = H - V9_SB - 150 + (top - 170)
+    L.d.rectangle([0, tb * S, W * S, (tb + 400) * S], fill=(249, 249, 249, 255))
+    L.d.rectangle([0, tb * S, W * S, (tb + 2) * S], fill=(200, 200, 205, 255))
+    L.d.ellipse([(270 - 26) * S, (tb + 38 - 26) * S, (270 + 26) * S, (tb + 38 + 26) * S], outline=(0, 122, 255, 255), width=int(5 * S))
+    L.line([(270, tb + 20), (270, tb + 38), (284, tb + 46)], (0, 122, 255, 255), 5)
+    hn_text(L, 270, tb + 96, "Zuletzt benutzt", 30, (0, 122, 255), anchor="mm")
+    L.rrect(762 - 30, tb + 16, 762 + 30, tb + 54, 8, outline=(140, 140, 146, 255), width=5)
+    hn_text(L, 810, tb + 96, "Durchsuchen", 30, (140, 140, 146), anchor="mm")
+    return top + 244 + 75  # Mitte der ersten Zeile (für den Tap)
+
+
 def scene_v9_site(L, t):
     """Die echte Oberfläche öffnet sich (von unten), Anna scrollt oben beginnend langsam nach unten, Banner von Tim,
-    Ablagefläche, Upload und Ergebnis."""
+    Ablagefläche, Dateiauswahl (iPhone-Dateien), Upload und Ergebnis."""
     tw = V9_T
     tmp = Layer()
+    t_loaded = tw["sheet_out"] + 0.05
     if t < tw["res_switch"]:
-        if t < tw["up_tap"] + 0.35:
+        if t < t_loaded:
             y_end = V9_TOP["drop"] - 150 - 489
             Y = v9_smooth(0, y_end, t, tw["scroll0"], tw["scroll1"])
             v9_top_window(tmp, Y)
             v8_tap(tmp, t, tw["up_tap"], 540, V8_S3["drop"] + V8_S3["drop_h"] / 2 + (350 - 6300))
         else:
-            y = v8_ease(6300.0, 9330, t, tw["go_scroll"], tw["go_scroll"] + 1.2)
+            y = v9_smooth(6300.0, 9330, t, tw["go_scroll"], tw["go_scroll"] + tw["go_dur"])
             ui_window(tmp, "v8_step3_geladen.jpg", "header_step3.jpg", y)
-            v8_tap(tmp, t, tw["up_tap"], 540, V8_S3["drop"] + V8_S3["drop_h"] / 2 + (350 - 6300))
             v8_tap(tmp, t, tw["go_tap"], 310, V8_S3["go"] + 80 + (350 - 9330))
+        row_y = v9_picker(tmp, t, tw["sheet_in"], tw["sheet_out"], tw["file_tap"])
+        if row_y:
+            v8_tap(tmp, t, tw["file_tap"], 460, row_y)
     else:
-        y = 960.0
-        y = v8_ease(y, V8_S5["vinted"] - 40, t, tw["res_scroll1"], tw["res_scroll1"] + 1.2)
-        y = v8_ease(y, V8_S5["etsy"] - 120, t, tw["res_scroll2"], tw["res_scroll2"] + 1.4)
+        # ein langer, gleichmäßiger Scroll von den Summen bis zur Etsy-Karte (statt zwei schneller Wischer)
+        y = v9_smooth(1500.0, V8_S5["etsy"] - 120, t, tw["res_scroll1"], tw["res_scroll1"] + tw["res_dur"])
         ui_window(tmp, "v8_step5.jpg", "header_step5.jpg", y)
         off = 350 - y
         v8_highlight(tmp, 150, V8_S5["etsy"] + 470 + off, 705, V8_S5["etsy"] + 535 + off, t, tw["res_hl"])
+    # Statusstreifen (Farbe der Kopfleiste) über der Seite, Seite um V9_SB nach unten geschoben
+    page = Layer()
+    page.d.rectangle([0, 0, W * S, V9_SB * S], fill=(32, 35, 40, 255))
+    page.im.paste(tmp.im, (0, V9_SB * S))
+    sp = v9_sheet_progress(t, tw["sheet_in"], tw["sheet_out"]) if t < tw["res_switch"] else 0.0
+    if sp > 0.001:
+        v8_blend(page, Image.new("RGBA", (int(W * S), int(V9_SB * S)), (0, 0, 0, int(105 * sp))), 0, 0)
+    v9_statusbar(page, (255, 255, 255))
+    tmp = page
     p = ease_out(prog(t, 0.0, 0.45))
-    L.d.rectangle([0, 0, W * S, H * S], fill=CH_BG + (255,))
+    if p < 1:
+        scene_v9_chat1(L, V9S["end1"])   # Chat bleibt beim Einblenden der Seite dahinter sichtbar
+    else:
+        L.d.rectangle([0, 0, W * S, H * S], fill=CH_BG + (255,))
     L.im.paste(tmp.im, (0, int((1 - p) * H * S)))
     # Mitteilungsbanner wie auf dem iPhone (iOS 17): Milchglas, große Rundung, Kontaktfoto mit App-Symbol, Name, Text
     b0, b1 = tw["banner_in"], tw["banner_out"]
@@ -1506,15 +1616,26 @@ def render_frame(args):
 SR = 44100
 VOICE = os.environ.get("AD_VOICE", "Anna")          # macOS-Systemstimme (say -v '?' zeigt die Liste)
 VO_RATE = os.environ.get("AD_VOICE_RATE", "165")    # Wörter pro Minute
+SOUND2 = os.environ.get("AD_SOUND") == "2"          # erweitertes Sounddesign (Treffer, Wort-Pops, Whoosh, Akzente)
 
 # Sprechertext je Variante: (absolute Startzeit, Text, spätestes Ende)
 def vo_lines(variant):
+    if variant == "V9":
+        return [
+            (at(1, V9S["tim1"] + 0.15), V9_TEXTS["tim1"], at(1, V9S["a1_start"])),
+            (at(1, V9S["a1_start"]), V9_TEXTS["anna1"], at(1, V9S["a1_send"] + 0.4)),
+            (at(1, V9S["tim2"] + 0.1), V9_TEXTS["tim2"], at(1, V9S["end1"])),
+            (at(2, V9_T["banner_in"] + 0.35), V9_TEXTS["tim_long"], at(3, 0.0)),
+            (at(3, V9S["a2_start"]), V9_TEXTS["anna2"], at(3, V9S["a2_send"] + 0.4)),
+            (at(3, V9S["tim3"] + 0.1), V9_TEXTS["tim3"], at(4, 0.0)),
+            (at(4, -0.10), "SellCheck. Check, was WIRKLICH bleibt. Für mehr Infos unten klicken.", DUR - 0.05),
+        ]
     if variant == "V8":
         return [
             (at(1, 0.05), "Wusstest du, dass Vinted, eBay und Kleinanzeigen deine Verkäufe an die Steuerbehörde melden, sobald du eine bestimmte Grenze erreichst? Ich zeig dir kurz, wo du stehst.", START[2]),
             (at(2, 0.05), "Dafür lädst du einfach die Datei mit deinen Verkäufen hoch. Wo du die bei deiner Plattform findest, zeigt dir SellCheck.", START[3]),
             (at(3, 0.05), "Dann siehst du pro Plattform, wie nah du an der Grenze bist. Gelb heißt: fast erreicht. Rot heißt: erreicht, so wie hier bei Etsy. Und in jeder Karte siehst du auch deinen Gewinn.", START[4]),
-            (at(4, 0.05), "Und daraus macht SellCheck dir die Übersicht für deine Steuererklärung, oder für deinen Steuerberater. Kostenlos mit Konto, und deine Daten bleiben in deinem Browser.", START[5]),
+            (at(4, 0.05), "Und daraus macht SellCheck dir die Übersicht für deine Steuererklärung, oder für deinen Steuerberater. Kostenlos und ohne Anmeldung, und deine Daten bleiben in deinem Browser.", START[5]),
             (at(5, -0.10), "SellCheck. Check, was wirklich bleibt. Unten klicken, Datei hochladen, fertig.", DUR - 0.05),
         ]
     if variant == "V6":
@@ -1655,6 +1776,27 @@ def tts(text, name):
     return [v / pk * 0.9 for v in vals]
 
 
+def keyword_times(variant, files, extra=()):
+    """Startzeiten betonter Wörter (GROSS geschrieben oder in extra) aus den gemessenen Sprachclips.
+    Verteilung innerhalb eines Satzes nach Wortlänge, wie bei den Untertiteln von V8."""
+    out, prev_end = [], 0.0
+    for (t0, text, limit), f in zip(vo_lines(variant), files):
+        if not f:
+            continue
+        t0 = max(t0, prev_end + 0.04)
+        dur = len(load_clip(f, f"{variant}kw")) / SR
+        prev_end = t0 + dur
+        toks = [w for w in text.split() if not w.startswith("[")]
+        weights = [len(w.strip(".,?!:")) + 1.5 + (8.0 if w[-1] in ".?!:" else 3.5 if w.endswith(",") else 0.0) for w in toks]
+        tot, tcur = sum(weights), t0
+        for w, wt in zip(toks, weights):
+            core = w.strip(".,?!:")
+            if (core.isupper() and len(core) > 3) or core in extra:
+                out.append(tcur)
+            tcur += dur * wt / tot
+    return out
+
+
 def build_audio(variant, path, with_voice=False, voice_files=None):
     n = int(SR * DUR)
     music = [0.0] * n
@@ -1733,10 +1875,48 @@ def build_audio(variant, path, with_voice=False, voice_files=None):
     def swipe(t0):
         add(sfx, t0, tone(260, 0.28, "sine", 3.5, 520, attack=2000.0), 0.12)
 
+    def whoosh(t0, dur=0.42, up=True, gain=0.2):
+        """Rauschen durch einen wandernden Bandpass: steigt (up) oder fällt, schwillt an und ab."""
+        m = int(dur * SR)
+        low = band = 0.0
+        q = 0.45
+        raw = []
+        for i in range(m):
+            x = i / m
+            f = 350 + 3800 * x if up else 4200 - 3800 * x
+            a = 2 * math.sin(math.pi * f / SR)
+            v = rnd.uniform(-1, 1)
+            low += a * band
+            high = v - low - q * band
+            band += a * high
+            raw.append(band * (math.sin(math.pi * x) ** 1.6))
+        peak = max(abs(v) for v in raw) or 1.0
+        add(sfx, t0, [v / peak for v in raw], gain)
+
+    def hit(t0):
+        """Tiefer Treffer mit kurzem Moll-Akkord: Spannung gleich zu Beginn."""
+        add(sfx, t0, tone(62, 0.5, "sine", 6.0, 38), 0.5)
+        for f in (196.0, 246.94, 329.63):
+            add(sfx, t0, tone(f, 0.36, "saw", 8.0), 0.045)
+
+    def thud(t0, gain=0.42):
+        add(sfx, t0, tone(84, 0.32, "sine", 7.0, 46), gain)
+
+    def word_pop(t0):
+        """Heller, kurzer Klick-Pop auf ein betontes Wort."""
+        add(sfx, t0, tone(1050, 0.07, "sine", 14.0, 1500), 0.26)
+        add(sfx, t0, tone(2600, 0.012, "sine", 120.0), 0.12)
+
     for k in KEYS[1:]:
-        swipe(START[k] - 0.12)
+        if SOUND2:
+            whoosh(START[k] - 0.2, 0.4, up=(k % 2 == 0))
+        else:
+            swipe(START[k] - 0.12)
     if variant != "V6":
-        swipe(at(3, S3_B) - 0.1)
+        if SOUND2:
+            whoosh(at(3, S3_B) - 0.22, 0.38, up=True)
+        else:
+            swipe(at(3, S3_B) - 0.1)
 
     if variant == "A":
         for base in (0.9, 1.25, 1.6):
@@ -1792,6 +1972,8 @@ def build_audio(variant, path, with_voice=False, voice_files=None):
         ping(at(1, V9S["tim2"]))
         tick(at(1, V9_T["tap_link"]), 1500)
         tick(at(2, V9_T["up_tap"]), 1500)
+        tick(at(2, V9_T["file_tap"]), 1700)
+        add(sfx, at(2, V9_T["sheet_in"]), tone(260, 0.28, "sine", 3.5, 520, attack=2000.0), 0.1)
         tick(at(2, V9_T["go_tap"]), 1500)
         ding(at(2, V9_T["res_hl"] + 0.2), 659.25)
         ping(at(2, V9_T["banner_in"]))
@@ -1817,6 +1999,21 @@ def build_audio(variant, path, with_voice=False, voice_files=None):
             tick(at(3, 2.0 + DEMO_SHIFT + i * 0.28 + 0.15), 1100 + i * 120)
         blip_down(at(3, 4.15 + DEMO_SHIFT))
         ding(at(3, S3_B + 1.6), 659.25)                                 # Summe ist oben angekommen
+    if SOUND2:
+        hit(0.0)                                             # Hook: Treffer vor dem ersten Wort
+        if variant == "V7":
+            thud(at(2, P7_T[5] + 0.7), 0.3)                  # Gewinn steht: tiefer Akzent unter dem Ding
+        if variant == "V6":
+            for i, ft in enumerate(V6_FLIP):                 # Antwortkarten: tiefer Akzent unter jedem Ding, der letzte (Gewinn) am stärksten
+                thud(at(3, ft + 0.4), 0.2 + 0.1 * i)
+        if with_voice and voice_files:
+            extra = {"V6": ("Eins", "Zwei", "Drei", "Gewinn", "alle"), "V7": ("Reseller", "Grenze", "BEIDES")}.get(variant, ())
+            for kt in keyword_times(variant, voice_files, extra):
+                if kt > 0.25:
+                    word_pop(kt - 0.03)
+        # Endkarte: Klick und Whoosh, wenn die Schaltfläche „Hier unten klicken“ erscheint
+        word_pop(at(4, CTA_T[1] + 0.5))
+        whoosh(at(4, CTA_T[1] + 0.5) - 0.12, 0.3, up=True, gain=0.14)
     if variant not in ("V2", "V3", "V6", "V7", "V8", "V9"):
         for i, f in enumerate((523.25, 659.25, 783.99)):
             ding(at(4, 0.35 + i * 0.4), f)
@@ -1850,6 +2047,21 @@ def build_audio(variant, path, with_voice=False, voice_files=None):
     mix = [music[k] * duck[k] + sfx[k] * (0.7 if with_voice else 1.0) + vo[k] * 1.0 for k in range(n)]
     peak = max(abs(v) for v in mix) or 1.0
     scale = 0.85 / peak
+    if SOUND2:
+        # Gleiche mittlere Lautstärke wie die Fassung ohne Zusatzeffekte (RMS 0,097), kurze Spitzen weich begrenzt.
+        r = math.sqrt(sum(v * v for v in mix) / len(mix)) or 1.0
+        scale = 0.097 / r
+        ref = r
+        knee = 0.8
+
+        def soft(v):
+            y = v * scale
+            m = abs(y)
+            if m <= knee:
+                return y
+            return math.copysign(knee + (0.98 - knee) * math.tanh((m - knee) / (0.98 - knee)), y)
+        mix = [soft(v) / scale for v in mix]
+        print(f"  Aussteuerung: Spitze {peak:.2f}, RMS-Bezug {ref:.3f}, Faktor {scale:.2f}", flush=True)
     fade = int(0.35 * SR)
     with wave.open(path, "wb") as w:
         w.setnchannels(2)
@@ -1914,7 +2126,7 @@ def main():
         print("Testframes gerendert")
         return
     if only == "voice":
-        folder = sys.argv[3] if len(sys.argv) > 3 else os.environ.get("AD_VOICE_DIR", os.path.join(HERE, {"V2": "voice_v2", "V3": "voice_v3", "V6": "voice_v6", "V7": "voice_v7", "V8": "voice_v8"}.get(variant, "voice")))
+        folder = sys.argv[3] if len(sys.argv) > 3 else os.environ.get("AD_VOICE_DIR", os.path.join(HERE, {"V2": "voice_v2", "V3": "voice_v3", "V6": "voice_v6", "V7": "voice_v7", "V8": "voice_v8", "V9": "voice_v9"}.get(variant, "voice")))
         files = find_voice_files(folder)
         missing = [i + 1 for i, f in enumerate(files) if not f]
         if len(missing) == len(files):
@@ -1926,10 +2138,11 @@ def main():
             print("Frames fehlen, rendere zuerst …", flush=True)
             with Pool() as pool:
                 list(pool.imap_unordered(render_frame, [(i, variant) for i in range(NF)], chunksize=8))
-        wav = os.path.join(FRAMES, f"audio_{variant}_mit_Stimme.wav")
+        sfx_tag = "_Sounddesign" if SOUND2 else ""
+        wav = os.path.join(FRAMES, f"audio_{variant}{sfx_tag}_mit_Stimme.wav")
         print("Ton mit Stimme …", flush=True)
         build_audio(variant, wav, True, files)
-        mp4 = os.path.join(OUT, f"sellcheck_tiktok_ad_{variant}_mit_Stimme.mp4")
+        mp4 = os.path.join(OUT, f"sellcheck_tiktok_ad_{variant}{sfx_tag}_mit_Stimme.mp4")
         encode(variant, wav, mp4)
         print("Fertig:", mp4, flush=True)
         return

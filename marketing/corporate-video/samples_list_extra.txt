@@ -1,0 +1,141 @@
+Percussion/BDrumNewhit_v3_rr1_Sum.wav
+Percussion/BDrumNewhit_v3_rr2_Sum.wav
+Percussion/BDrumNewhit_v4_rr1_Sum.wav
+Percussion/BDrumNewhit_v4_rr2_Sum.wav
+Percussion/BDrumNewhit_v5_rr1_Sum.wav
+Percussion/BDrumNewhit_v5_rr2_Sum.wav
+Percussion/Snare2-HitSN_v5_rr1_Sum.wav
+Percussion/Snare2-HitSN_v5_rr2_Sum.wav
+Percussion/Snare2-HitSN_v7_rr1_Sum.wav
+Percussion/Snare2-HitSN_v7_rr2_Sum.wav
+Percussion/Tamb1-Hit_v2_rr1_Sum.wav
+Percussion/Tamb1-Hit_v2_rr2_Sum.wav
+Percussion/Tamb1-Shake_v1_rr1_Sum.wav
+Percussion/Tamb1-Shake_v1_rr2_Sum.wav
+Percussion/cymbal-crash1_ff_rr1.wav
+Percussion/cymbal-crash1_ff_rr2.wav
+Percussion/cymbal-crash1_mf_rr1.wav
+Percussion/cymbal-crash1_mf_rr2.wav
+Percussion/susCymb1-cresc-Long_v1.wav
+Percussion/susCymb1-cresc-Median_v1.wav
+Percussion/susCymb1-cresc-Short_v1.wav
+Strings/Cello Section/pizzT/pizzT_A2_v2_RR1.wav
+Strings/Cello Section/pizzT/pizzT_A2_v2_RR2.wav
+Strings/Cello Section/pizzT/pizzT_B1_v2_RR1.wav
+Strings/Cello Section/pizzT/pizzT_B1_v2_RR2.wav
+Strings/Cello Section/pizzT/pizzT_B3_v2_RR1.wav
+Strings/Cello Section/pizzT/pizzT_B3_v2_RR2.wav
+Strings/Cello Section/pizzT/pizzT_C1_v2_RR1.wav
+Strings/Cello Section/pizzT/pizzT_C1_v2_RR2.wav
+Strings/Cello Section/pizzT/pizzT_C3_v2_RR1.wav
+Strings/Cello Section/pizzT/pizzT_C3_v2_RR2.wav
+Strings/Cello Section/pizzT/pizzT_D2_v2_RR1.wav
+Strings/Cello Section/pizzT/pizzT_D2_v2_RR2.wav
+Strings/Cello Section/pizzT/pizzT_D4_v2_RR1.wav
+Strings/Cello Section/pizzT/pizzT_D4_v2_RR2.wav
+Strings/Cello Section/pizzT/pizzT_E1_v2_RR1.wav
+Strings/Cello Section/pizzT/pizzT_E1_v2_RR2.wav
+Strings/Cello Section/pizzT/pizzT_E3_v2_RR1.wav
+Strings/Cello Section/pizzT/pizzT_E3_v2_RR2.wav
+Strings/Cello Section/pizzT/pizzT_F2_v2_RR1.wav
+Strings/Cello Section/pizzT/pizzT_F2_v2_RR2.wav
+Strings/Cello Section/pizzT/pizzT_F4_v2_RR1.wav
+Strings/Cello Section/pizzT/pizzT_F4_v2_RR2.wav
+Strings/Cello Section/pizzT/pizzT_G1_v2_RR1.wav
+Strings/Cello Section/pizzT/pizzT_G1_v2_RR2.wav
+Strings/Cello Section/pizzT/pizzT_G3_v2_RR1.wav
+Strings/Cello Section/pizzT/pizzT_G3_v2_RR2.wav
+Strings/Cello Section/spic/spic_A2_v2_RR1.wav
+Strings/Cello Section/spic/spic_A2_v2_RR2.wav
+Strings/Cello Section/spic/spic_B1_v2_RR1.wav
+Strings/Cello Section/spic/spic_B1_v2_RR2.wav
+Strings/Cello Section/spic/spic_B3_v2_RR1.wav
+Strings/Cello Section/spic/spic_B3_v2_RR2.wav
+Strings/Cello Section/spic/spic_C1_v2_RR1.wav
+Strings/Cello Section/spic/spic_C1_v2_RR2.wav
+Strings/Cello Section/spic/spic_C3_v2_RR1.wav
+Strings/Cello Section/spic/spic_C3_v2_RR2.wav
+Strings/Cello Section/spic/spic_D2_v2_RR1.wav
+Strings/Cello Section/spic/spic_D2_v2_RR2.wav
+Strings/Cello Section/spic/spic_D4_v2_RR1.wav
+Strings/Cello Section/spic/spic_D4_v2_RR2.wav
+Strings/Cello Section/spic/spic_E1_v2_RR1.wav
+Strings/Cello Section/spic/spic_E1_v2_RR2.wav
+Strings/Cello Section/spic/spic_E3_v2_RR1.wav
+Strings/Cello Section/spic/spic_E3_v2_RR2.wav
+Strings/Cello Section/spic/spic_F2_v2_RR1.wav
+Strings/Cello Section/spic/spic_F2_v2_RR2.wav
+Strings/Cello Section/spic/spic_F4_v2_RR1.wav
+Strings/Cello Section/spic/spic_F4_v2_RR2.wav
+Strings/Cello Section/spic/spic_G1_v2_RR1.wav
+Strings/Cello Section/spic/spic_G1_v2_RR2.wav
+Strings/Cello Section/spic/spic_G3_v2_RR1.wav
+Strings/Cello Section/spic/spic_G3_v2_RR2.wav
+Strings/Viola Section/spic/Violas_spic_A3_v2_rr1.wav
+Strings/Viola Section/spic/Violas_spic_A3_v2_rr2.wav
+Strings/Viola Section/spic/Violas_spic_B2_v2_rr1.wav
+Strings/Viola Section/spic/Violas_spic_B2_v2_rr2.wav
+Strings/Viola Section/spic/Violas_spic_B4_v2_rr1.wav
+Strings/Viola Section/spic/Violas_spic_B4_v2_rr2.wav
+Strings/Viola Section/spic/Violas_spic_C2_v2_rr1.wav
+Strings/Viola Section/spic/Violas_spic_C2_v2_rr2.wav
+Strings/Viola Section/spic/Violas_spic_C4_v2_rr1.wav
+Strings/Viola Section/spic/Violas_spic_C4_v2_rr2.wav
+Strings/Viola Section/spic/Violas_spic_D3_v2_rr1.wav
+Strings/Viola Section/spic/Violas_spic_D3_v2_rr2.wav
+Strings/Viola Section/spic/Violas_spic_D5_v2_rr1.wav
+Strings/Viola Section/spic/Violas_spic_D5_v2_rr2.wav
+Strings/Viola Section/spic/Violas_spic_E2_v2_rr1.wav
+Strings/Viola Section/spic/Violas_spic_E2_v2_rr2.wav
+Strings/Viola Section/spic/Violas_spic_E4_v2_rr1.wav
+Strings/Viola Section/spic/Violas_spic_E4_v2_rr2.wav
+Strings/Viola Section/spic/Violas_spic_F3_v2_rr1.wav
+Strings/Viola Section/spic/Violas_spic_F3_v2_rr2.wav
+Strings/Viola Section/spic/Violas_spic_G2_v2_rr1.wav
+Strings/Viola Section/spic/Violas_spic_G2_v2_rr2.wav
+Strings/Viola Section/spic/Violas_spic_G4_v2_rr1.wav
+Strings/Viola Section/spic/Violas_spic_G4_v2_rr2.wav
+Strings/Violin Section/Pizz/VlnEns_Pizz_A2_v2_rr1.wav
+Strings/Violin Section/Pizz/VlnEns_Pizz_A2_v2_rr2.wav
+Strings/Violin Section/Pizz/VlnEns_Pizz_A3_v2_rr1.wav
+Strings/Violin Section/Pizz/VlnEns_Pizz_A3_v2_rr2.wav
+Strings/Violin Section/Pizz/VlnEns_Pizz_B2_v2_rr1.wav
+Strings/Violin Section/Pizz/VlnEns_Pizz_B2_v2_rr2.wav
+Strings/Violin Section/Pizz/VlnEns_Pizz_B4_v2_rr1.wav
+Strings/Violin Section/Pizz/VlnEns_Pizz_B4_v2_rr2.wav
+Strings/Violin Section/Pizz/VlnEns_Pizz_C4_v2_rr1.wav
+Strings/Violin Section/Pizz/VlnEns_Pizz_C4_v2_rr2.wav
+Strings/Violin Section/Pizz/VlnEns_Pizz_D3_v2_rr1.wav
+Strings/Violin Section/Pizz/VlnEns_Pizz_D3_v2_rr2.wav
+Strings/Violin Section/Pizz/VlnEns_Pizz_D5_v2_rr1.wav
+Strings/Violin Section/Pizz/VlnEns_Pizz_D5_v2_rr2.wav
+Strings/Violin Section/Pizz/VlnEns_Pizz_E4_v2_rr1.wav
+Strings/Violin Section/Pizz/VlnEns_Pizz_E4_v2_rr2.wav
+Strings/Violin Section/Pizz/VlnEns_Pizz_F#3_v2_rr1.wav
+Strings/Violin Section/Pizz/VlnEns_Pizz_F#3_v2_rr2.wav
+Strings/Violin Section/Pizz/VlnEns_Pizz_G2_v2_rr1.wav
+Strings/Violin Section/Pizz/VlnEns_Pizz_G2_v2_rr2.wav
+Strings/Violin Section/Pizz/VlnEns_Pizz_G4_v2_rr1.wav
+Strings/Violin Section/Pizz/VlnEns_Pizz_G4_v2_rr2.wav
+Strings/Violin Section/Spic/VlnEns_Spic_A2_v2_rr1.wav
+Strings/Violin Section/Spic/VlnEns_Spic_A2_v2_rr2.wav
+Strings/Violin Section/Spic/VlnEns_Spic_A3_v2_rr1.wav
+Strings/Violin Section/Spic/VlnEns_Spic_A3_v2_rr2.wav
+Strings/Violin Section/Spic/VlnEns_Spic_B2_v2_rr1.wav
+Strings/Violin Section/Spic/VlnEns_Spic_B2_v2_rr2.wav
+Strings/Violin Section/Spic/VlnEns_Spic_B4_v2_rr1.wav
+Strings/Violin Section/Spic/VlnEns_Spic_B4_v2_rr2.wav
+Strings/Violin Section/Spic/VlnEns_Spic_C4_v2_rr1.wav
+Strings/Violin Section/Spic/VlnEns_Spic_C4_v2_rr2.wav
+Strings/Violin Section/Spic/VlnEns_Spic_D3_v2_rr1.wav
+Strings/Violin Section/Spic/VlnEns_Spic_D3_v2_rr2.wav
+Strings/Violin Section/Spic/VlnEns_Spic_D5_v2_rr1.wav
+Strings/Violin Section/Spic/VlnEns_Spic_D5_v2_rr2.wav
+Strings/Violin Section/Spic/VlnEns_Spic_E4_v2_rr1.wav
+Strings/Violin Section/Spic/VlnEns_Spic_E4_v2_rr2.wav
+Strings/Violin Section/Spic/VlnEns_Spic_F#3_v2_rr1.wav
+Strings/Violin Section/Spic/VlnEns_Spic_F#3_v2_rr2.wav
+Strings/Violin Section/Spic/VlnEns_Spic_G2_v2_rr1.wav
+Strings/Violin Section/Spic/VlnEns_Spic_G2_v2_rr2.wav
+Strings/Violin Section/Spic/VlnEns_Spic_G4_v2_rr1.wav
+Strings/Violin Section/Spic/VlnEns_Spic_G4_v2_rr2.wav
