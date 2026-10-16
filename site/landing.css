@@ -197,3 +197,8 @@ main > section.on-dark h2 { font-size: clamp(2rem, 4.6vw, 3.4rem); }
 .demo-plats i.yellow { background: #e5a93a; }
 .demo-plats i.red { background: var(--red); }
 @media (max-width: 700px) { .demo-plats span { padding: 8px 12px; } }
+
+/* Sprungmarken (Menü, Knöpfe): Überschrift nicht unter der festen Kopfleiste verstecken */
+section[id], .hero { scroll-margin-top: 76px; }
+/* Kein grauer Tipp-Blitz auf den Plattform-Chips (Safari auf dem iPhone) */
+.demo-plats label { -webkit-tap-highlight-color: transparent; }

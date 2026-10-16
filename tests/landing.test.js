@@ -68,3 +68,9 @@ test("Beispielstände zeigen alle drei Stufen", () => {
   const levels = [levelOf(n[0], n[1]), levelOf(n[2], n[3]), levelOf(n[4], n[5]), levelOf(n[6], n[7])];
   assert.deepEqual(new Set(levels), new Set(["green", "yellow", "red"]));
 });
+
+test("Sprungmarken: Abschnitte haben einen Abstand nach oben, damit die feste Kopfleiste nichts verdeckt", () => {
+  const css = fs.readFileSync(path.join(SITE, "landing.css"), "utf8");
+  assert.match(css, /section\[id\][^{]*\{[^}]*scroll-margin-top: \d+px/);
+  assert.match(css, /\.demo-plats label \{[^}]*-webkit-tap-highlight-color: transparent/);
+});
