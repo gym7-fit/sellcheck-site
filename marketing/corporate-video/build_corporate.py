@@ -56,6 +56,9 @@ BEAT = 60.0 / BPM  # 0,5 s
 # Szenen: (Name, Start, Länge). Alle Starts liegen auf dem Beat-Raster.
 SCENES = [("hook", 0.0, 4.0), ("problem", 4.0, 8.0), ("loesung", 12.0, 10.0), ("produkt", 22.0, 16.0),
           ("vertrauen", 38.0, 6.0), ("abbinder", 44.0, 5.0)]
+MASTER_GRID = 1.9  # Gesamtpegel für Musik auf dem Raster plus Sprecher (Spitze ca. 0,8)
+VOICE_GAIN = 1.0  # Sprecher-Clips sind in split_voice.py auf gleiche Lautheit gebracht
+DUCK = 0.62  # Musik unter der Stimme: um diesen Anteil leiser (0,62 = etwa -8 dB)
 DUR = 51.0  # 49 s Bild plus 2 s Ausklingen der Musik auf der Endkarte
 NF = int(DUR * FPS)
 WIPE = 0.36  # Dauer des Wisch-Übergangs, Mitte = Schnitt
@@ -706,48 +709,57 @@ def build_audio(path, voice_dir=None, track=None, offset=None, grid=False):
     duck = [1.0] * n
     vo = [0.0] * n
     if voice_dir:
-        starts = [0.3, 4.3, 12.8, 22.4, 38.3, 44.8]
+        plan_path = os.path.join(voice_dir, "plan.json")
+        if os.path.exists(plan_path):
+            # Vorbereitet von split_voice.py: Dateien bereits auf gleiche Lautheit gebracht und satzweise geteilt
+            import json
+            items = [(os.path.join(voice_dir, f), st, True) for f, st in json.load(open(plan_path))]
+        else:
+            starts = [0.3, 4.3, 12.8, 22.4, 38.3, 44.8]
+            items = []
+            for k, st in enumerate(starts, 1):
+                for ext in (".mp3", ".m4a", ".wav"):
+                    p = os.path.join(voice_dir, f"{k}{ext}")
+                    if os.path.exists(p):
+                        items.append((p, st, False))
+                        break
         prev_end = 0.0
-        for k, st in enumerate(starts, 1):
-            src = None
-            for ext in (".mp3", ".m4a", ".wav"):
-                p = os.path.join(voice_dir, f"{k}{ext}")
-                if os.path.exists(p):
-                    src = p
-                    break
-            if not src:
-                continue
+        for k, (src, st, prepared) in enumerate(sorted(items, key=lambda e: e[1]), 1):
             wav = os.path.join(FRAMES, f"vo_{k}.wav")
             subprocess.run(["afconvert", "-f", "WAVE", "-d", "LEI16@44100", "-c", "1", src, wav], check=True)
             with wave.open(wav) as w:
                 raw = w.readframes(w.getnframes())
             vals = struct.unpack("<" + "h" * (len(raw) // 2), raw)
-            pk = max(abs(v) for v in vals) or 1
-            samples = [v / pk * 0.9 for v in vals]
-            t0 = max(st, prev_end + 0.15)
+            if prepared:
+                samples = [v / 32768 for v in vals]
+            else:
+                pk = max(abs(v) for v in vals) or 1
+                samples = [v / pk * 0.9 for v in vals]
+            t0 = max(st, prev_end + 0.12)
             end = t0 + len(samples) / SR
             prev_end = end
-            print(f"  Sprecher {k}: {t0:5.2f}s bis {end:5.2f}s", flush=True)
+            print(f"  Sprecher {os.path.basename(src)}: {t0:5.2f}s bis {end:5.2f}s", flush=True)
             for i2, v in enumerate(samples):
                 j = int(t0 * SR) + i2
                 if 0 <= j < n:
                     vo[j] += v
-            a, b = int((t0 - 0.1) * SR), int((end + 0.25) * SR)
+            a, b = int((t0 - 0.1) * SR), int((end + 0.3) * SR)
             for j in range(max(0, a), min(n, b)):
-                ramp = min(1.0, (j - a) / (0.1 * SR), (b - j) / (0.25 * SR))
-                duck[j] = min(duck[j], 1.0 - 0.5 * max(0.0, ramp))
+                ramp = min(1.0, (j - a) / (0.1 * SR), (b - j) / (0.3 * SR))
+                duck[j] = min(duck[j], 1.0 - DUCK * max(0.0, ramp))
     # Master: Musik auf feste mittlere Lautstärke, Sprache oben drauf, weiche Begrenzung
     rms = math.sqrt(sum(v * v for v in ml) / n) or 1.0
     g = (0.09 if grid else 0.14) / rms
     fade_in, fade_out = int(0.02 * SR), int((1.8 if grid else 2.4 if track else 0.9) * SR)
+    master = MASTER_GRID if grid else 1.0
     with wave.open(path, "wb") as w:
         w.setnchannels(2)
         w.setsampwidth(2)
         w.setframerate(SR)
         out = bytearray()
         for k in range(n):
-            l = ml[k] * g * duck[k] + vo[k] * 0.9
-            r = mr[k] * g * duck[k] + vo[k] * 0.9
+            l = (ml[k] * g * duck[k] + vo[k] * VOICE_GAIN) * master
+            r = (mr[k] * g * duck[k] + vo[k] * VOICE_GAIN) * master
             for ch in (l, r):
                 pass
             fl = 1.0
