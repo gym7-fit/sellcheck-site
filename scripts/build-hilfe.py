@@ -18,6 +18,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
 OUT = SITE / "hilfe"
 STAND = "Oktober 2026"
+SITE_URL = "https://gym7-fit.github.io/sellcheck-site/"  # wird von scripts/set-site-url.py beim Livegang geändert
 
 CSP = ("default-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; "
        "form-action 'none'; base-uri 'none'; object-src 'none'")
@@ -336,7 +337,8 @@ def steps_html(d, way_idx, way):
     return "".join(out)
 
 
-def page_shell(title, desc, body, depth_home="../"):
+def page_shell(title, desc, body, slug="", depth_home="../"):
+    url = f"{SITE_URL}hilfe/{slug}"
     return f"""<!doctype html>
 <html lang="de">
 <head>
@@ -346,6 +348,19 @@ def page_shell(title, desc, body, depth_home="../"):
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{e(title)} – SellCheck</title>
   <meta name="description" content="{e(desc)}">
+  <link rel="canonical" href="{url}">
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+  <meta property="og:site_name" content="SellCheck">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="de_DE">
+  <meta property="og:title" content="{e(title)} – SellCheck">
+  <meta property="og:description" content="{e(desc)}">
+  <meta property="og:url" content="{url}">
+  <meta property="og:image" content="{SITE_URL}social/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="SellCheck: Check, was wirklich bleibt.">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#0e1116">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../style.css">
@@ -420,7 +435,7 @@ def platform_page(d):
   {alt}
   {src}
 </main>"""
-    return page_shell(d["headline"], d["lead"], body)
+    return page_shell(d["headline"], d["lead"], body, d["slug"] + ".html")
 
 
 def hub_page():
@@ -453,7 +468,7 @@ def hub_page():
     <p><a class="btn" href="../tools.html">Zurück zu den Tools</a></p>
   </section>
 </main>"""
-    return page_shell("Wo finde ich meine Exportdatei?", "Anleitungen für den Export deiner Verkaufsdaten bei eBay, Etsy, Amazon, PayPal, Vinted, Kleinanzeigen und deiner Bank.", body)
+    return page_shell("Wo finde ich meine Exportdatei?", "Anleitungen für den Export deiner Verkaufsdaten bei eBay, Etsy, Amazon, PayPal, Vinted, Kleinanzeigen und deiner Bank.", body, "")
 
 
 def main():

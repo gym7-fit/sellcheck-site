@@ -39,15 +39,26 @@ Nach dem Deployment prüfen: Header kommen an (z. B. `curl -I https://deine-doma
 
 Optional: `brand.html` nicht mitveröffentlichen (interne Markenseite, ist auf `noindex` gesetzt).
 
-## 4. Social Media
+## 4. Social Media und Link-Vorschau
 
-In `social/`: `og-image.png` (1200×630, Link-Vorschau), `profilbild.png` (800×800, TikTok/Instagram). Für die Link-Vorschau muss im `<head>` ein `og:image`-Tag mit **absoluter** Adresse ergänzt werden, sobald die Domain feststeht, zum Beispiel:
+In `social/`: `og-image.png` (1200×630, Link-Vorschau), `profilbild.png` (800×800, TikTok/Instagram). `apple-touch-icon.png` (180×180) liegt direkt in `site/`.
 
-```html
-<meta property="og:image" content="https://DEINE-DOMAIN/social/og-image.png">
-<meta property="og:title" content="SellCheck – Alle Plattformen. Ein Überblick.">
-<meta property="og:type" content="website">
+Open Graph, canonical und Twitter-Karte stehen bereits auf Startseite, Tools und allen Hilfeseiten, derzeit mit der Adresse der GitHub-Pages-Vorabansicht. **Beim Livegang die echte Adresse setzen:**
+
+```bash
+python3 scripts/set-site-url.py https://deine-domain.de/
 ```
+
+Das Skript ersetzt die Adresse in den Seiten und im Hilfe-Generator, erzeugt die Hilfeseiten neu und schreibt `site/sitemap.xml`. `npm test` prüft Link-Vorschau, Bildgrößen und canonical.
+
+## 4b. Erklärfilm (Startseite, Abschnitt „Der Überblick in 50 Sekunden“)
+
+Dateien in `site/media/`: `sellcheck-erklaerfilm.mp4` (1280×720, ca. 9 MB, Metadaten am Anfang), `…-poster.jpg`, `….de.vtt` (Untertitel). Das Video lädt erst auf Klick (`preload="none"`), startet nie von selbst und hat Untertitel und einen Text zum Film.
+
+- [ ] Stimme ist **KI-generiert** (ElevenLabs, „Judith Maas“): Hinweis steht unter dem Video; bei TikTok/YouTube als KI-Inhalt kennzeichnen.
+- [ ] ElevenLabs-Tarif prüfen: Darf die Bibliotheksstimme in der Werbung genutzt werden (kommerzielle Nutzung)?
+- [ ] Musik: eigene Synthese plus CC0-Aufnahmen (VSCO-2-CE), kein Nachweis nötig. Lizenznotiz: `marketing/corporate-video/music/LIZENZ.md`.
+- Neu rendern: Quellcode und Ablauf in `marketing/corporate-video/README.md`; Untertitel mit `make_captions.py`.
 
 ## 5. Tests
 
