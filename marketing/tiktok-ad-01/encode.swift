@@ -19,6 +19,7 @@ let height = args.count == 8 ? (Int(args[7]) ?? 1920) : 1920
 
 try? FileManager.default.removeItem(atPath: outPath)
 let writer = try AVAssetWriter(outputURL: URL(fileURLWithPath: outPath), fileType: .mp4)
+writer.shouldOptimizeForNetworkUse = true  // moov-Atom an den Dateianfang: Video startet beim Laden im Browser sofort
 
 let videoSettings: [String: Any] = [
     AVVideoCodecKey: AVVideoCodecType.h264,

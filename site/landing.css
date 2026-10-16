@@ -161,3 +161,15 @@ main > section.on-dark h2 { font-size: clamp(2rem, 4.6vw, 3.4rem); }
   .bento > .tool-wide { flex-direction: column; align-items: flex-start; }
   main > section.on-dark { padding: 72px 0; }
 }
+
+/* Film */
+.film { padding: 96px 0; }
+.film-head { max-width: 640px; margin: 0 auto 36px; text-align: center; }
+.film-head h2 { font-size: clamp(2rem, 4vw, 3rem); }
+.film-head p { color: var(--muted); font-size: 1.15rem; text-wrap: pretty; }
+.film-frame { margin: 0 auto; max-width: 960px; }
+.film-frame video { display: block; width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: 20px; box-shadow: 0 2px 4px rgba(0,0,0,.25), 0 36px 70px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.07); }
+.film-frame figcaption { margin-top: 14px; text-align: center; }
+.film-text { max-width: 960px; margin: 22px auto 0; border-bottom: 0; border-top: 1px solid var(--line); }
+.film-text p { max-width: 62ch; }
+@media (max-width: 700px) { .film { padding: 64px 0; } .film-frame video { border-radius: 14px; } }
