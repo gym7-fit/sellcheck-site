@@ -85,6 +85,6 @@ test("Pro-Karte: Ergebnis zuerst, Preis aufgeschlüsselt, nur Vorhandenes als Le
   // Noch nicht gebaute Funktionen dürfen nicht in der Leistungsliste stehen
   const list = card.slice(card.indexOf('<ul class="check">'), card.indexOf("</ul>"));
   assert.ok(!/Screenshot|KI|Weiterleitung|Inserat/i.test(list), "Geplante Funktionen gehören nicht in die Leistungsliste");
-  assert.match(card, /noch nicht erhältlich/, "Hinweis auf Geplantes fehlt");
+  assert.match(card, /Noch nicht erhältlich/, "Hinweis auf Geplantes fehlt");
   assert.ok(!/\d+ Stunden|\$\s?\d+|\d+\s?€ deiner Zeit/.test(card), "keine erfundenen Zeit- oder Geldersparnisse");
 });
