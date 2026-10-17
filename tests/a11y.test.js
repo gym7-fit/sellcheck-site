@@ -6,6 +6,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const SITE = path.join(__dirname, "..", "site");
+const OWN_HOST = fs.readFileSync(path.join(__dirname, "..", "scripts", "build-hilfe.py"), "utf8").match(/^SITE_URL = "https:\/\/([^"]+)"/m)[1];
 const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]));
 const PAGES = walk(SITE).filter((f) => f.endsWith(".html")).map((f) => ({ name: path.relative(SITE, f), html: fs.readFileSync(f, "utf8") }));
 // Vom Test ausgenommen: Seiten, die nur als Vorlage oder Ausgabe dienen
@@ -93,6 +94,8 @@ test("Datenschutz: keine Drittanbieter-Einbindungen (Skripte, Schriften, Bilder,
     const rel = path.relative(SITE, f);
     if (rel.endsWith(".html")) {
       for (const m of s.matchAll(/<(script|img|iframe|link|source|video|audio|form)\b[^>]*\b(?:src|href|action)="(https?:)?\/\/([^"]+)"/g)) {
+        // Eigene Adresse der Seite (z. B. in der 404-Seite, die unter beliebigen Pfaden ausgeliefert wird) ist keine Einbindung von außen
+        if (m[3].startsWith(OWN_HOST)) continue;
         // normale Verweise (<a>) sind keine Einbindungen; <link rel="canonical"> und Open-Graph-Angaben zeigen auf die eigene Seite
         if (m[1] === "link" && /rel="(canonical|alternate)"/.test(m[0])) continue;
         assert.fail(`${rel}: Einbindung von außen: ${m[0].slice(0, 100)}`);

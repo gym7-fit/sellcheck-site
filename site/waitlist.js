@@ -67,6 +67,7 @@ document.querySelectorAll("form.waitlist").forEach((form) => {
       if (!res.ok) throw new Error(res.status);
       form.reset();
       note.textContent = "Vielen Dank. Bitte bestätige noch den Link in der E-Mail, die wir dir senden.";
+      location.href = "danke.html";
     } catch {
       note.textContent = "Die Anmeldung konnte nicht gespeichert werden. Bitte versuche es später erneut.";
     } finally {

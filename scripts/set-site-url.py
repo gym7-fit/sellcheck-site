@@ -16,7 +16,7 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
 GEN = ROOT / "scripts" / "build-hilfe.py"
-PAGES = ["index.html", "tools.html"]
+PAGES = ["index.html", "tools.html", "404.html", "agb.html", "datenschutz.html", "impressum.html", "danke.html"]
 
 
 def current():
@@ -37,7 +37,7 @@ def main():
         p.write_text(p.read_text(encoding="utf-8").replace(old, new), encoding="utf-8")
     GEN.write_text(GEN.read_text(encoding="utf-8").replace(f'SITE_URL = "{old}"', f'SITE_URL = "{new}"'), encoding="utf-8")
     subprocess.run([sys.executable, str(GEN)], check=True, cwd=ROOT)
-    urls = [new] + [new + n for n in ("tools.html", "hilfe/")] + [f"{new}hilfe/{p.name}" for p in sorted((SITE / "hilfe").glob("*.html")) if p.name != "index.html"]
+    urls = [new] + [new + n for n in ("tools.html", "agb.html", "datenschutz.html", "impressum.html", "hilfe/")] + [f"{new}hilfe/{p.name}" for p in sorted((SITE / "hilfe").glob("*.html")) if p.name != "index.html"]
     sm = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     sm += [f"  <url><loc>{u}</loc></url>" for u in urls]
     sm.append("</urlset>")
