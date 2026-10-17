@@ -346,14 +346,14 @@ def page_shell(title, desc, body, slug="", depth_home="../"):
   <meta http-equiv="Content-Security-Policy" content="{CSP}">
   <meta name="robots" content="noindex, nofollow">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{e(title)} – SellCheck</title>
+  <title>{e(title)} | SellCheck</title>
   <meta name="description" content="{e(desc)}">
   <link rel="canonical" href="{url}">
   <link rel="apple-touch-icon" href="../apple-touch-icon.png">
   <meta property="og:site_name" content="SellCheck">
   <meta property="og:type" content="article">
   <meta property="og:locale" content="de_DE">
-  <meta property="og:title" content="{e(title)} – SellCheck">
+  <meta property="og:title" content="{e(title)} | SellCheck">
   <meta property="og:description" content="{e(desc)}">
   <meta property="og:url" content="{url}">
   <meta property="og:image" content="{SITE_URL}social/og-image.png">
@@ -382,7 +382,7 @@ def page_shell(title, desc, body, slug="", depth_home="../"):
 <footer class="on-dark help-footer">
   <div class="wrap">
     <p>SellCheck gibt Orientierung und ist keine Steuer- oder Rechtsberatung. Alles läuft in deinem Browser.</p>
-    <p><a href="../index.html">Startseite</a> · <a href="../tools.html">Tools</a> · <a href="../impressum.html">Impressum</a> · <a href="../datenschutz.html">Datenschutz</a></p>
+    <p><a href="../index.html">Startseite</a> · <a href="../tools.html">Tools</a> · <a href="../impressum.html">Impressum</a> · <a href="../datenschutz.html">Datenschutz</a> · <a href="../agb.html">Nutzungsbedingungen</a></p>
   </div>
 </footer>
 </body>

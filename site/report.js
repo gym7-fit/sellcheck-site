@@ -242,7 +242,7 @@
     } catch { /* ohne Stil trotzdem lesbar */ }
     const box = document.createElement("div");
     box.append(node);
-    const title = `Steuer-Report ${year} – SellCheck`;
+    const title = `Steuer-Report ${year} | SellCheck`;
     return `<!doctype html>\n<html lang="de">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<meta name="color-scheme" content="light">\n<meta name="robots" content="noindex">\n<title>${escapeHtml(title)}</title>\n<style>\n${css}\n</style>\n</head>\n<body>\n<main class="sheet">\n${box.innerHTML}\n</main>\n</body>\n</html>\n`;
   }
 
@@ -261,7 +261,7 @@
   } else {
     root.append(built);
   }
-  document.title = `Steuer-Report ${year} – SellCheck`;
+  document.title = `Steuer-Report ${year} | SellCheck`;
   document.getElementById("print").addEventListener("click", () => window.print());
   const dl = document.getElementById("download");
   if (dl) {

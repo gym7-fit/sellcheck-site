@@ -40,7 +40,7 @@ test("Hilfeseiten: kein Skript, nicht indexierbar, Content-Security-Policy ohne 
     assert.ok(/<meta name="robots" content="noindex, nofollow">/.test(h), `${f}: noindex fehlt`);
     const csp = (h.match(/Content-Security-Policy" content="([^"]+)"/) || [])[1] || "";
     assert.ok(csp.includes("default-src 'none'") && !csp.includes("script-src"), `${f}: CSP`);
-    assert.match(h, /<title>[^<]+ – SellCheck<\/title>/, `${f}: Titel`);
+    assert.match(h, /<title>[^<]+ \| SellCheck<\/title>/, `${f}: Titel`);
     assert.match(h, /<h1>/, `${f}: Überschrift`);
   }
 });
