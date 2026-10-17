@@ -75,3 +75,9 @@ test("Haken: Nutzungsbedingungen, Datenschutz, Impressum und Favicon sind da und
 test("Haken: Datenschutz nennt Konto und App", () => {
   assert.match(text(path.join(SITE, "datenschutz.html")), /iPhone-App und Konto/);
 });
+
+test("Mobil: Raster-Spalten haben keine feste Mindestbreite über der Bildschirmbreite (min(…, 100%))", () => {
+  for (const f of files.filter((x) => x.endsWith(".css"))) {
+    for (const m of text(f).matchAll(/minmax\((\d+)px, 1fr\)/g)) assert.ok(+m[1] < 200, `${rel(f)}: minmax(${m[1]}px, 1fr) läuft bei kleinen Bildschirmen über`);
+  }
+});
