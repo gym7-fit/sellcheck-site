@@ -410,6 +410,7 @@ def platform_page(d):
     body = f"""<main id="main">
 <div class="help-hero on-dark">
   <div class="wrap">
+    <nav class="crumbs" aria-label="Brotkrumen"><a href="../index.html">Startseite</a> › <a href="index.html">Hilfe</a> › <span aria-current="page">{e(d["name"])}</span></nav>
     <a class="help-back" href="index.html">← Alle Datenquellen</a>
     <span class="eyebrow">Hilfe · Datei besorgen</span>
     <h1>{e(d["headline"])}</h1>
@@ -452,6 +453,7 @@ def hub_page():
     body = f"""<main id="main">
 <div class="help-hero on-dark">
   <div class="wrap">
+    <nav class="crumbs" aria-label="Brotkrumen"><a href="../index.html">Startseite</a> › <span aria-current="page">Hilfe</span></nav>
     <span class="eyebrow">Hilfe · Datei besorgen</span>
     <h1>Wo finde ich meine Exportdatei?</h1>
     <p>Wähle deine Plattform. Du bekommst eine Schritt-für-Schritt-Anleitung, wo die Datei liegt und was du danach in SellCheck tust.</p>

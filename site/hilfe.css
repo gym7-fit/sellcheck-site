@@ -53,3 +53,6 @@
   .help-step { grid-template-columns: 1fr; gap: 10px; padding: 16px; }
   .help-hero { padding: 36px 0 30px; }
 }
+.crumbs { font-size: .88rem; margin-bottom: 14px; color: #a2a8b3; }
+.crumbs a { color: #d9dde4; }
+.crumbs [aria-current] { color: #fff; font-weight: 600; }
