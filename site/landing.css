@@ -211,3 +211,5 @@ section[id], .hero { scroll-margin-top: 76px; }
 
 /* Angebot: Karten oben ausrichten, damit die kürzere Starter-Karte nicht unten leer in die Länge gezogen wird */
 #angebot .grid { align-items: start; }
+.plan.featured .plan-free { margin: 6px 0 14px; color: var(--muted); }
+.plan.featured .plan-free a { color: var(--lime); text-decoration: underline; text-underline-offset: 3px; }
