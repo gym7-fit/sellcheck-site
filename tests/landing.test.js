@@ -92,7 +92,7 @@ test("Angebot: Stufen Essential und Premium, Preis aufgeschlüsselt, nur Vorhand
   const lists = [...sec.matchAll(/<ul class="check">[\s\S]*?<\/ul>/g)].map((m) => m[0]).join("");
   assert.ok(!/Screenshot|KI|Weiterleitung|Inserat|Synchron|Geräte/i.test(lists), "Geplantes gehört nicht in die Leistungslisten");
   assert.match(sec, /Noch nicht erhältlich/, "Hinweis auf Geplantes fehlt");
-  assert.match(sec, /Basic bleibt kostenlos/, "kostenlose Stufe Basic wird genannt");
+  assert.match(sec, /Basic kostenlos/, "kostenlose Stufe Basic wird genannt");
   assert.ok(!/\d+ Stunden|\$\s?\d+|\d+\s?€ deiner Zeit/.test(sec), "keine erfundenen Zeit- oder Geldersparnisse");
   assert.ok(!/SellCheck Pro|Pro-Karte/.test(sec), "alter Name Pro ist ersetzt");
 });
