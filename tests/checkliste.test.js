@@ -81,3 +81,13 @@ test("Mobil: Raster-Spalten haben keine feste Mindestbreite über der Bildschirm
     for (const m of text(f).matchAll(/minmax\((\d+)px, 1fr\)/g)) assert.ok(+m[1] < 200, `${rel(f)}: minmax(${m[1]}px, 1fr) läuft bei kleinen Bildschirmen über`);
   }
 });
+
+test("Scannbar: keine Textwände auf Startseite und Tools (Absätze kurz, lange Antworten mit Liste)", () => {
+  for (const page of ["index.html", "tools.html"]) {
+    const html = text(path.join(SITE, page)).replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, "");
+    for (const m of html.matchAll(/<p\b[^>]*>([\s\S]*?)<\/p>/g)) {
+      const t = m[1].replace(/<[^>]+>/g, "").replace(/&[a-z]+;/g, "x").replace(/\s+/g, " ").trim();
+      assert.ok(t.length <= 340, `${page}: Absatz mit ${t.length} Zeichen (Richtwert 340): „${t.slice(0, 60)}…“`);
+    }
+  }
+});
