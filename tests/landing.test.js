@@ -74,3 +74,17 @@ test("Sprungmarken: Abschnitte haben einen Abstand nach oben, damit die feste Ko
   assert.match(css, /section\[id\][^{]*\{[^}]*scroll-margin-top: \d+px/);
   assert.match(css, /\.demo-plats label \{[^}]*-webkit-tap-highlight-color: transparent/);
 });
+
+test("Pro-Karte: Ergebnis zuerst, Preis aufgeschlüsselt, nur Vorhandenes als Leistung, Geplantes als geplant markiert", () => {
+  const html = fs.readFileSync(path.join(__dirname, "..", "site", "index.html"), "utf8");
+  const card = html.slice(html.indexOf("SellCheck Pro</h3>"), html.indexOf("<!-- VERTRAUEN -->"));
+  assert.match(card, /class="plan-lead"/, "Ergebnis-Satz fehlt");
+  assert.match(card, /rund 2,42 Euro im Monat/, "Preis pro Monat fehlt");
+  assert.match(card, /class="plan-cost"/, "Vergleich mit dem Problem fehlt");
+  assert.match(card, /href="#demo"/, "Beispielrechnung fehlt");
+  // Noch nicht gebaute Funktionen dürfen nicht in der Leistungsliste stehen
+  const list = card.slice(card.indexOf('<ul class="check">'), card.indexOf("</ul>"));
+  assert.ok(!/Screenshot|KI|Weiterleitung|Inserat/i.test(list), "Geplante Funktionen gehören nicht in die Leistungsliste");
+  assert.match(card, /noch nicht erhältlich/, "Hinweis auf Geplantes fehlt");
+  assert.ok(!/\d+ Stunden|\$\s?\d+|\d+\s?€ deiner Zeit/.test(card), "keine erfundenen Zeit- oder Geldersparnisse");
+});
