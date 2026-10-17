@@ -88,7 +88,7 @@ p { margin: 0 0 1em; }
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   border: 0; cursor: pointer; text-decoration: none; font: inherit; font-weight: 700;
   background: var(--lime); color: var(--ink) !important;
-  padding: 14px 24px; border-radius: 999px; transition: transform .15s, background .15s;
+  padding: 14px 24px; border-radius: var(--radius-sm, 12px); transition: transform .15s, background .15s;
 }
 .btn:hover { background: var(--lime-strong); transform: translateY(-1px); }
 .btn.secondary { background: transparent; color: var(--text) !important; box-shadow: inset 0 0 0 1.5px var(--line); }
@@ -121,7 +121,7 @@ p { margin: 0 0 1em; }
 
 /* Plattform-Chips */
 .chips { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 28px 0 0; }
-.chips li { padding: 6px 14px; border-radius: 999px; font-size: .85rem; font-weight: 600; color: var(--paper); box-shadow: inset 0 0 0 1.5px #3a414d; }
+.chips li { padding: 6px 14px; border-radius: var(--radius-sm, 12px); font-size: .85rem; font-weight: 600; color: var(--paper); box-shadow: inset 0 0 0 1.5px #3a414d; }
 .chips li:last-child { color: var(--lime); box-shadow: inset 0 0 0 1.5px rgba(200,241,105,.4); }
 
 /* Produkt-Mockup */
@@ -208,7 +208,7 @@ input, select {
 input:focus, select:focus { border-color: var(--text); outline: none; box-shadow: 0 0 0 3px rgba(200,241,105,.55); }
 .field-row { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); margin-bottom: 14px; }
 .inline-form { display: flex; gap: 10px; flex-wrap: wrap; }
-.inline-form input { flex: 1 1 220px; border-radius: 999px; padding: 13px 18px; }
+.inline-form input { flex: 1 1 220px; border-radius: var(--radius-sm, 12px); padding: 13px 18px; }
 .form-note { margin-top: 10px; min-height: 1.4em; }
 
 /* ---------- Hinweise ---------- */
@@ -287,7 +287,7 @@ td.num, th.num { text-align: right; }
 .page-hero h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); margin-bottom: .3em; }
 .page-hero p { color: #c5cad3; font-size: 1.15rem; max-width: 620px; }
 .tool-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 24px; }
-.tool-nav a { display: inline-flex; gap: 8px; align-items: center; text-decoration: none; padding: 9px 16px; border-radius: 999px; font-size: .92rem; font-weight: 600; color: var(--paper); box-shadow: inset 0 0 0 1.5px #3a414d; }
+.tool-nav a { display: inline-flex; gap: 8px; align-items: center; text-decoration: none; padding: 9px 16px; border-radius: var(--radius-sm, 12px); font-size: .92rem; font-weight: 600; color: var(--paper); box-shadow: inset 0 0 0 1.5px #3a414d; }
 .tool-nav a:hover { box-shadow: inset 0 0 0 1.5px var(--lime); color: var(--lime); }
 .tool-nav .ico { width: 18px; height: 18px; }
 .tools-main { margin-top: -36px; position: relative; padding-bottom: 72px; }
@@ -421,7 +421,7 @@ dialog.edit-dialog::backdrop { background: rgba(8, 10, 14, .6); }
 .src-item .src-tile { width: 100%; }
 .src-help {
   display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 36px;
-  padding: 6px 12px; border-radius: 999px; border: 1.5px solid var(--line); background: transparent;
+  padding: 6px 12px; border-radius: var(--radius-sm, 12px); border: 1.5px solid var(--line); background: transparent;
   color: var(--text); font-weight: 700; font-size: .88rem; text-decoration: none;
   transition: border-color .15s, background .15s;
 }

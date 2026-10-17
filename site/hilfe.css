@@ -24,7 +24,7 @@
 
 /* Menüweg als Kette: zeigt, wo man klickt, ohne ein Abbild der fremden Oberfläche zu behaupten */
 .help-path { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0 0 !important; }
-.help-path .chip { padding: 5px 11px; border-radius: 999px; border: 1.5px solid var(--text); background: var(--bg); font-weight: 700; font-size: .88rem; line-height: 1.2; }
+.help-path .chip { padding: 5px 11px; border-radius: var(--radius-sm, 12px); border: 1.5px solid var(--text); background: var(--bg); font-weight: 700; font-size: .88rem; line-height: 1.2; }
 .help-path .chip:last-child { background: var(--lime); border-color: var(--lime); color: var(--ink); }
 .help-path .sep { color: var(--muted); font-weight: 800; }
 

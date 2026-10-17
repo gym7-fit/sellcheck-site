@@ -5,8 +5,6 @@
   var LIMIT_COUNT = 30; // wird unten aus tax-lib.js übernommen, damit Startseite und Tools dieselben Grenzen nutzen
   var LIMIT_SUM = 2000;
   var eur = new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
-  var eur2 = new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  var calm = !window.matchMedia || !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   /* ---- Ampel je Plattform (gleiche Grenzen und Schwellen wie in den Tools: ab 60 % gelb, ab 100 % rot) ---- */
   var T = window.SCTax || {};
@@ -83,38 +81,5 @@
     render();
   }
 
-  if (!calm) return;
-
-  /* ---- Beispielbetrag im Hero zählt hoch ---- */
-  var big = document.querySelector("[data-count]");
-  if (big) {
-    var target = Number(big.getAttribute("data-count"));
-    var start = performance.now() + 450;
-    var dur = 1100;
-    var ease = function (t) { return 1 - Math.pow(1 - t, 4); };
-    big.textContent = eur2.format(0);
-    var tick = function (now) {
-      var t = Math.min(1, Math.max(0, (now - start) / dur));
-      big.textContent = eur2.format(target * ease(t));
-      if (t < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  }
-
-  /* ---- Werkzeug-Karten blenden einmal gestaffelt ein, sobald sie sichtbar werden ---- */
-  var cards = document.querySelectorAll(".bento > .tool-card");
-  if (cards.length && "IntersectionObserver" in window && Element.prototype.animate) {
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (!e.isIntersecting) return;
-        io.unobserve(e.target);
-        var i = Array.prototype.indexOf.call(cards, e.target);
-        e.target.animate(
-          [{ opacity: 0, transform: "translateY(18px)" }, { opacity: 1, transform: "none" }],
-          { duration: 520, delay: (i % 3) * 70, easing: "cubic-bezier(.23,1,.32,1)", fill: "backwards" }
-        );
-      });
-    }, { threshold: 0.15 });
-    cards.forEach(function (c) { io.observe(c); });
-  }
+  // Keine Zähl- und Scroll-Animationen: Zahlen stehen sofort da (Checkliste: keine erfundenen Zähler, wenige Animationen).
 })();
