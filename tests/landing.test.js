@@ -75,16 +75,22 @@ test("Sprungmarken: Abschnitte haben einen Abstand nach oben, damit die feste Ko
   assert.match(css, /\.demo-plats label \{[^}]*-webkit-tap-highlight-color: transparent/);
 });
 
-test("Pro-Karte: Ergebnis zuerst, Preis aufgeschlüsselt, nur Vorhandenes als Leistung, Geplantes als geplant markiert", () => {
+test("Angebot: Stufen Essential und Premium, Preis aufgeschlüsselt, nur Vorhandenes als Leistung, Geplantes als geplant markiert", () => {
   const html = fs.readFileSync(path.join(__dirname, "..", "site", "index.html"), "utf8");
-  const card = html.slice(html.indexOf("SellCheck Pro</h3>"), html.indexOf("<!-- VERTRAUEN -->"));
-  assert.match(card, /class="plan-lead"/, "Ergebnis-Satz fehlt");
-  assert.match(card, /rund 2,42 Euro im Monat/, "Preis pro Monat fehlt");
-  assert.match(card, /class="plan-cost"/, "Vergleich mit dem Problem fehlt");
-  assert.match(card, /href="#demo"/, "Beispielrechnung fehlt");
-  // Noch nicht gebaute Funktionen dürfen nicht in der Leistungsliste stehen
-  const list = card.slice(card.indexOf('<ul class="check">'), card.indexOf("</ul>"));
-  assert.ok(!/Screenshot|KI|Weiterleitung|Inserat/i.test(list), "Geplante Funktionen gehören nicht in die Leistungsliste");
-  assert.match(card, /Noch nicht erhältlich/, "Hinweis auf Geplantes fehlt");
-  assert.ok(!/\d+ Stunden|\$\s?\d+|\d+\s?€ deiner Zeit/.test(card), "keine erfundenen Zeit- oder Geldersparnisse");
+  const sec = html.slice(html.indexOf('<section id="angebot"'), html.indexOf("<!-- VERTRAUEN -->"));
+  for (const h of ["Starter</h3>", "Essential</h3>", "Premium</h3>"]) assert.ok(sec.includes(h), `Karte ${h} fehlt`);
+  assert.match(sec, /4,99 €[\s\S]*oder 39 € im Jahr/, "Essential-Preise");
+  assert.match(sec, /6,99 €[\s\S]*oder 49 € im Jahr/, "Premium-Preise");
+  assert.match(sec, /rund 3,25 Euro im Monat/, "Monatsanteil Essential");
+  assert.match(sec, /rund 4,08 Euro im Monat/, "Monatsanteil Premium");
+  assert.equal((sec.match(/class="plan-lead"/g) || []).length, 2, "Ergebnis-Satz je Bezahl-Stufe");
+  assert.match(sec, /class="plan-cost"/, "Vergleich mit dem Problem fehlt");
+  assert.match(sec, /href="#demo"/, "Beispielrechnung fehlt");
+  // Noch nicht gebaute Funktionen (Screenshot-Import, KI-Inserate, Sync) dürfen nirgends als Leistung stehen
+  const lists = [...sec.matchAll(/<ul class="check">[\s\S]*?<\/ul>/g)].map((m) => m[0]).join("");
+  assert.ok(!/Screenshot|KI|Weiterleitung|Inserat|Synchron|Geräte/i.test(lists), "Geplantes gehört nicht in die Leistungslisten");
+  assert.match(sec, /Noch nicht erhältlich/, "Hinweis auf Geplantes fehlt");
+  assert.match(sec, /Gratis bleibt gratis/, "Gratis-Stufe wird genannt");
+  assert.ok(!/\d+ Stunden|\$\s?\d+|\d+\s?€ deiner Zeit/.test(sec), "keine erfundenen Zeit- oder Geldersparnisse");
+  assert.ok(!/SellCheck Pro|Pro-Karte/.test(sec), "alter Name Pro ist ersetzt");
 });

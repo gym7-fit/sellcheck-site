@@ -213,3 +213,5 @@ section[id], .hero { scroll-margin-top: 76px; }
 #angebot .grid { align-items: start; }
 .plan.featured .plan-free { margin: 6px 0 14px; color: var(--muted); }
 .plan.featured .plan-free a { color: var(--lime); text-decoration: underline; text-underline-offset: 3px; }
+.plan-note { margin-top: 22px; max-width: 760px; }
+.price-year { margin: -4px 0 4px; font-weight: 700; }
