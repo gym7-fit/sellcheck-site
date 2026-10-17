@@ -81,18 +81,24 @@ test("Angebot: Stufen Essential und Premium, Preis aufgeschlüsselt, nur Vorhand
   for (const h of ["Starter</h3>", "Essential</h3>", "Premium</h3>"]) assert.ok(sec.includes(h), `Karte ${h} fehlt`);
   assert.match(sec, /4,99 €[\s\S]*oder 39 € im Jahr/, "Essential-Preise");
   assert.match(sec, /6,99 €[\s\S]*oder 49 € im Jahr/, "Premium-Preise");
-  assert.match(sec, /rund 3,25 Euro im Monat/, "Monatsanteil Essential");
-  assert.match(sec, /rund 4,08 Euro im Monat/, "Monatsanteil Premium");
+  assert.match(sec, /3,25 € im Monat/, "Monatsanteil Essential");
+  assert.match(sec, /4,08 € im Monat/, "Monatsanteil Premium");
   assert.equal((sec.match(/class="plan-lead"/g) || []).length, 2, "Ergebnis-Satz je Bezahl-Stufe");
   assert.match(sec, /Alles aus Basic/, "Essential nennt „Alles aus Basic“");
   assert.match(sec, /Alles aus Essential/, "Premium nennt „Alles aus Essential“");
-  assert.match(sec, /Unbegrenzt viele Artikel/, "unbegrenzte Artikel als eigener Punkt");
+  assert.match(sec, /Unbegrenzt<\/b> viele Artikel/, "unbegrenzte Artikel als eigener Punkt");
   assert.match(sec, /class="plan-cost"/, "Vergleich mit dem Problem fehlt");
   assert.match(sec, /href="#demo"/, "Beispielrechnung fehlt");
   // Noch nicht gebaute Funktionen (Screenshot-Import, KI-Inserate, Sync) dürfen nirgends als Leistung stehen
   const lists = [...sec.matchAll(/<ul class="check">[\s\S]*?<\/ul>/g)].map((m) => m[0]).join("");
   assert.ok(!/Screenshot|KI|Weiterleitung|Inserat|Synchron|Geräte/i.test(lists), "Geplantes gehört nicht in die Leistungslisten");
   assert.match(sec, /Noch nicht erhältlich/, "Hinweis auf Geplantes fehlt");
+  // Scanbar: kurze Listenpunkte, kein langer Fließtext unter den Preisen
+  for (const li of [...sec.matchAll(/<li>([\s\S]*?)<\/li>/g)].map((m) => m[1].replace(/<[^>]+>/g, ""))) {
+    assert.ok(li.length <= 60, `Listenpunkt zu lang (${li.length}): ${li}`);
+  }
+  for (const m of sec.matchAll(/<p class="plan-lead">([\s\S]*?)<\/p>/g)) assert.ok(m[1].length <= 60, "Stufen-Satz zu lang");
+  assert.ok(!/class="plan-sub"/.test(sec), "kein zusätzlicher Erklärsatz unter dem Preis");
   assert.match(sec, /Basic kostenlos/, "kostenlose Stufe Basic wird genannt");
   assert.ok(!/\d+ Stunden|\$\s?\d+|\d+\s?€ deiner Zeit/.test(sec), "keine erfundenen Zeit- oder Geldersparnisse");
   assert.ok(!/SellCheck Pro|Pro-Karte/.test(sec), "alter Name Pro ist ersetzt");
