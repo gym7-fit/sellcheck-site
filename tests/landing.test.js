@@ -84,6 +84,7 @@ test("Angebot: Stufen Essential und Premium, Preis aufgeschlüsselt, nur Vorhand
   assert.match(sec, /rund 3,25 Euro im Monat/, "Monatsanteil Essential");
   assert.match(sec, /rund 4,08 Euro im Monat/, "Monatsanteil Premium");
   assert.equal((sec.match(/class="plan-lead"/g) || []).length, 2, "Ergebnis-Satz je Bezahl-Stufe");
+  assert.match(sec, /Alles aus Basic/, "Essential nennt „Alles aus Basic“");
   assert.match(sec, /Alles aus Essential/, "Premium nennt „Alles aus Essential“");
   assert.match(sec, /Unbegrenzt viele Artikel/, "unbegrenzte Artikel als eigener Punkt");
   assert.match(sec, /class="plan-cost"/, "Vergleich mit dem Problem fehlt");
