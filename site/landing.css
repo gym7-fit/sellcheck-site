@@ -208,3 +208,6 @@ section[id], .hero { scroll-margin-top: 76px; }
 .plan-sub { margin: 0 0 8px; color: var(--muted); font-size: .95rem; }
 .plan-cost { margin: 16px 0 12px; padding: 12px 14px; border-radius: var(--radius-sm); background: var(--surface-2); font-size: .92rem; line-height: 1.5; }
 .plan ul.check li b { font-weight: 700; }
+
+/* Angebot: Karten oben ausrichten, damit die kürzere Starter-Karte nicht unten leer in die Länge gezogen wird */
+#angebot .grid { align-items: start; }
