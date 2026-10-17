@@ -202,3 +202,9 @@ main > section.on-dark h2 { font-size: clamp(2rem, 4.6vw, 3.4rem); }
 section[id], .hero { scroll-margin-top: 76px; }
 /* Kein grauer Tipp-Blitz auf den Plattform-Chips (Safari auf dem iPhone) */
 .demo-plats label { -webkit-tap-highlight-color: transparent; }
+
+/* Pro-Karte: Ergebnis zuerst, dann aufgeschlüsselt */
+.plan-lead { font-size: 1.12rem; font-weight: 600; line-height: 1.45; margin: 14px 0 10px; }
+.plan-sub { margin: 0 0 8px; color: var(--muted); font-size: .95rem; }
+.plan-cost { margin: 16px 0 12px; padding: 12px 14px; border-radius: var(--radius-sm); background: var(--surface-2); font-size: .92rem; line-height: 1.5; }
+.plan ul.check li b { font-weight: 700; }
