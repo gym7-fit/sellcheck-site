@@ -83,3 +83,16 @@ test("Sitemap-Erzeugung kennt alle öffentlichen Seiten", () => {
   const s = fs.readFileSync(path.join(__dirname, "..", "scripts", "set-site-url.py"), "utf8");
   for (const f of ["agb.html", "datenschutz.html", "impressum.html"]) assert.ok(s.includes(f), `${f} nicht in der Sitemap-Erzeugung`);
 });
+
+test("Bestätigungsseite: öffnet die App über sellcheck://, nicht indexiert, Skript extern (strenge CSP), Fehlerfall vorhanden", () => {
+  const html = read("bestaetigt.html");
+  assert.match(html, /href="sellcheck:\/\/bestaetigt"/, "Knopf zur App fehlt");
+  assert.match(html, /<meta name="robots" content="noindex">/, "Seite darf nicht indexiert werden");
+  assert.match(html, /<script src="bestaetigt\.js"><\/script>/, "Skript muss extern sein");
+  assert.ok(!/<script>[\s\S]*?<\/script>/.test(html), "kein Inline-Skript (CSP)");
+  assert.match(html, /id="fehler"[^>]*hidden/, "Fehlerfall (abgelaufener Link) fehlt");
+  const js = read("bestaetigt.js");
+  assert.match(js, /sellcheck:\/\/bestaetigt/, "Skript öffnet die App nicht");
+  assert.match(js, /history\.replaceState/, "Token im Adress-Fragment müssen entfernt werden");
+  assert.ok(!/access_token|refresh_token/.test(js.replace(/\/\/.*$/gm, "")), "Tokens dürfen nicht weitergegeben werden");
+});
