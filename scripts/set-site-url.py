@@ -16,7 +16,7 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
 GEN = ROOT / "scripts" / "build-hilfe.py"
-PAGES = ["index.html", "tools.html", "404.html", "agb.html", "datenschutz.html", "impressum.html", "danke.html"]
+PAGES = ["index.html", "tools.html", "404.html", "agb.html", "datenschutz.html", "impressum.html", "danke.html", "bestaetigt.html"]
 
 
 def current():
