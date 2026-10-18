@@ -64,3 +64,9 @@ test("Film: CSP erlaubt Medien nur von der eigenen Origin (Seite und _headers)",
   assert.ok(!/media-src[^;]*https?:/.test(csp));
   assert.match(read("_headers"), /media-src 'self'/);
 });
+
+test("Veröffentlichter Ordner: keine Reste von abgebrochenen Schreibvorgängen oder Systemdateien", () => {
+  const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]));
+  const junk = walk(SITE).filter((f) => /\.sb-[0-9a-f]+-|\.tmp$|\.part$|\.orig$|~$|(^|\/)\.DS_Store$/.test(f));
+  assert.deepEqual(junk.map((f) => path.relative(SITE, f)), [], "Reste im site-Ordner, die öffentlich ausgeliefert würden");
+});
