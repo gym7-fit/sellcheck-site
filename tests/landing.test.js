@@ -123,3 +123,11 @@ test("Meldegrenze: Startseite, Tools und Report sagen, dass die Plattform nach G
     assert.match(s, /nach Abzug ihrer Gebühren/, `${name}: Hinweis Gebühren fehlt`);
   }
 });
+
+test("Karten: Symbol steht neben der Überschrift, nicht als Kachel darüber (Entscheidung Louis 23.10.2026)", () => {
+  assert.ok(!/<div class="icon-badge[^"]*"><svg[^\n]*<\/svg><\/div>\s*<h3>/.test(html), "Symbol-Kachel direkt über einer h3");
+  assert.ok((html.match(/class="card-head"/g) || []).length >= 6, "Werkzeug- und Vertrauenskarten nutzen card-head");
+  const css = fs.readFileSync(path.join(SITE, "landing.css"), "utf8");
+  assert.match(css, /\.card-head \{[^}]*display: flex/);
+  assert.match(css, /\.bento > \.tool-wide \{ display: grid; grid-template-columns: auto 1fr;/, "breite Karte am Handy: Symbol neben dem Text");
+});

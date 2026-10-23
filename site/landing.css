@@ -93,13 +93,20 @@ h1, h2, h3 { text-wrap: balance; }
 .rows h3 { font-size: 1.3rem; margin-bottom: .3em; }
 .rows p { margin: 0; max-width: 34em; }
 
+/* ---------- Symbol neben der Überschrift (statt Kachel darüber) ---------- */
+.card-head { display: flex; align-items: center; gap: 12px; margin-bottom: .4em; }
+.card-head h3 { margin: 0; }
+.card-ico { flex: none; display: grid; place-items: center; width: 28px; height: 28px; color: var(--text); }
+.card-ico .ico { width: 28px; height: 28px; }
+.on-dark .card-ico { color: var(--lime); }
+
 /* ---------- Werkzeuge: Bento mit Rhythmus ---------- */
 .bento { grid-template-columns: repeat(6, 1fr); }
 .bento > .tool-feature { grid-column: span 3; padding: 0; overflow: hidden; }
 .bento > .tool-feature > :not(.tool-visual) { margin-left: 28px; margin-right: 28px; }
 .bento > .tool-feature h3 { margin-top: 0; font-size: 1.35rem; }
 .bento > .tool-feature .more { margin-bottom: 26px; }
-.bento > .tool-feature .icon-badge { margin-top: 26px; }
+.bento > .tool-feature .card-head { margin-top: 26px; }
 .bento > :not(.tool-feature):not(.tool-wide) { grid-column: span 2; }
 .bento > .tool-wide { grid-column: span 6; flex-direction: row; align-items: center; gap: 22px; background: var(--ink); color: var(--paper); border-color: #2b313b; --muted: #a2a8b3; }
 .bento > .tool-wide:hover { border-color: var(--lime); }
@@ -133,7 +140,9 @@ h1, h2, h3 { text-wrap: balance; }
 .trust-main { border-radius: 24px; padding: 40px; display: flex; flex-direction: column; justify-content: flex-end; min-height: 320px; background: var(--ink); border: 1px solid #2b313b; }
 .trust-main h3 { font-size: clamp(1.8rem, 3.2vw, 2.5rem); letter-spacing: -.03em; margin-bottom: .35em; }
 .trust-main p { font-size: 1.15rem; color: #c5cad3; max-width: 26em; margin: 0; }
-.trust-main .icon-badge { margin-bottom: auto; }
+.trust-main .card-head { margin-bottom: .35em; }
+.trust-main .card-head h3 { margin: 0; }
+.trust-main .card-ico, .trust-main .card-ico .ico { width: 40px; height: 40px; }
 .trust-side { display: grid; gap: 0; align-content: center; }
 .trust-item { display: grid; grid-template-columns: 48px 1fr; gap: 20px; padding: 26px 0; border-top: 1px solid var(--line); }
 .trust-item:first-child { border-top: 0; }
@@ -163,7 +172,9 @@ main > section.on-dark h2 { font-size: clamp(2rem, 4.6vw, 3.4rem); }
   .hero { padding: 44px 0 60px; }
   .demo { padding: 64px 0; }
   .demo-card { padding: 22px; }
-  .bento > .tool-wide { flex-direction: column; align-items: flex-start; }
+  /* Symbol bleibt auch am Handy neben der Überschrift, „Öffnen“ darunter */
+  .bento > .tool-wide { display: grid; grid-template-columns: auto 1fr; column-gap: 16px; row-gap: 14px; align-items: start; }
+  .bento > .tool-wide .more { grid-column: 1 / -1; }
   main > section.on-dark { padding: 72px 0; }
 }
 
