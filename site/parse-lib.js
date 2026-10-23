@@ -132,9 +132,27 @@
     if (dt.getUTCMonth() !== m - 1) return null;
     return `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
   }
+  // Zeitstempel mit Zeitzone (z. B. Amazon „2026-12-31T23:30:00+00:00“) auf den Kalendertag in Deutschland umrechnen,
+  // sonst landet ein Verkauf in der Silvesternacht im falschen Jahr. Ohne Zeitzone bleibt das Datum, wie es dasteht.
+  const BERLIN_DAY = (() => {
+    try { return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Berlin", year: "numeric", month: "2-digit", day: "2-digit" }); } catch { return null; }
+  })();
+  function berlinDay(s) {
+    const m = s.match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?\s*(Z|[+-]\d{2}:?\d{2})$/i);
+    if (!m || !BERLIN_DAY) return null;
+    const off = m[7].toUpperCase() === "Z" ? "Z" : m[7].replace(/^([+-]\d{2}):?(\d{2})$/, "$1:$2");
+    const t = Date.parse(`${m[1]}-${m[2]}-${m[3]}T${m[4]}:${m[5]}:${m[6] || "00"}${off}`);
+    if (!Number.isFinite(t) || !validDate(+m[1], +m[2], +m[3])) return null;
+    const out = BERLIN_DAY.format(new Date(t));
+    const [y, mo, d] = out.split("-").map(Number);
+    return validDate(y, mo, d);
+  }
+
   function parseDate(v, order) {
     const s = String(v || "").trim();
     if (!s) return null;
+    const tz = berlinDay(s);
+    if (tz) return tz;
     let m = s.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
     if (m) return validDate(+m[1], +m[2], +m[3]);
     m = s.match(/^(\d{1,2})[./-](\d{1,2})[./-](\d{2,4})/);

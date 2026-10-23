@@ -528,8 +528,7 @@
 
     const r = T.computeEuer(SC.sales, { year: state.year, vat: state.vat || "small", rate: state.rate });
     r.byPlatform.forEach((x) => {
-      const ratio = Math.max(x.count / T.MELDE_COUNT, x.revenue / (T.MELDE_SUM * 100));
-      const lvl = !x.reported ? "none" : ratio >= 1 ? "red" : ratio >= 0.6 ? "yellow" : "green";
+      const lvl = x.level; // aus SCTax.meldeStatus: none, green, yellow, red
       const txt = !x.reported ? "keine Meldung" : lvl === "red" ? "Grenze erreicht" : lvl === "yellow" ? "nähert sich" : "weit entfernt";
       const chip = el("div", undefined, "limit-chip " + lvl);
       chip.append(el("b", x.platform), el("span", `${x.count} Verkäufe · ${money(x.revenue)} · ${txt}`));
@@ -647,8 +646,7 @@
     }
     L.push("", "Plattformen und Meldegrenze:");
     r.byPlatform.forEach((x) => {
-      const ratio = Math.max(x.count / T.MELDE_COUNT, x.revenue / (T.MELDE_SUM * 100));
-      const txt = !x.reported ? "keine Meldung" : ratio >= 1 ? "Grenze erreicht" : ratio >= 0.6 ? "nähert sich" : "weit entfernt";
+      const txt = { none: "keine Meldung", red: "Grenze erreicht", yellow: "nähert sich", green: "weit entfernt" }[x.level];
       L.push(`- ${x.platform}: ${x.count} Verkäufe, ${money(x.revenue)}, ${txt}`);
     });
     L.push("", "Orientierung, keine Steuer- oder Rechtsberatung. Alle Angaben ohne Gewähr.");

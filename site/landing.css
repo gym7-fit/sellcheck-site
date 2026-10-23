@@ -37,15 +37,15 @@ h1, h2, h3 { text-wrap: balance; }
 .mock { max-width: 460px; padding: 24px; transform: rotate(1.2deg); box-shadow: 0 2px 4px rgba(0,0,0,.25), 0 36px 70px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.07); }
 .mock-big { font-size: 2.9rem; }
 
-/* Hero-Choreografie: Karte fährt ein, Balken wachsen, Betrag zählt hoch */
+/* Hero: kurze Einblendung (je höchstens 300 ms), Inhalt steht nach spätestens 0,4 s */
 @media (prefers-reduced-motion: no-preference) {
-  .hero-copy > * { animation: rise .7s var(--ease-out) both; }
-  .hero-copy > h1 { animation-delay: .04s; }
-  .hero-copy > .lead { animation-delay: .12s; }
-  .hero-copy > .cta { animation-delay: .2s; }
-  .hero-copy > .pills { animation-delay: .28s; }
-  .mock { animation: card-in .9s var(--ease-out) .18s both; }
-  .mock-gauge .bar i { animation-duration: 1s; animation-timing-function: var(--ease-out); animation-delay: .7s; }
+  .hero-copy > * { animation: rise .3s var(--ease-out) both; }
+  .hero-copy > h1 { animation-delay: 0s; }
+  .hero-copy > .lead { animation-delay: .03s; }
+  .hero-copy > .cta { animation-delay: .06s; }
+  .hero-copy > .pills { animation-delay: .09s; }
+  .mock { animation: card-in .3s var(--ease-out) .06s both; }
+  .mock-gauge .bar i { animation-duration: .3s; animation-timing-function: var(--ease-out); animation-delay: .1s; }
 }
 @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
 @keyframes card-in { from { opacity: 0; transform: translateY(26px) rotate(3deg) scale(.97); } }
@@ -71,11 +71,11 @@ h1, h2, h3 { text-wrap: balance; }
 .demo-row { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-top: 4px; }
 .demo-row label { margin: 0; font-size: .95rem; }
 .demo-row output { font-size: 1.5rem; font-weight: 800; letter-spacing: -.03em; }
-.demo-card input[type="range"] { padding: 0; height: 36px; border: 0; background: transparent; margin: 4px 0 14px; cursor: pointer; }
+.demo-card input[type="range"] { padding: 0; height: 44px; border: 0; background: transparent; margin: 4px 0 14px; cursor: pointer; }
 .demo-card input[type="range"]:focus { box-shadow: none; }
 .demo-card input[type="range"]:focus-visible { outline: 3px solid var(--lime-strong); outline-offset: 2px; border-radius: 8px; }
 .demo-meter { height: 12px; border-radius: 99px; background: var(--surface-2); overflow: hidden; margin: 6px 0 4px; }
-.demo-meter > div { height: 100%; width: 0; border-radius: 99px; background: var(--green); transition: width .45s var(--ease-out), background-color .25s; }
+.demo-meter > div { height: 100%; width: 0; border-radius: 99px; background: var(--green); transition: width .3s var(--ease-out), background-color .25s; }
 .demo-meter > div.yellow { background: #e5a93a; }
 .demo-meter > div.red { background: var(--red); }
 .demo-card .ampel { margin-top: 20px; transition: background-color .25s, border-color .25s; }
@@ -190,7 +190,7 @@ main > section.on-dark h2 { font-size: clamp(2rem, 4.6vw, 3.4rem); }
 .demo-plats { border: 0; padding: 0; margin: 0 0 20px; display: flex; flex-wrap: wrap; gap: 8px; }
 .demo-plats label { position: relative; margin: 0; cursor: pointer; font-size: .92rem; }
 .demo-plats input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
-.demo-plats span { display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: var(--radius-sm, 12px); background: var(--surface-2); box-shadow: inset 0 0 0 1.5px var(--line); font-weight: 700; transition: background-color .18s var(--ease-out), color .18s var(--ease-out); }
+.demo-plats span { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: var(--radius-sm, 12px); background: var(--surface-2); box-shadow: inset 0 0 0 1.5px var(--line); font-weight: 700; transition: background-color .18s var(--ease-out), color .18s var(--ease-out); }
 .demo-plats input:checked + span { background: var(--ink); color: var(--paper); box-shadow: none; }
 .demo-plats input:focus-visible + span { outline: 3px solid var(--lime-strong); outline-offset: 2px; }
 .demo-plats i { width: 10px; height: 10px; border-radius: 50%; background: var(--green); flex: none; box-shadow: 0 0 0 2px rgba(255,255,255,.35); }

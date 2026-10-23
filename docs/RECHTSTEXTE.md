@@ -1,4 +1,4 @@
-# Rechtstexte: was fehlt und was geprüft werden muss (Stand 16. Oktober 2026)
+# Rechtstexte: was fehlt und was geprüft werden muss (Stand 23. Oktober 2026)
 
 `impressum.html` und `datenschutz.html` sind **Entwürfe** (gelbe Platzhalter, Hinweisbox, `noindex`). Ich kann Angaben, die nur du kennst, nicht erfinden, und keine Rechtsberatung geben. Diese Datei sammelt alles, was vor dem Livegang ausgefüllt, entschieden und geprüft werden muss.
 
@@ -16,7 +16,17 @@
 | Datenschutz 5 | Zweck der Speicherung der Adresse nach der Freischaltung | Entscheidung, siehe unten |
 | Datenschutz 5 und 7 | E-Mail-Dienst: Anbieter, Sitz, Standort in der EU, Vertrag, Speicherdauer, Löschung nach Versand, Frist für Einwilligungsnachweis | nach Wahl des Dienstes |
 | Datenschutz 9 | zuständige Landesdatenschutzbehörde | nach deinem Wohnsitz |
-| Datenschutz 10 | Stand-Datum | beim Veröffentlichen |
+| Datenschutz 10 | Supabase Inc. (Rechenzentrum Frankfurt): Auftragsverarbeitung mit Standardvertragsklauseln; Absender der Konto-Mails (Dienst, Sitz, Standort) | nach Vertragsabschluss |
+| Datenschutz 11 | Stand-Datum | beim Veröffentlichen |
+| Impressum | Antwortzeit (z. B. 2 Werktage) | was du einhalten kannst |
+| AGB | Anbieter (wie Impressum), Stand-Datum | wie Impressum |
+| AGB | Leistungsumfang bei Start, Preis und Lieferweg Starter-Paket | erst ab Verfügbarkeit |
+| AGB | Umsatzsteuer im Preis oder Hinweis § 19 UStG | wie Impressum |
+| AGB | Zahlungswege im Web, Abo-Verlängerung, Kündigungsfrist, Verwaltung über Apple-ID bzw. Web | bei Start der Bezahlstufen |
+| AGB | Widerrufsbelehrung mit Muster-Formular, Erlöschen bei digitalen Inhalten | Rechtstexte-Dienst oder Kanzlei |
+| AGB | Haftungsregelung, Änderungen der Bedingungen (Zustimmungsfiktion), Streitbeilegung | Rechtstexte-Dienst oder Kanzlei |
+
+Stand der Zählung 23.10.2026: Impressum 9, Datenschutz 14, AGB 11 Platzhalter (Klasse `ph`).
 
 ## 2. Entscheidungen, die du treffen musst
 
@@ -27,7 +37,8 @@
 
 ## 3. Faktenblatt für die rechtliche Prüfung (technischer Stand)
 
-- Statische Seite, kein Server von uns, keine Datenbank, keine Konten (geparkt in `parked/accounts/`).
+- Webseite: statische Seite, kein Server von uns, keine Datenbank, keine Konten auf der Seite (geparkt in `parked/accounts/`).
+- iPhone-App (in Entwicklung): Basic ohne Konto; Konto ab Essential bei Supabase (Frankfurt) mit Vorname, Nachname, Verkaufsart, Umsatzsteuer-Art; freiwillige Datensicherung von Artikeln, Fotos und Belegen mit Einwilligung; Kontolöschung in der App. `bestaetigt.html` ist die Zielseite des Bestätigungs-Buttons in der Konto-Mail.
 - **Keine** Cookies, kein Tracking, keine Analyse, keine Werbung, keine Einbettung von Dritten; Schriften, Skripte, Bilder und Video liegen auf der eigenen Origin (strenge CSP: `default-src 'none'`).
 - Browser-Speicher (localStorage): `sellcheck.sales.v1` (Verkäufe), `sellcheck.wizard.v1` (Ablauf), `sellcheck.settings.v1` (Einstellungen), `sellcheck.lead.v1` (Freischaltung mit E-Mail-Adresse). Nichts davon wird gesendet, solange keine Endpunkte eingetragen sind.
 - Datenfluss nach außen nur bei eingetragenen Endpunkten: `leadEndpoint` (E-Mail-Adresse, Einwilligungen mit Wortlaut und Zeitpunkt) und `reportEndpoint` (E-Mail-Adresse plus Report: Verkaufsdaten verlassen das Gerät, einmalig, nur nach Haken oder Klick).
@@ -42,6 +53,18 @@
 - **Marke:** „SellCheck“ bei DPMA und EUIPO recherchieren, bevor Domain und Werbung hängen (`LIVEGANG.md`, Abschnitt 1).
 - **Plattformnamen:** Nur als Text genannt, keine Logos; Hinweis „unabhängig von den genannten Plattformen“ steht im Film und auf der Seite. Im Rechtscheck bestätigen lassen.
 - **Hinweise zur Einordnung privat/gewerblich:** neutral formuliert, keine Beratung; ebenfalls vom Steuerberater prüfen lassen.
+
+## 4a. Fragen für die Anwalts- und Steuerprüfung (aus der Prüfung vom 23.10.2026)
+
+1. **Datenschutz 2 und 10:** Dort steht „Für die iPhone-App legst du ein Konto an“. Die App läuft in Basic ohne Konto. Wortlaut so anpassen: „Ein Konto ist freiwillig und erst für Essential und Premium nötig“?
+2. **Supabase Inc.:** Daten liegen in Frankfurt, der Anbieter sitzt in den USA. Reichen Auftragsverarbeitung und Standardvertragsklauseln, und muss der mögliche Drittlandzugriff in Abschnitt 10 genannt werden?
+3. **Kontolöschung:** Abschnitt 10 verspricht Löschung „samt Sicherung“. Technisch muss die Lösch-Funktion alle Fotos erfassen (Fund 17 in `PRUEFUNG-2026-10-23.md`, wird in der App-Prüfung behoben). Aufbewahrungspflichten für Konto-Nachweise benennen?
+4. **Angebotskarten (UWG, PAngV):** Preise für Stufen, die es noch nicht gibt („Geplant“, „In Vorbereitung“, „Noch nicht erhältlich“). Reicht das als Kennzeichnung? Darf die Essential-Karte Funktionen nennen, die Basic auch hat (Fund 3)?
+5. **Meldegrenze:** Die Seite rechnet mit dem Verkaufspreis, das Gesetz mit der Vergütung nach Abzug der Plattform-Gebühren (§ 5 Abs. 2 PStTG). Ist der vorsichtigere Ansatz mit einem Hinweissatz in Ordnung (Fund 4)?
+6. **Regelbesteuerung im Steuer-Export:** Volle Umsatzsteuer auf den Verkaufspreis, keine Differenzbesteuerung (§ 25a UStG). Hinweis im Report genug, oder die Option ganz weglassen (Fund 6)?
+7. **Abos im Web (falls je angeboten):** Kündigungsbutton nach § 312k BGB, Widerruf digitaler Inhalte, Bestätigungsmail.
+8. **Barrierefreiheit (BFSG):** Gilt die Ausnahme für Kleinstunternehmen, sobald Bezahlstufen verkauft werden?
+9. **Vorabansicht auf GitHub Pages (USA):** Öffentlich erreichbar, `noindex`, ohne Formular-Versand. Reicht der Entwurfshinweis bis zum Umzug?
 
 ## 5. Reihenfolge
 
