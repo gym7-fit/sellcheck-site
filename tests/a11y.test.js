@@ -128,3 +128,26 @@ test("Fehler: Formulare zeigen Fehler am Feld (fielderr.js eingebunden, SCField 
   assert.match(css, /\.field-error\b/);
   assert.match(css, /\[aria-invalid="true"\]/);
 });
+
+test("Tippflächen: Knöpfe, aufklappbare Fragen und Ja/Nein-Auswahl sind mindestens 44 px hoch", () => {
+  const css = fs.readFileSync(path.join(SITE, "style.css"), "utf8");
+  for (const sel of ["\\.btn", "summary", "\\.quiz-opt"]) {
+    assert.match(css, new RegExp(`(^|\\n)${sel} \\{[^}]*min-height: 44px`), `${sel} ohne min-height: 44px`);
+  }
+  const landing = fs.readFileSync(path.join(SITE, "landing.css"), "utf8");
+  assert.match(landing, /\.demo-card input\[type="range"\] \{[^}]*height: 44px/);
+});
+
+test("Bewegung: Einblendungen und Übergänge dauern höchstens 300 ms", () => {
+  for (const f of ["style.css", "landing.css", "wizard.css", "gate.css", "report.css", "hilfe.css"]) {
+    const p = path.join(SITE, f);
+    if (!fs.existsSync(p)) continue;
+    const css = fs.readFileSync(p, "utf8");
+    for (const m of css.matchAll(/(?:animation|transition)(?:-duration)?:[^;}]*/g)) {
+      for (const d of m[0].matchAll(/(\d*\.?\d+)(m?s)\b/g)) {
+        const ms = d[2] === "ms" ? Number(d[1]) : Number(d[1]) * 1000;
+        assert.ok(ms <= 300, `${f}: ${m[0].trim()} (${ms} ms)`);
+      }
+    }
+  }
+});

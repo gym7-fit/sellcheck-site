@@ -54,10 +54,18 @@ test("Grenzen kommen aus tax-lib.js (eine Quelle für Startseite und Tools), Skr
   assert.match(js, /T\.MELDE_COUNT/);
 });
 
-test("Ampel-Schwellen der Startseite entsprechen denen der Tools (ab 60 % gelb, ab 100 % rot)", () => {
-  assert.match(js, /worst >= 1 \? "red" : worst >= 0\.6 \? "yellow" : "green"/);
+test("Ampel-Schwellen kommen auf Startseite, in den Tools und im Ablauf aus einer Quelle (SCTax.meldeStatus)", () => {
+  assert.match(js, /T\.meldeStatus\(/);
   const tools = fs.readFileSync(path.join(SITE, "tools.js"), "utf8");
-  assert.match(tools, /ratio >= 1 \? "red" : ratio >= 0\.6 \? "yellow" : "green"/);
+  const wizard = fs.readFileSync(path.join(SITE, "wizard.js"), "utf8");
+  assert.match(tools, /SCTax\.meldeStatus\(/);
+  assert.ok(!/ratio >= 0\.6|worst >= 0\.6/.test(tools + wizard), "keine eigenen Schwellen in tools.js oder wizard.js");
+  assert.equal(Tax.MELDE_WARN, 0.6);
+});
+
+test("Gelb-Text verspricht keine Hochrechnung („Bei diesem Tempo“), es gibt keine", () => {
+  const tools = fs.readFileSync(path.join(SITE, "tools.js"), "utf8");
+  assert.ok(!/Bei diesem Tempo/.test(js + tools));
 });
 
 test("Beispielstände zeigen alle drei Stufen", () => {

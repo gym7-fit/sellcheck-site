@@ -34,6 +34,15 @@ test("parseNum: deutsche und englische Schreibweisen ergeben denselben Betrag", 
 });
 
 /* ---- Datum: falsches Jahr/Monat verschiebt Meldegrenze ---- */
+test("parseDate: Zeitstempel mit Zeitzone zählen nach deutscher Zeit (Silvesternacht landet im richtigen Jahr)", () => {
+  assert.equal(P.parseDate("2026-12-31T23:30:00+00:00"), "2027-01-01", "00:30 Uhr in Deutschland");
+  assert.equal(P.parseDate("2026-12-31T22:59:59Z"), "2026-12-31", "23:59 Uhr in Deutschland");
+  assert.equal(P.parseDate("2026-07-01T22:30:00Z"), "2026-07-02", "Sommerzeit: 00:30 Uhr");
+  assert.equal(P.parseDate("2026-01-01T00:30:00+0100"), "2026-01-01");
+  assert.equal(P.parseDate("2026-12-31T23:30:00"), "2026-12-31", "ohne Zeitzone bleibt der Tag, wie er dasteht");
+  assert.equal(P.parseDate("2026-02-30T10:00:00Z"), null);
+});
+
 test("parseDate: ISO, deutsch, US, Monatsnamen, Zeitanhang und Unsinn", () => {
   assert.equal(P.parseDate("2026-09-12T10:22:31+00:00"), "2026-09-12");
   assert.equal(P.parseDate("03.09.2026 10:12", "dmy"), "2026-09-03");

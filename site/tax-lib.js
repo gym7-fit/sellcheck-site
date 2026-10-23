@@ -25,6 +25,27 @@
   const fromCents = (c) => c / 100;
   const freigrenzePrivat = (year) => (Number(year) >= 2024 ? 1000 : 600);
 
+  /* ---------- Meldegrenze (eine Quelle für Startseite, Tools und Report) ---------- */
+  // § 4 Abs. 5 Satz 1 Nr. 4 PStTG: Freigestellt ist nur, wer auf derselben Plattform in weniger als 30 Fällen
+  // verkauft UND dafür insgesamt weniger als 2.000 € erhalten hat. Bei genau 2.000,00 € meldet die Plattform also.
+  // Rot = Grenze erreicht, Gelb ab 60 % einer der beiden Grenzen (Hinweisstufe, keine gesetzliche Größe).
+  // Beträge in Cent, damit Summen wie 0,1 + 0,2 genau an der Grenze nicht als knapp darunter gelten.
+  const MELDE_WARN = 0.6;
+  function meldeStatus(count, revenueCents) {
+    const c = Math.max(0, Math.floor(Number(count) || 0));
+    const s = Math.max(0, Math.round(Number(revenueCents) || 0));
+    const ratio = Math.max(c / MELDE_COUNT, s / (MELDE_SUM * 100));
+    const reached = c >= MELDE_COUNT || s >= MELDE_SUM * 100;
+    return {
+      ratio,
+      reached,
+      level: reached ? "red" : ratio >= MELDE_WARN ? "yellow" : "green",
+      // Unter der Grenze nie „100 %“ anzeigen (99,6 % wäre sonst gerundet 100 % bei Gelb)
+      percent: reached ? Math.max(100, Math.floor(ratio * 100)) : Math.min(99, Math.floor(ratio * 100)),
+    };
+  }
+  const sumCents = (list, key) => list.reduce((a, x) => a + cents(x[key]), 0);
+
   /* ---------- Bereinigen (auch gegen beschädigten localStorage) ---------- */
   const clampNum = (v) => (Number.isFinite(Number(v)) && Number(v) >= 0 && Number(v) < 1e9 ? Number(v) : 0);
   const ISO = /^\d{4}-\d{2}-\d{2}$/;
@@ -161,7 +182,8 @@
     });
     res.byPlatform = [...plat.values()].map((r) => {
       const reported = REPORTED_PLATFORMS.includes(r.platform);
-      return { ...r, profit: r.revenue - r.goods - r.other, reported, meldegrenze: reported && (r.count >= MELDE_COUNT || r.revenue >= cents(MELDE_SUM)) };
+      const st = meldeStatus(r.count, r.revenue);
+      return { ...r, profit: r.revenue - r.goods - r.other, reported, meldegrenze: reported && st.reached, level: reported ? st.level : "none" };
     }).sort((a, b) => b.revenue - a.revenue);
 
     // Je Monat
@@ -273,8 +295,8 @@
   }
 
   return {
-    KU_LIMIT_PREVIOUS, KU_LIMIT_CURRENT, GEWERBESTEUER_FREIBETRAG, REPORTED_PLATFORMS, MELDE_COUNT, MELDE_SUM,
-    cents, fromCents, freigrenzePrivat, sanitizeEntry, sanitizeSettings, validIso, csvText, csvNum, deDate, toCsv, cellT, cellN,
+    KU_LIMIT_PREVIOUS, KU_LIMIT_CURRENT, GEWERBESTEUER_FREIBETRAG, REPORTED_PLATFORMS, MELDE_COUNT, MELDE_SUM, MELDE_WARN,
+    meldeStatus, sumCents, cents, fromCents, freigrenzePrivat, sanitizeEntry, sanitizeSettings, validIso, csvText, csvNum, deDate, toCsv, cellT, cellN,
     computeEuer, journalCsv, summaryRows, summaryCsv, computePrivate, privateCsv, addYears,
   };
 });

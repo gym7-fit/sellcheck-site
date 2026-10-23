@@ -80,9 +80,7 @@ fillSelect($("t-filter"), true);
 fillSelect($("a-platform"), false);
 
 /* ---------- Bewertung gegen die Meldegrenze ---------- */
-function level(ratio) {
-  return ratio >= 1 ? "red" : ratio >= 0.6 ? "yellow" : "green";
-}
+// Grenzen, Schwellen und Rundung kommen aus tax-lib.js (SCTax.meldeStatus), Beträge in Cent.
 const LEVEL_TEXT = {
   green: "Grün: weit entfernt",
   yellow: "Gelb: nähert sich der Grenze",
@@ -90,34 +88,34 @@ const LEVEL_TEXT = {
 };
 
 /* ---------- 1. Ampel (manuell) ---------- */
-function setBar(bar, ratio) {
-  bar.style.width = Math.min(100, ratio * 100) + "%";
-  bar.className = ratio >= 1 ? "red" : ratio >= 0.6 ? "yellow" : "";
+function setBar(bar, st) {
+  bar.style.width = Math.min(100, st.ratio * 100) + "%";
+  bar.className = st.level === "green" ? "" : st.level;
 }
 
 function renderAmpel() {
-  const count = num($("a-count"));
-  const sum = num($("a-sum"));
-  const rc = count / LIMIT_COUNT;
-  const rs = sum / LIMIT_SUM;
-  const worst = Math.max(rc, rs);
+  const count = Math.floor(num($("a-count")));
+  const sumCents = SCTax.cents(num($("a-sum")));
+  const st = SCTax.meldeStatus(count, sumCents);
+  const stCount = SCTax.meldeStatus(count, 0);
+  const stSum = SCTax.meldeStatus(0, sumCents);
 
   const arc = $("a-gauge-arc");
-  arc.setAttribute("stroke-dashoffset", String(100 - Math.min(1, worst) * 100));
-  arc.setAttribute("class", "arc " + (worst >= 1 ? "red" : worst >= 0.6 ? "yellow" : ""));
-  $("a-gauge-pct").textContent = pct.format(worst * 100) + " %";
+  arc.setAttribute("stroke-dashoffset", String(100 - Math.min(1, st.ratio) * 100));
+  arc.setAttribute("class", "arc " + (st.level === "green" ? "" : st.level));
+  $("a-gauge-pct").textContent = st.percent + " %";
 
-  setBar($("a-count-bar"), rc);
-  setBar($("a-sum-bar"), rs);
-  $("a-count-txt").textContent = `${count} von ${LIMIT_COUNT} (${pct.format(rc * 100)} %)`;
-  $("a-sum-txt").textContent = `${eur.format(sum)} von ${eur.format(LIMIT_SUM)} (${pct.format(rs * 100)} %)`;
+  setBar($("a-count-bar"), stCount);
+  setBar($("a-sum-bar"), stSum);
+  $("a-count-txt").textContent = `${count} von ${LIMIT_COUNT} (${stCount.percent} %)`;
+  $("a-sum-txt").textContent = `${eur.format(sumCents / 100)} von ${eur.format(LIMIT_SUM)} (${stSum.percent} %)`;
 
   const box = $("a-result");
   const [title, text, cls] =
-    worst >= 1
+    st.level === "red"
       ? ["Rot: Grenze erreicht", "Die Plattform meldet dich voraussichtlich ans BZSt. Das ist noch keine Steuerforderung. Halte Einkaufsbelege und Verkaufsdaten bereit und kläre bei Unsicherheit deinen Fall mit Finanzamt oder Steuerberatung.", "red"]
-      : worst >= 0.6
-      ? ["Gelb: Du näherst dich der Grenze", `Bei diesem Tempo erreichst du die Grenze voraussichtlich bald. Es fehlen noch ${Math.max(0, LIMIT_COUNT - count)} Verkäufe oder ${eur.format(Math.max(0, LIMIT_SUM - sum))}.`, "yellow"]
+      : st.level === "yellow"
+      ? ["Gelb: Du näherst dich der Grenze", `Es fehlen noch ${Math.max(0, LIMIT_COUNT - count) === 1 ? "1 Verkauf" : Math.max(0, LIMIT_COUNT - count) + " Verkäufe"} oder ${eur.format(Math.max(0, LIMIT_SUM * 100 - sumCents) / 100)}. Danach meldet die Plattform.`, "yellow"]
       : ["Grün: Weit entfernt", "Du liegst deutlich unter der Meldegrenze dieser Plattform. Für gelegentliche Verkäufe besteht in der Regel kein Handlungsbedarf.", "green"];
   box.className = "ampel " + cls;
   box.querySelector("strong").textContent = title;
@@ -129,7 +127,7 @@ $("a-from-tracker").addEventListener("click", () => {
   const year = currentYear();
   const rows = sales.filter((s) => isSold(s) && s.date.startsWith(year) && s.platform === $("a-platform").value);
   $("a-count").value = rows.length;
-  $("a-sum").value = rows.reduce((a, s) => a + s.sell, 0).toFixed(2);
+  $("a-sum").value = (SCTax.sumCents(rows, "sell") / 100).toFixed(2);
   renderAmpel();
 });
 
@@ -198,13 +196,12 @@ function renderOverview() {
         const mineStock = stock.filter((s) => s.platform === name);
         if (!mine.length && !mineStock.length) return null;
 
-        const psum = mine.reduce((a, s) => a + s.sell, 0);
+        const psumCents = SCTax.sumCents(mine, "sell");
+        const psum = psumCents / 100;
         const pprofit = mine.reduce((a, s) => a + profitOf(s), 0);
-        const rc = mine.length / LIMIT_COUNT;
-        const rs = psum / LIMIT_SUM;
-        const worst = Math.max(rc, rs);
+        const st = SCTax.meldeStatus(mine.length, psumCents);
         const reported = isReported(name);
-        const lvl = reported ? level(worst) : "";
+        const lvl = reported ? st.level : "";
 
         const row = el("div", undefined, "plat-row " + lvl);
         const nameBox = el("div", name, "name");
@@ -213,7 +210,7 @@ function renderOverview() {
         );
         const meter = el("div", undefined, "meter");
         const bar = el("div");
-        if (reported) setBar(bar, worst);
+        if (reported) setBar(bar, st);
         else bar.style.width = "0";
         meter.append(bar);
         const nums = el("div", undefined, "nums");
@@ -221,7 +218,7 @@ function renderOverview() {
         const status = el(
           "div",
           reported
-            ? `${LEVEL_TEXT[lvl]} (${pct.format(worst * 100)} %)` + (mineStock.length ? ` · ${mineStock.length} im Bestand` : "")
+            ? `${LEVEL_TEXT[lvl]} (${st.percent} %)` + (mineStock.length ? ` · ${mineStock.length} im Bestand` : "")
             : "Keine Plattform-Meldung" + (mineStock.length ? ` · ${mineStock.length} im Bestand` : ""),
           "status"
         );
@@ -291,7 +288,7 @@ function renderTracker() {
       const sold = isSold(s);
       const p = profitOf(s);
       tr.append(
-        td(new Date(s.date).toLocaleDateString("de-DE")),
+        td(SCTax.deDate(s.date)), // ohne Date-Objekt: kein Versatz um einen Tag in anderen Zeitzonen
         td(s.name),
         td(s.platform),
         td(sold ? "Verkauft" : "Bestand"),
@@ -471,7 +468,7 @@ const SIGNALS = [
   "Ich biete viele gleiche oder neue Artikel an (Neuware, mehrere Stück desselben Produkts).",
   "Ich habe einen festen Ablauf: Einkauf, Lager, Fotos, Versand.",
   "Ich möchte mit dem Verkaufen Geld verdienen, nicht nur Platz schaffen.",
-  "Ich habe mehr als 30 Verkäufe oder 2.000 € Einnahmen pro Jahr auf einer Plattform.",
+  "Ich habe 30 oder mehr Verkäufe oder mindestens 2.000 € Einnahmen pro Jahr auf einer Plattform.",
   "Ich verkaufe auf mehreren Plattformen parallel mit hohem Aufwand.",
 ];
 

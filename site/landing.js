@@ -11,6 +11,7 @@
   LIMIT_COUNT = T.MELDE_COUNT || LIMIT_COUNT;
   LIMIT_SUM = T.MELDE_SUM || LIMIT_SUM;
   var levelOf = function (c, s) {
+    if (T.meldeStatus) { var st = T.meldeStatus(c, Math.round(s * 100)); return { worst: st.ratio, level: st.level }; }
     var worst = Math.max(c / LIMIT_COUNT, s / LIMIT_SUM);
     return { worst: worst, level: worst >= 1 ? "red" : worst >= 0.6 ? "yellow" : "green" };
   };
@@ -52,7 +53,7 @@
       if (level === "red") {
         text = ["Rot: Grenze erreicht", "Die Plattform meldet dich voraussichtlich ans BZSt. Das ist noch keine Steuerforderung. Halte Einkaufsbelege und Verkaufsdaten bereit."];
       } else if (level === "yellow") {
-        text = ["Gelb: Du näherst dich der Grenze", "Bei diesem Tempo erreichst du die Grenze voraussichtlich bald. Es fehlen noch " + Math.max(0, LIMIT_COUNT - c) + " Verkäufe oder " + eur.format(Math.max(0, LIMIT_SUM - s)) + "."];
+        text = ["Gelb: Du näherst dich der Grenze", "Es fehlen noch " + (LIMIT_COUNT - c === 1 ? "1 Verkauf" : Math.max(0, LIMIT_COUNT - c) + " Verkäufe") + " oder " + eur.format(Math.max(0, LIMIT_SUM - s)) + ". Danach meldet die Plattform."];
       } else {
         text = ["Grün: Weit entfernt", "Du liegst deutlich unter der Meldegrenze dieser Plattform. Für gelegentliche Verkäufe besteht in der Regel kein Handlungsbedarf."];
       }

@@ -116,6 +116,46 @@ test("Plattform: Meldegrenze wird je Plattform erkannt, bar/Sonstige nie", () =>
   assert.equal(by["Flohmarkt / bar"].meldegrenze, false);
 });
 
+// § 4 Abs. 5 Satz 1 Nr. 4 PStTG: freigestellt nur bei „weniger als 30“ Verkäufen UND „weniger als 2 000 Euro“.
+// Genau 2.000,00 € oder genau 30 Verkäufe sind also schon meldepflichtig (Rot). Quelle: gesetze-im-internet.de/psttg/__4.html
+test("Meldegrenze: genau 2.000,00 € oder genau 30 Verkäufe ist Rot, 1.999,99 € bei 29 Verkäufen ist Gelb", () => {
+  assert.equal(T.meldeStatus(29, 199999).level, "yellow");
+  assert.equal(T.meldeStatus(29, 200000).level, "red");
+  assert.equal(T.meldeStatus(30, 0).level, "red");
+  assert.equal(T.meldeStatus(1, 200000).reached, true);
+  assert.equal(T.meldeStatus(0, 0).level, "green");
+});
+
+test("Meldegrenze: Gelb ab genau 60 % einer der beiden Grenzen (18 Verkäufe oder 1.200 €)", () => {
+  assert.equal(T.meldeStatus(17, 119999).level, "green");
+  assert.equal(T.meldeStatus(18, 0).level, "yellow");
+  assert.equal(T.meldeStatus(0, 120000).level, "yellow");
+});
+
+test("Meldegrenze: Unter der Grenze zeigt die Prozentzahl nie 100 % (sonst stünde „100 %“ neben Gelb)", () => {
+  assert.equal(T.meldeStatus(29, 199999).percent, 99);
+  assert.equal(T.meldeStatus(0, 199000).percent, 99);
+  assert.equal(T.meldeStatus(30, 0).percent, 100);
+  assert.equal(T.meldeStatus(45, 0).percent, 150);
+});
+
+test("Meldegrenze: Beträge, die zusammen genau 2.000 € ergeben, gelten als erreicht (keine Gleitkomma-Drift)", () => {
+  // Diese Summe ergibt mit normaler Kommazahl-Addition 1999,9999999999998 €
+  const prices = [119.09, 66.34, 98.1, 48.58, 122.92, 140.75, 121.51, 170.65];
+  const rest = Math.round((2000 - prices.reduce((a, p) => a + Math.round(p * 100), 0) / 100) * 100) / 100;
+  const items = [...prices, rest].map((sell) => ({ sell }));
+  assert.equal(T.sumCents(items, "sell"), 200000);
+  assert.equal(T.meldeStatus(items.length, T.sumCents(items, "sell")).level, "red");
+  const r = T.computeEuer(items.map((x) => e({ date: "2026-04-01", sell: x.sell })), { year: 2026, vat: "small" });
+  assert.equal(r.byPlatform[0].meldegrenze, true);
+  assert.equal(r.byPlatform[0].level, "red");
+});
+
+test("Meldegrenze: Plattformen ohne Meldung (bar, Sonstige) haben die Stufe „none“", () => {
+  const r = T.computeEuer([e({ date: "2026-03-01", sell: 2500, platform: "Flohmarkt / bar" })], { year: 2026, vat: "small" });
+  assert.equal(r.byPlatform[0].level, "none");
+});
+
 /* ---- Privat (§ 23 EStG) ---- */
 test("Privat: Gebrauchsgegenstand ist nicht steuerbar, Rest wird nach Haltefrist eingeordnet", () => {
   const sales = [
