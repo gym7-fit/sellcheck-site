@@ -58,6 +58,9 @@ test("Regelbesteuerung: Brutto wird in Netto und Umsatzsteuer zerlegt, Gewinn re
   assert.equal(eur(r.revenueTotal), 119);
   assert.equal(eur(r.profit), 100 - 50);
   assert.ok(r.warnings.some((w) => w.code === "vorsteuer"));
+  // Regelbesteuerung rechnet volle Umsatzsteuer; der Hinweis auf die fehlende Differenzbesteuerung muss im Report stehen
+  const diff = r.warnings.find((w) => w.code === "differenz");
+  assert.ok(diff && diff.level === "info" && /§ 25a UStG/.test(diff.text));
 });
 
 test("Regelbesteuerung: Rundung pro Beleg, Netto plus USt ergibt immer exakt Brutto", () => {
@@ -244,4 +247,9 @@ test("sanitizeSettings: Standardwerte und Längenbegrenzung", () => {
   assert.equal(s.rate, 7);
   assert.equal(s.mode, "private");
   assert.equal(T.sanitizeSettings({ rate: 99 }).rate, 19);
+});
+
+test("Kleinunternehmer: kein Hinweis auf Differenzbesteuerung (dort wird keine Umsatzsteuer gerechnet)", () => {
+  const r = T.computeEuer([e({ date: "2026-03-01", sell: 50 })], { year: 2026, vat: "small" });
+  assert.ok(!r.warnings.some((w) => w.code === "differenz"));
 });

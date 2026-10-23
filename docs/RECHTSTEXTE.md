@@ -56,6 +56,8 @@ Stand der Zählung 23.10.2026: Impressum 9, Datenschutz 14, AGB 11 Platzhalter (
 
 ## 4a. Fragen für die Anwalts- und Steuerprüfung (aus der Prüfung vom 23.10.2026)
 
+Umgesetzt am 23.10.2026 nach Entscheidung von Louis: Punkt 1 (Wortlaut Datenschutz), Punkt 4 (Essential-Karte nur mit echten Zusätzen), Punkt 5 (Hinweissatz Gebühren), Punkt 6 (Hinweis Differenzbesteuerung). Die Formulierungen trotzdem im Rechts- und Steuercheck gegenlesen lassen.
+
 1. **Datenschutz 2 und 10:** Dort steht „Für die iPhone-App legst du ein Konto an“. Die App läuft in Basic ohne Konto. Wortlaut so anpassen: „Ein Konto ist freiwillig und erst für Essential und Premium nötig“?
 2. **Supabase Inc.:** Daten liegen in Frankfurt, der Anbieter sitzt in den USA. Reichen Auftragsverarbeitung und Standardvertragsklauseln, und muss der mögliche Drittlandzugriff in Abschnitt 10 genannt werden?
 3. **Kontolöschung:** Abschnitt 10 verspricht Löschung „samt Sicherung“. Technisch muss die Lösch-Funktion alle Fotos erfassen (Fund 17 in `PRUEFUNG-2026-10-23.md`, wird in der App-Prüfung behoben). Aufbewahrungspflichten für Konto-Nachweise benennen?

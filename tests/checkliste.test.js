@@ -91,3 +91,10 @@ test("Scannbar: keine Textwände auf Startseite und Tools (Absätze kurz, lange 
     }
   }
 });
+
+test("Datenschutz: Konto für die App ist erst ab Essential nötig, Basic läuft ohne Konto (wie in FREE-VS-PRO.md)", () => {
+  const s = fs.readFileSync(path.join(SITE, "datenschutz.html"), "utf8");
+  assert.ok(!/legst du ein Konto an/.test(s), "Satz „legst du ein Konto an“ unterstellt Kontopflicht");
+  assert.match(s, /Basic[^<]*ohne Konto/);
+  assert.match(s, /erst für Essential und Premium/);
+});

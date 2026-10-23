@@ -101,7 +101,7 @@
         <fieldset class="choice-group" id="w-vat-group" hidden>
           <legend>Wie behandelst du die Umsatzsteuer?</legend>
           <label class="choice"><input type="radio" name="w-vat" value="small"><span class="choice-body"><b>Kleinunternehmer</b><small>Ich berechne keine Umsatzsteuer (§ 19 UStG). Bei kleinen Umsätzen ist das der Normalfall.</small></span></label>
-          <label class="choice"><input type="radio" name="w-vat" value="regular"><span class="choice-body"><b>Regelbesteuerung</b><small>Meine Preise enthalten Umsatzsteuer.</small></span></label>
+          <label class="choice"><input type="radio" name="w-vat" value="regular"><span class="choice-body"><b>Regelbesteuerung</b><small>Meine Preise enthalten Umsatzsteuer. Die Differenzbesteuerung (§ 25a UStG) rechnet SellCheck hier nicht.</small></span></label>
           <div id="w-rate-wrap" hidden class="choice-extra">
             <label for="w-rate">Steuersatz</label>
             <select id="w-rate"><option value="19">19 %</option><option value="7">7 %</option></select>
@@ -340,6 +340,7 @@
       </header>
       <div class="step-body" id="body-5">
         <p class="step-help">Plattformen melden Verkäufer ans Bundeszentralamt für Steuern, wenn sie im Jahr <strong>30 Verkäufe</strong> oder <strong>2.000 € Einnahmen</strong> pro Plattform erreichen. Eine Meldung ist keine Steuerforderung. Hier siehst du, wo du stehst.</p>
+        <p class="small muted">Die Plattform zählt deine Einnahmen nach Abzug ihrer Gebühren. SellCheck nimmt den Verkaufspreis und warnt dadurch eher früher.</p>
         <div class="stats" id="o-total"></div>
         <div class="plat-list" id="o-list"></div>
         <p id="o-hint" class="notice" hidden></p>
