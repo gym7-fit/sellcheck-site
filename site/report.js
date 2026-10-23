@@ -135,7 +135,7 @@
       row([p.platform, { text: String(p.count), cls: "num" }, { text: money(p.revenue), cls: "num" }, { text: money(p.goods), cls: "num" }, { text: money(p.other), cls: "num" },
         { text: money(p.profit), cls: "num" + (p.profit < 0 ? " neg" : "") }, p.reported ? (p.meldegrenze ? "Grenze erreicht" : "darunter") : "keine Meldung"]));
     frag.append(table(["Plattform", "Verkäufe", "Einnahmen", "Wareneinkauf", "Sonstige Ausgaben", "Ergebnis", "Meldegrenze"], prow, [1, 2, 3, 4, 5], [16, 9, 14, 15, 17, 14, 15]));
-    frag.append(h("p", `Meldegrenze: ${T.MELDE_COUNT} Verkäufe oder ${T.MELDE_SUM.toLocaleString("de-DE")} € pro Plattform und Jahr (§ 4 Abs. 5 PStTG). Eine Meldung ist keine Steuerforderung.`, "small"));
+    frag.append(h("p", `Meldegrenze: ${T.MELDE_COUNT} Verkäufe oder ${T.MELDE_SUM.toLocaleString("de-DE")} € pro Plattform und Jahr (§ 4 Abs. 5 PStTG). Die Plattform zählt die Einnahmen nach Abzug ihrer Gebühren (§ 5 Abs. 2 PStTG), dieser Report den Verkaufspreis. Eine Meldung ist keine Steuerforderung.`, "small"));
 
     // 4. Monate
     frag.append(h("h2", "4. Nach Monat"));

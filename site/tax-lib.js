@@ -217,6 +217,8 @@
     if (o.vat === "small" && fromCents(res.revenueGross) > KU_LIMIT_CURRENT) w.push({ level: "warn", code: "kuLimitCurrent", text: `Die Einnahmen liegen über ${KU_LIMIT_CURRENT.toLocaleString("de-DE")} €. Die Kleinunternehmerregelung gilt dann bereits im laufenden Jahr nicht mehr. Bitte umgehend mit dem Steuerberater klären.` });
     if (fromCents(res.profit) > GEWERBESTEUER_FREIBETRAG) w.push({ level: "info", code: "gewerbesteuer", text: `Der Gewinn liegt über dem Gewerbesteuer-Freibetrag für Einzelunternehmen (${GEWERBESTEUER_FREIBETRAG.toLocaleString("de-DE")} €, Anbieterangabe, bitte prüfen). Gewerbesteuer kann anfallen.` });
     if (res.vat === "regular") w.push({ level: "info", code: "vorsteuer", text: "Vorsteuer aus Einkäufen und die Umsatzsteuer-Voranmeldung bzw. -Erklärung sind in diesem Report nicht enthalten. Einkaufspreise werden unverändert als Betriebsausgaben angesetzt." });
+    // § 25a UStG: bei Gebrauchtware von Privat gilt oft die Differenzbesteuerung, die hier nicht gerechnet wird
+    if (res.vat === "regular") w.push({ level: "info", code: "differenz", text: "Die Differenzbesteuerung (§ 25a UStG) ist hier nicht berücksichtigt. Die Umsatzsteuer wird aus dem vollen Verkaufspreis gerechnet. Kaufst du gebrauchte Ware von Privatleuten ein, kann die Differenzbesteuerung gelten. Dann ist die Umsatzsteuer hier zu hoch. Bitte steuerlich klären." });
     res.dataComplete = !w.some((x) => x.level === "warn");
     return w;
   }

@@ -93,6 +93,10 @@ test("Angebot: Stufen Essential und Premium, Preis aufgeschlüsselt, nur Vorhand
   assert.match(sec, /4,08 € im Monat/, "Monatsanteil Premium");
   assert.equal((sec.match(/class="plan-lead"/g) || []).length, 2, "Ergebnis-Satz je Bezahl-Stufe");
   assert.match(sec, /Alles aus Basic/, "Essential nennt „Alles aus Basic“");
+  // Essential nennt nur echte Zusätze: Meldegrenze, Bestand und Gewinn pro Artikel hat Basic schon (FREE-VS-PRO.md)
+  const essential = sec.slice(sec.indexOf("Essential</h3>"), sec.indexOf("Premium</h3>"));
+  assert.ok(!/Meldegrenze|Bestand|Gewinn pro Artikel/.test(essential.replace(/<[^>]+>/g, "")), "Essential listet Basic-Funktionen als Zusatz");
+  assert.match(essential, /150 statt 50 Artikel/);
   assert.match(sec, /Alles aus Essential/, "Premium nennt „Alles aus Essential“");
   assert.match(sec, /Unbegrenzt<\/b> viele Artikel/, "unbegrenzte Artikel als eigener Punkt");
   assert.match(sec, /class="plan-cost"/, "Vergleich mit dem Problem fehlt");
@@ -110,4 +114,12 @@ test("Angebot: Stufen Essential und Premium, Preis aufgeschlüsselt, nur Vorhand
   assert.match(sec, /Basic kostenlos/, "kostenlose Stufe Basic wird genannt");
   assert.ok(!/\d+ Stunden|\$\s?\d+|\d+\s?€ deiner Zeit/.test(sec), "keine erfundenen Zeit- oder Geldersparnisse");
   assert.ok(!/SellCheck Pro|Pro-Karte/.test(sec), "alter Name Pro ist ersetzt");
+});
+
+test("Meldegrenze: Startseite, Tools und Report sagen, dass die Plattform nach Gebühren zählt (§ 5 Abs. 2 PStTG)", () => {
+  const tools = fs.readFileSync(path.join(SITE, "tools.html"), "utf8");
+  const report = fs.readFileSync(path.join(SITE, "report.js"), "utf8");
+  for (const [name, s] of [["index.html", html], ["tools.html", tools], ["report.js", report]]) {
+    assert.match(s, /nach Abzug ihrer Gebühren/, `${name}: Hinweis Gebühren fehlt`);
+  }
 });
