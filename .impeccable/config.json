@@ -1,0 +1,35 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "kicker-above-heading",
+        "value": "*",
+        "files": [
+          "site/index.html"
+        ],
+        "createdAt": "2026-10-23T11:51:37.247Z",
+        "reason": "Labels Geplant/In Vorbereitung sind Pflicht-Kennzeichnung für noch nicht erhältliche Angebote (UWG/PAngV, PRUEFAUFTRAG.md 3.4, Test in landing.test.js), kein Deko-Kicker"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "site/tools.html"
+        ],
+        "createdAt": "2026-10-23T11:51:37.265Z",
+        "reason": "Fehlalarm: .table-scroll umschließt Tabellen, deren Zellen 11px 14px Innenabstand haben (style.css th, td)"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "site/datenschutz.html"
+        ],
+        "createdAt": "2026-10-23T11:51:37.282Z",
+        "reason": "Fehlalarm: div.legal am Seitenende hat style=border:0, es gibt keine Kante"
+      }
+    ]
+  }
+}
