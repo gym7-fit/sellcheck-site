@@ -22,6 +22,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#0e1116">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="../fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="../style.css">
   <link rel="stylesheet" href="../hilfe.css">
 </head>
@@ -45,16 +46,13 @@
   <div class="wrap">
     <nav class="crumbs" aria-label="Brotkrumen"><a href="../index.html">Startseite</a> › <a href="index.html">Hilfe</a> › <span aria-current="page">Amazon</span></nav>
     <a class="help-back" href="index.html">← Alle Datenquellen</a>
-    <span class="eyebrow">Hilfe · Datei besorgen</span>
     <h1>Amazon: So findest du deine Berichte in Seller Central</h1>
     <p>Als Verkäufer bei Amazon gibt es zwei brauchbare Berichte: den Bestellbericht (Textdatei) und den Zahlungsbericht (CSV). Du brauchst ein Verkäuferkonto in Seller Central.</p>
+    <p class="help-status"><span class="tag ok">Export vorhanden</span></p>
   </div>
 </div>
 <div class="wrap help-main">
-  <div class="help-top">
-    <dl class="help-facts"><div><dt>Datei</dt><dd>Bestellbericht (.txt mit Tabulatoren) oder Zahlungsbericht (CSV)</dd></div><div><dt>Zeitraum</dt><dd>Bestellbericht: letzte Tage; Zahlungen: Monat oder freier Zeitraum</dd></div><div><dt>Dauer</dt><dd>bis zu 45 Minuten bzw. bis zu 3 Stunden</dd></div></dl>
-    <div class="help-tag"><span class="tag ok">Export vorhanden</span></div>
-  </div>
+  <dl class="help-facts"><div><dt>Datei</dt><dd>Bestellbericht (.txt mit Tabulatoren) oder Zahlungsbericht (CSV)</dd></div><div><dt>Zeitraum</dt><dd>Bestellbericht: letzte Tage; Zahlungen: Monat oder freier Zeitraum</dd></div><div><dt>Dauer</dt><dd>bis zu 45 Minuten bzw. bis zu 3 Stunden</dd></div></dl>
   <p class="help-note">Stand der Beschreibung: Oktober 2026. Anbieter ändern ihre Oberfläche gelegentlich, Menünamen können deshalb abweichen. Findest du einen Menüpunkt nicht, suche im Hilfe-Center von Amazon nach „Berichts-Repository“.</p>
   <section class="help-way"><h2>Weg 1: Bestellbericht</h2><ol class="help-steps"><li class="help-step"><span class="n" aria-hidden="true">1</span><div><h3>Bestellberichte öffnen</h3><p>Öffne in Seller Central im Menü „Bestellungen“ den Punkt „Bestellberichte“.</p><p class="help-path" aria-label="Menüweg"><span class="chip">Seller Central</span><span class="sep" aria-hidden="true">›</span><span class="chip">Bestellungen</span><span class="sep" aria-hidden="true">›</span><span class="chip">Bestellberichte</span></p></div></li><li class="help-step"><span class="n" aria-hidden="true">2</span><div><h3>Neue Bestellungen wählen</h3><p>Wähle die Option „Neue Bestellungen“.</p><p class="help-path" aria-label="Menüweg"><span class="chip">Bestellberichte</span><span class="sep" aria-hidden="true">›</span><span class="chip">Neue Bestellungen</span></p></div></li><li class="help-step"><span class="n" aria-hidden="true">3</span><div><h3>Zeitraum in Tagen festlegen</h3><p>Wähle im Bereich „Anfordern eines Bestellberichts“ die Anzahl der Tage, die der Bericht abdecken soll. Klicke dann auf „Bericht anfordern“.</p></div></li><li class="help-step"><span class="n" aria-hidden="true">4</span><div><h3>Bericht herunterladen</h3><p>Der Bericht erscheint nach kurzer Zeit im Bereich „Berichtsstatus prüfen und herunterladen“. Das dauert bis zu 45 Minuten. Lade die Textdatei herunter.</p></div></li></ol></section><section class="help-way"><h2>Weg 2: Zahlungsbericht (CSV)</h2><ol class="help-steps"><li class="help-step"><span class="n" aria-hidden="true">1</span><div><h3>Berichts-Repository öffnen</h3><p>Wähle im Menü „Zahlungen“ den Punkt „Berichts-Repository“.</p><p class="help-path" aria-label="Menüweg"><span class="chip">Seller Central</span><span class="sep" aria-hidden="true">›</span><span class="chip">Zahlungen</span><span class="sep" aria-hidden="true">›</span><span class="chip">Berichts-Repository</span></p></div></li><li class="help-step"><span class="n" aria-hidden="true">2</span><div><h3>Berichtstyp wählen</h3><p>Wähle bei mehreren Kontotypen ggf. „Alle“. Wähle als Berichtstyp den „Umsatzsteuer-Transaktionsbericht (CSV)“. Er enthält eine detaillierte Transaktionsliste.</p></div></li><li class="help-step"><span class="n" aria-hidden="true">3</span><div><h3>Zeitraum festlegen</h3><p>Wähle entweder einen Monat oder einen „Benutzerdefinierten Datumsbereich“ mit Start- und Enddatum. Klicke auf „Bericht anfordern“.</p></div></li><li class="help-step"><span class="n" aria-hidden="true">4</span><div><h3>Bericht herunterladen</h3><p>Es kann bis zu drei Stunden dauern, bis der Bericht in der Liste erscheint. Schau später noch einmal nach und lade die Datei herunter.</p></div></li></ol></section>
   <section class="help-next">
@@ -73,8 +71,14 @@
 </main>
 <footer class="on-dark help-footer">
   <div class="wrap">
-    <p>SellCheck gibt Orientierung und ist keine Steuer- oder Rechtsberatung. Alles läuft in deinem Browser.</p>
-    <p><a href="../index.html">Startseite</a> · <a href="../tools.html">Tools</a> · <a href="../impressum.html">Impressum</a> · <a href="../datenschutz.html">Datenschutz</a> · <a href="../agb.html">Nutzungsbedingungen</a></p>
+    <p class="help-footer-note">SellCheck gibt Orientierung und ist keine Steuer- oder Rechtsberatung. Alles läuft in deinem Browser.</p>
+    <ul class="help-footer-links">
+      <li><a href="../index.html">Startseite</a></li>
+      <li><a href="../tools.html">Tools</a></li>
+      <li><a href="../impressum.html">Impressum</a></li>
+      <li><a href="../datenschutz.html">Datenschutz</a></li>
+      <li><a href="../agb.html">Nutzungsbedingungen</a></li>
+    </ul>
   </div>
 </footer>
 </body>

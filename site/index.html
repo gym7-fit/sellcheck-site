@@ -22,6 +22,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#0e1116">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="landing.css">
 </head>
@@ -47,46 +48,45 @@
 <main id="main">
   <!-- HERO -->
   <div class="hero on-dark">
-    <div class="wrap hero-grid">
+    <div class="wrap">
       <div class="hero-copy">
-        <h1>Check, was <em>wirklich bleibt.</em></h1>
-        <p class="lead">Wie nah bist du an der Meldegrenze? SellCheck zeigt es für jede Plattform, dazu Gewinn pro Artikel und Bestand. Ohne Tabellenpflege und ohne Zugriff auf deine Konten.</p>
-        <div class="cta">
-          <a class="btn" href="#demo">Meldegrenze prüfen
-            <svg class="ico" viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></svg></a>
-          <a class="btn secondary" href="tools.html">Kostenlos starten</a>
+        <h1>Check, was wirklich bleibt.</h1>
+        <div class="hero-row">
+          <p class="lead">Wie nah bist du an der Meldegrenze? SellCheck zeigt es für jede Plattform. Dazu siehst du, was dir pro Artikel nach Einkauf und Versand bleibt.</p>
+          <div class="cta">
+            <a class="btn" href="#demo">Meldegrenze prüfen</a>
+            <a class="btn secondary" href="tools.html">Tools kostenlos öffnen</a>
+          </div>
         </div>
-        <ul class="pills">
-          <li><svg class="ico" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Meldegrenze für jede Plattform</li>
-          <li><svg class="ico" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Kostenlos, ohne Anmeldung</li>
-          <li><svg class="ico" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Daten bleiben bei dir</li>
-        </ul>
       </div>
-
-      <!-- Produkt-Vorschau (Beispieldaten) -->
-      <div class="mock" role="img" aria-label="Vorschau: Gesamtgewinn und Meldegrenze für drei Plattformen, Beispieldaten">
-        <div class="mock-top"><span>Gewinn 2026 · alle Plattformen</span><span class="chip">Beispieldaten</span></div>
-        <div class="mock-big"><span>842,50 €</span><small>nach Kosten</small></div>
-        <div class="mock-gauge">
-          <div class="mock-sub">Meldegrenze je Plattform: 30 Verkäufe oder 2.000 €</div>
-          <div class="plat"><div class="row"><span>Vinted</span><span>21 von 30</span></div><div class="bar"><i style="width:70%;background:#e5a93a"></i></div></div>
-          <div class="plat"><div class="row"><span>Kleinanzeigen</span><span>8 von 30</span></div><div class="bar"><i style="width:27%;background:#4cc27f"></i></div></div>
-          <div class="plat"><div class="row"><span>eBay</span><span>2 von 30</span></div><div class="bar"><i style="width:7%;background:#4cc27f"></i></div></div>
-          <div class="hint">Gesamt: 31 Verkäufe auf 3 Plattformen. Jede Plattform zählt für sich, dein Gesamtbild zählt auch.</div>
-        </div>
-        <ul class="mock-list">
-          <li><span>Nike Air Max 90<small>Vinted · Einkauf 24&nbsp;€ · Versand 3,50&nbsp;€ · Verkauf 61&nbsp;€</small></span><span class="win">+ 33,50&nbsp;€</span></li>
-          <li><span>Retro-Konsole<small>eBay · Einkauf 35&nbsp;€ · Versand 5,90&nbsp;€ · Verkauf 79&nbsp;€</small></span><span class="win">+ 38,10&nbsp;€</span></li>
-          <li><span>Zara Mantel M<small>Kleinanzeigen · Einkauf 18&nbsp;€ · Verkauf 16&nbsp;€</small></span><span class="lose">− 2,00&nbsp;€</span></li>
-        </ul>
-      </div>
+      <ul class="tickets" aria-label="Vorschau mit Beispieldaten: Meldegrenze je Plattform">
+        <li class="ticket">
+          <div class="ticket-head"><span class="ticket-name">Vinted</span><span class="st yellow">nähert sich</span></div>
+          <p class="count"><span class="num">21</span> <small>von 30 Verkäufen</small></p>
+          <div class="bar" aria-hidden="true"><i class="yellow fill-70"></i></div>
+          <p class="sum num">1.280 € von 2.000 €</p>
+        </li>
+        <li class="ticket">
+          <div class="ticket-head"><span class="ticket-name">Kleinanzeigen</span><span class="st green">weit entfernt</span></div>
+          <p class="count"><span class="num">8</span> <small>von 30 Verkäufen</small></p>
+          <div class="bar" aria-hidden="true"><i class="green fill-27"></i></div>
+          <p class="sum num">420 € von 2.000 €</p>
+        </li>
+        <li class="ticket">
+          <div class="ticket-head"><span class="ticket-name">eBay</span><span class="st green">weit entfernt</span></div>
+          <p class="count"><span class="num">2</span> <small>von 30 Verkäufen</small></p>
+          <div class="bar" aria-hidden="true"><i class="green fill-7"></i></div>
+          <p class="sum num">90 € von 2.000 €</p>
+        </li>
+      </ul>
+      <p class="hero-note">Beispieldaten. Kostenlos, ohne Anmeldung, deine Daten bleiben auf deinem Gerät.</p>
     </div>
   </div>
 
   <!-- PLATTFORMEN -->
-  <div class="platform-strip">
+  <div class="platform-strip on-dark">
     <div class="wrap">
-      <p class="muted">Für Verkäufer auf</p>
+      <p>Für Verkäufe auf</p>
       <ul class="chips" aria-label="Plattformen, die du erfassen kannst">
         <li>Vinted</li><li>Kleinanzeigen</li><li>eBay</li><li>Etsy</li><li>Amazon</li><li>Flohmarkt / bar</li><li>und weiteren</li>
       </ul>
@@ -94,11 +94,18 @@
   </div>
 
   <!-- DEMO -->
-  <section id="demo" class="demo">
+  <section id="demo" class="demo on-dark">
     <div class="wrap demo-grid">
       <div class="demo-intro">
         <h2>Meldegrenze prüfen.</h2>
-        <p class="demo-lead">Wähle eine Plattform und trage Verkäufe und Umsatz ein. Die Ampel zeigt, wie nah du an der Meldegrenze liegst. Jede Plattform zählt für sich.</p>
+        <p class="demo-lead">Wähle eine Plattform und schieb die Regler auf deine Zahlen. Die Ampel zeigt sofort, wo du stehst.</p>
+        <ul class="facts">
+          <li><b>Je Plattform und Jahr.</b> Verkäufe auf verschiedenen Plattformen werden nicht zusammengezählt.</li>
+          <li><b>Eine Grenze genügt.</b> Ab 30 Verkäufen oder 2.000 € Einnahmen wirst du in der Regel gemeldet. Gezählt werden abgeschlossene Verkäufe, nicht Artikel.</li>
+          <li><b>Meldung ist keine Steuerforderung.</b> Ob Steuern anfallen, entscheidet das Finanzamt.</li>
+          <li><b>SellCheck warnt eher früher.</b> Die Plattform zählt deine Einnahmen nach Abzug ihrer Gebühren. SellCheck nimmt den Verkaufspreis.</li>
+        </ul>
+        <p class="small muted demo-src">Quelle: <a href="https://www.finanzamt.nrw.de/steuerinfos/unternehmen/plattformen-steuertransparenzgesetz" target="_blank" rel="noopener noreferrer">Finanzamt NRW</a>. Deine Eingaben hier werden weder gespeichert noch gesendet.</p>
       </div>
       <div class="demo-card" aria-label="Meldegrenzen-Ampel zum Ausprobieren">
         <fieldset class="demo-plats">
@@ -115,19 +122,10 @@
         <div class="demo-meter" aria-hidden="true"><div id="d-meter" class="yellow"></div></div>
         <div id="d-result" class="ampel yellow" role="status" aria-live="polite">
           <strong>Gelb: Du näherst dich der Grenze</strong>
-          <div>Bei diesem Tempo erreichst du die Grenze voraussichtlich bald. Es fehlen noch 9 Verkäufe oder 720 €.</div>
+          <div>Es fehlen noch 9 Verkäufe oder 720 €. Danach meldet die Plattform.</div>
         </div>
         <p class="small muted demo-note">Die Punkte an den Plattformen zeigen jeweils die Ampel. Orientierung, keine Steuerberatung.</p>
-      </div>
-      <div class="demo-more">
-        <ul class="facts">
-          <li><b>Je Plattform und Jahr.</b> Verkäufe auf verschiedenen Plattformen werden nicht zusammengezählt.</li>
-          <li><b>Eine Grenze genügt.</b> Ab 30 Verkäufen oder 2.000 € Einnahmen wirst du in der Regel gemeldet. Gezählt werden abgeschlossene Verkäufe, nicht Artikel.</li>
-          <li><b>Meldung ist keine Steuerforderung.</b> Ob Steuern anfallen, entscheidet das Finanzamt.</li>
-          <li><b>SellCheck warnt eher früher.</b> Die Plattform zählt deine Einnahmen nach Abzug ihrer Gebühren. SellCheck nimmt den Verkaufspreis.</li>
-        </ul>
-        <p class="small muted demo-src">Quelle: <a href="https://www.finanzamt.nrw.de/steuerinfos/unternehmen/plattformen-steuertransparenzgesetz" target="_blank" rel="noopener noreferrer">Finanzamt NRW</a>. Die Eingaben hier werden weder gespeichert noch gesendet.</p>
-        <a class="btn" href="tools.html">Alle Plattformen im Überblick
+        <a class="btn demo-go" href="tools.html">Alle Plattformen im Überblick
           <svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </div>
     </div>
@@ -138,39 +136,35 @@
     <div class="wrap split">
       <div class="split-head">
         <h2>Jede Plattform zählt getrennt.</h2>
-        <p>Wer auf mehreren Plattformen verkauft, hat mehrere Zähler und mehrere Meldungen, aber nirgends das Gesamtbild. Eine Meldung ist noch keine Steuerforderung, und wer gelegentlich eigene Gegenstände verkauft, handelt in der Regel privat.</p>
+        <p>Wer auf mehreren Plattformen verkauft, hat mehrere Zähler, aber nirgends das Gesamtbild. Eine Meldung ist noch keine Steuerforderung. Wer gelegentlich eigene Sachen verkauft, handelt in der Regel privat.</p>
       </div>
       <ul class="rows">
         <li>
-          <div class="icon-badge soft"><svg class="ico" viewBox="0 0 24 24"><path d="M4 17a8 8 0 1 1 16 0"/><path d="M12 17l4-5"/></svg></div>
-          <div><h3>Mehrere Zähler</h3>
-          <p class="muted">Die Meldegrenze gilt je Plattform. Wie nah du ihr auf jeder einzelnen bist, musst du selbst nachhalten.</p></div>
+          <div class="card-head"><span class="card-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24"><path d="M4 17a8 8 0 1 1 16 0"/><path d="M12 17l4-5"/></svg></span><h3>Mehrere Zähler</h3></div>
+          <p class="muted">Die Meldegrenze gilt je Plattform. Wie nah du ihr auf jeder einzelnen bist, musst du selbst nachhalten.</p>
         </li>
         <li>
-          <div class="icon-badge soft"><svg class="ico" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg></div>
-          <div><h3>Kein Gesamtbild</h3>
-          <p class="muted">Jede Plattform kennt nur ihren Ausschnitt. Was du insgesamt verdienst, weiß keine von ihnen.</p></div>
+          <div class="card-head"><span class="card-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg></span><h3>Kein Gesamtbild</h3></div>
+          <p class="muted">Jede Plattform kennt nur ihren Ausschnitt. Was du insgesamt verdienst, weiß keine von ihnen.</p>
         </li>
         <li>
-          <div class="icon-badge soft"><svg class="ico" viewBox="0 0 24 24"><path d="M3 12V4h8l10 10-8 8z"/><circle cx="8" cy="9" r="1.5"/></svg></div>
-          <div><h3>Barverkäufe fehlen in den Meldungen</h3>
-          <p class="muted">Plattformen melden nur, was sie sicher wissen. Bar bezahlte oder außerhalb abgewickelte Verkäufe fehlen dort, aber nicht in deinem Überblick.</p></div>
+          <div class="card-head"><span class="card-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24"><path d="M3 7h18v10H3z"/><circle cx="12" cy="12" r="2.5"/><path d="M6 10v4M18 10v4"/></svg></span><h3>Barverkäufe fehlen in den Meldungen</h3></div>
+          <p class="muted">Bar bezahlte oder außerhalb abgewickelte Verkäufe sieht die Plattform nicht. In deinem Überblick stehen sie trotzdem.</p>
         </li>
         <li>
-          <div class="icon-badge soft"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
-          <div><h3>Privat oder gewerblich?</h3>
-          <p class="muted">Wer zum Weiterverkauf einkauft, wird eher gewerblich eingestuft. Eine neutrale Checkliste zeigt dir, worauf es ankommt.</p></div>
+          <div class="card-head"><span class="card-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></span><h3>Privat oder gewerblich?</h3></div>
+          <p class="muted">Wer gezielt zum Weiterverkauf einkauft, gilt eher als gewerblich. Eine neutrale Checkliste zeigt, worauf es ankommt.</p>
         </li>
       </ul>
     </div>
   </section>
 
   <!-- FILM -->
-  <section id="film" class="film on-dark">
+  <section id="film" class="film tint">
     <div class="wrap">
       <div class="film-head">
         <h2>Der Überblick in 50 Sekunden.</h2>
-        <p>Ein kurzer Film über Meldegrenze, Gewinn und Bestand. Die Zahlen im Film sind Beispieldaten.</p>
+        <p>Ein kurzer Film über Meldegrenze, Gewinn und Bestand. Alle Zahlen darin sind Beispieldaten.</p>
       </div>
       <figure class="film-frame">
         <video controls preload="none" playsinline poster="media/sellcheck-erklaerfilm-poster.jpg" aria-describedby="film-text">
@@ -190,23 +184,23 @@
   </section>
 
   <!-- TOOLS -->
-  <section id="tools" class="tint">
+  <section id="tools">
     <div class="wrap">
       <div class="section-head">
         <h2>Sechs Werkzeuge, direkt im Browser.</h2>
-        <p>Kostenlos und ohne Anmeldung. Das Ergebnis schaltest du mit deiner E-Mail-Adresse frei. Deine Eingaben bleiben auf deinem Gerät.</p>
+        <p>Kostenlos und ohne Anmeldung. Das Ergebnis schaltest du mit deiner E-Mail-Adresse frei, deine Eingaben bleiben auf deinem Gerät.</p>
       </div>
       <div class="bento">
         <a class="card tool-card tool-feature" href="tools.html">
           <div class="tool-visual" aria-hidden="true">
             <span class="ex">Beispiel</span>
-            <div class="mini-row"><span>Vinted</span><i style="--w:70%;--c:#e5a93a"></i></div>
-            <div class="mini-row"><span>Kleinanzeigen</span><i style="--w:27%;--c:#4cc27f"></i></div>
-            <div class="mini-row"><span>eBay</span><i style="--w:7%;--c:#4cc27f"></i></div>
+            <div class="mini-row"><span>Vinted</span><i><b class="yellow fill-70"></b></i></div>
+            <div class="mini-row"><span>Kleinanzeigen</span><i><b class="green fill-27"></b></i></div>
+            <div class="mini-row"><span>eBay</span><i><b class="green fill-7"></b></i></div>
           </div>
           <div class="card-head"><span class="card-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 10v10"/></svg></span><h3>Plattform-Überblick</h3></div>
-          <p class="muted">Alle Verkäufe, alle Plattformen: Anzahl, Umsatz und Gewinn je Plattform plus Gesamtwert, mit Ampel für die Meldegrenze jeder einzelnen. Dazu dein Bestand und das darin gebundene Geld.</p>
-          <span class="more">Öffnen <svg class="ico" viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          <p class="muted">Verkäufe, Umsatz und Gewinn je Plattform, mit Ampel für jede Meldegrenze. Dazu dein Bestand und das Geld, das darin steckt.</p>
+          <span class="more">Öffnen <svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
         </a>
         <a class="card tool-card tool-feature" href="tools.html">
           <div class="tool-visual doc" aria-hidden="true">
@@ -216,23 +210,23 @@
             <div class="doc-line total"><span>Gewinn</span><b>1.905,60 €</b></div>
           </div>
           <div class="card-head"><span class="card-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24"><path d="M7 3h8l4 4v14H7z"/><path d="M15 3v4h4M10 12h6M10 16h6"/></svg></span><h3>Steuer-Export</h3></div>
-          <p class="muted">Eine druckbare Aufstellung als Ausfüllhilfe für die Anlage EÜR (oder Anlage SO bei privaten Verkäufen), dazu Journal und Summen als CSV für Steuerberater. Mit richtigem Zeitpunkt für Einkauf und Verkauf, Kleinunternehmer oder Regelbesteuerung.</p>
-          <span class="more">Öffnen <svg class="ico" viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          <p class="muted">Ausfüllhilfe für die Anlage EÜR oder die Anlage SO, dazu Journal und Summen als CSV für die Steuerberatung. Einkauf und Verkauf landen im richtigen Jahr.</p>
+          <span class="more">Öffnen <svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
         </a>
         <a class="card tool-card" href="tools.html">
           <div class="card-head"><span class="card-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24"><path d="M4 17a8 8 0 1 1 16 0"/><path d="M12 17l4-5"/></svg></span><h3>Meldegrenzen-Ampel</h3></div>
-          <p class="muted">Verkäufe und Umsatz einer Plattform eintragen, sofort sehen: grün, gelb oder rot.</p>
-          <span class="more">Öffnen <svg class="ico" viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          <p class="muted">Verkäufe und Umsatz einer Plattform eintragen und sofort sehen: grün, gelb oder rot.</p>
+          <span class="more">Öffnen <svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
         </a>
         <a class="card tool-card" href="tools.html">
           <div class="card-head"><span class="card-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M14 12h2M8 16h2M14 16h2"/></svg></span><h3>Gewinn pro Artikel</h3></div>
-          <p class="muted">Einkauf, Verkauf, Versand: Gewinn, Marge und Rendite in Sekunden.</p>
-          <span class="more">Öffnen <svg class="ico" viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          <p class="muted">Einkauf, Verkauf und Versand eingeben. Gewinn und Marge stehen sofort da.</p>
+          <span class="more">Öffnen <svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
         </a>
         <a class="card tool-card" href="tools.html">
           <div class="card-head"><span class="card-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg></span><h3>Tracker mit Bestand &amp; CSV</h3></div>
-          <p class="muted">Jeden Verkauf und jeden Einkauf festhalten, am Jahresende als Tabelle für EÜR oder Steuerberater exportieren.</p>
-          <span class="more">Öffnen <svg class="ico" viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          <p class="muted">Jeden Einkauf und Verkauf festhalten. Am Jahresende als Tabelle für die EÜR oder die Steuerberatung exportieren.</p>
+          <span class="more">Öffnen <svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
         </a>
         <a class="card tool-card tool-wide" href="tools.html">
           <div class="icon-badge"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
@@ -240,44 +234,36 @@
             <h3>Privat oder gewerblich?</h3>
             <p class="muted">Neutrale Checkliste mit den Merkmalen, auf die es ankommt. Keine Steuerberatung.</p>
           </div>
-          <span class="more">Öffnen <svg class="ico" viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          <span class="more">Öffnen <svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
         </a>
       </div>
     </div>
   </section>
 
-  <!-- BAND -->
-  <div class="band on-dark">
-    <div class="wrap">
-      <p>Kein Login bei deinen Plattformen. <em>Kein Zugriff auf deine Konten.</em></p>
-    </div>
-  </div>
-
   <!-- SO FUNKTIONIERT'S -->
-  <section id="ablauf">
+  <section id="ablauf" class="tint">
     <div class="wrap">
       <div class="section-head">
         <h2>In drei Schritten zum Überblick.</h2>
       </div>
       <ol class="steps">
-        <li class="step"><h3>Einkauf und Verkauf eintragen</h3><p class="muted">Artikel, Plattform, Preise, Versand. Ein Eintrag dauert wenige Sekunden. Noch nicht verkauft? Dann erscheint der Artikel im Bestand.</p></li>
+        <li class="step"><h3>Verkäufe eintragen</h3><p class="muted">Artikel, Plattform, Preise, Versand. Oder die Exportdatei deiner Plattform einlesen. Was noch nicht verkauft ist, landet im Bestand.</p></li>
         <li class="step"><h3>Gesamtbild sehen</h3><p class="muted">Gewinn pro Artikel, pro Plattform und insgesamt. Dazu das Geld, das noch im Lager steckt.</p></li>
-        <li class="step"><h3>Vorbereitet sein</h3><p class="muted">Meldegrenze jeder Plattform im Blick, Belege geordnet, Export per Klick.</p></li>
+        <li class="step"><h3>Vorbereitet sein</h3><p class="muted">Die Meldegrenze jeder Plattform im Blick, Report und CSV für die Steuer mit einem Klick.</p></li>
       </ol>
     </div>
   </section>
 
   <!-- ANGEBOT -->
-  <section id="angebot" class="tint">
+  <section id="angebot">
     <div class="wrap">
       <div class="section-head">
         <h2>Für alle, die regelmäßig verkaufen.</h2>
-        <p>Die Gratis-Tools genügen für gelegentliche Verkäufe. Wer regelmäßig einkauft und auf mehreren Plattformen verkauft, braucht mehr Struktur. Dafür gibt es das Starter-Paket und, in Vorbereitung, die iPhone-App mit Essential und Premium.</p>
+        <p>Für gelegentliche Verkäufe reichen die Gratis-Tools. Wer regelmäßig einkauft und auf mehreren Plattformen verkauft, braucht mehr Struktur: das Starter-Paket und bald die iPhone-App mit Essential und Premium.</p>
       </div>
-      <div class="grid cols-3">
+      <div class="grid cols-3 plans">
         <div class="card plan featured">
-          <span class="label">In Vorbereitung</span>
-          <h3 style="margin-top:14px;font-size:1.5rem">Starter</h3>
+          <div class="plan-top"><h3>Starter</h3><span class="label">In Vorbereitung</span></div>
           <div class="price">9,99 € <small>einmalig</small></div>
           <ul class="check">
             <li>Guide „Verkaufen und Finanzamt“ (PDF)</li>
@@ -295,12 +281,11 @@
             </div>
             <label class="consent"><input type="checkbox" name="consent" required> <span>Ich möchte per E-Mail über den Start informiert werden. Abmeldung jederzeit möglich. Mehr in der <a href="datenschutz.html">Datenschutzerklärung</a>.</span></label>
             <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
-<p class="form-note small muted" role="status" aria-live="polite"></p>
+            <p class="form-note small muted" role="status" aria-live="polite"></p>
           </form>
         </div>
         <div class="card plan">
-          <span class="label">Geplant</span>
-          <h3 style="margin-top:14px;font-size:1.5rem">Essential</h3>
+          <div class="plan-top"><h3>Essential</h3><span class="label">Geplant</span></div>
           <div class="price">4,99 € <small>/ Monat</small></div>
           <p class="price-year">oder 39 € im Jahr (3,25 € im Monat)</p>
           <p class="plan-lead">Aufzeichnen und weitergeben.</p>
@@ -312,8 +297,7 @@
           </ul>
         </div>
         <div class="card plan">
-          <span class="label">Geplant</span>
-          <h3 style="margin-top:14px;font-size:1.5rem">Premium</h3>
+          <div class="plan-top"><h3>Premium</h3><span class="label">Geplant</span></div>
           <div class="price">6,99 € <small>/ Monat</small></div>
           <p class="price-year">oder 49 € im Jahr (4,08 € im Monat)</p>
           <p class="plan-lead">Vorausschauen und richtig rechnen.</p>
@@ -325,7 +309,7 @@
             <li><b>Gewinn nach Umsatzsteuer</b> (auch Differenzbesteuerung)</li>
           </ul>
           <p class="plan-cost"><b>Was Nichtstun kostet:</b> Eine Plattform-Meldung merkst du sonst erst hinterher. Liegende Ware bindet Geld.</p>
-          <p><a class="btn secondary small" href="#demo">Mit Beispielwerten durchrechnen</a></p>
+          <p class="mb-0"><a class="btn secondary small" href="#demo">Mit Beispielwerten durchrechnen</a></p>
         </div>
       </div>
       <p class="muted small plan-note"><b>Noch nicht erhältlich:</b> Die iPhone-App ist in Entwicklung. Zum Start: 14 Tage kostenlos testen.</p>
@@ -334,34 +318,30 @@
   </section>
 
   <!-- VERTRAUEN -->
-  <section class="trust">
+  <section class="trust tint">
     <div class="wrap">
       <div class="section-head">
         <h2>Sachlich und ohne Alarmismus.</h2>
       </div>
-      <div class="trust-grid">
-        <div class="trust-main on-dark">
+      <ul class="trust-list">
+        <li>
           <div class="card-head"><span class="card-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span><h3>Kein Kontozugriff</h3></div>
-          <p>SellCheck meldet sich nie bei deinen Plattformen an und setzt keine Bots ein. Es gibt keinen Zugriff auf deine Konten.</p>
-        </div>
-        <div class="trust-side">
-          <div class="trust-item">
-            <div class="icon-badge soft"><svg class="ico" viewBox="0 0 24 24"><path d="M3 12V4h8l10 10-8 8z"/><circle cx="8" cy="9" r="1.5"/></svg></div>
-            <div><h3>Ausgerichtet auf deutsche Regeln</h3>
-            <p class="muted">Meldegrenze, Abgrenzung privat/gewerblich und EÜR orientieren sich am deutschen Recht.</p></div>
-          </div>
-          <div class="trust-item">
-            <div class="icon-badge soft"><svg class="ico" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-            <div><h3>Auch „kein Handlungsbedarf“ ist ein Ergebnis</h3>
-            <p class="muted">Liegst du weit unter den Grenzen, zeigt SellCheck Grün. Das erspart unnötigen Aufwand.</p></div>
-          </div>
-        </div>
-      </div>
+          <p class="muted">SellCheck meldet sich nie bei deinen Plattformen an und setzt keine Bots ein. Es gibt keinen Zugriff auf deine Konten.</p>
+        </li>
+        <li>
+          <div class="card-head"><span class="card-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24"><path d="M3 12V4h8l10 10-8 8z"/><circle cx="8" cy="9" r="1.5"/></svg></span><h3>Ausgerichtet auf deutsche Regeln</h3></div>
+          <p class="muted">Meldegrenze, Abgrenzung privat oder gewerblich und EÜR orientieren sich am deutschen Recht.</p>
+        </li>
+        <li>
+          <div class="card-head"><span class="card-ico" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><h3>Auch „kein Handlungsbedarf“ ist ein Ergebnis</h3></div>
+          <p class="muted">Liegst du weit unter den Grenzen, zeigt SellCheck Grün. Das erspart dir unnötigen Aufwand.</p>
+        </li>
+      </ul>
     </div>
   </section>
 
   <!-- FAQ -->
-  <section id="faq" class="tint">
+  <section id="faq">
     <div class="wrap faq">
       <div class="section-head">
         <h2>Häufige Fragen</h2>
@@ -382,7 +362,7 @@
       </details>
       <details>
         <summary>Wie ist das bei Kleinanzeigen?</summary>
-        <p>Kleinanzeigen meldet nach eigener Auskunft nur Verkäufe, die über sein Bezahlsystem abgeschlossen wurden. Bar bezahlte oder außerhalb abgewickelte Verkäufe sieht die Plattform nicht. Für dich selbst und deine Einordnung als privat oder gewerblich zählen sie trotzdem.</p>
+        <p>Kleinanzeigen meldet nach eigener Auskunft nur Verkäufe, die über sein Bezahlsystem abgeschlossen wurden. Bar bezahlte oder außerhalb abgewickelte Verkäufe sieht die Plattform nicht. Für deinen Überblick und die Frage privat oder gewerblich zählen sie trotzdem.</p>
       </details>
       <details>
         <summary>Muss ich Steuern zahlen, wenn eine Plattform mich meldet?</summary>
@@ -399,7 +379,7 @@
       </details>
       <details>
         <summary>Brauche ich ein Konto?</summary>
-        <p>Nein. Du kannst die Tools ohne Anmeldung nutzen. Ergebnis, Report und Downloads schaltest du mit deiner E-Mail-Adresse frei. Deine Eingaben bleiben dabei auf deinem Gerät. Nur wenn du den Report per E-Mail anforderst, wird er einmalig übermittelt.</p>
+        <p>Nein. Du nutzt die Tools ohne Anmeldung. Ergebnis, Report und Downloads schaltest du mit deiner E-Mail-Adresse frei. Deine Eingaben bleiben dabei auf deinem Gerät. Nur wenn du den Report per E-Mail anforderst, wird er einmalig übermittelt.</p>
       </details>
       <details>
         <summary>Welche Plattformen kann ich eintragen?</summary>
@@ -425,17 +405,17 @@
   </section>
 
   <!-- ABSCHLUSS -->
-  <section class="on-dark" style="text-align:center">
+  <section class="final on-dark">
     <div class="wrap">
-      <h2 style="max-width:760px;margin:0 auto .4em">Weißt du, wie nah du an der Meldegrenze bist?</h2>
-      <p class="muted" style="margin-bottom:28px">Prüfe es für jede Plattform. Kostenlos und ohne Anmeldung, das Ergebnis schaltest du mit deiner E-Mail-Adresse frei.</p>
-      <a class="btn" href="tools.html">Meldegrenze für alle Plattformen prüfen
+      <h2>Weißt du, wie nah du an der Meldegrenze bist?</h2>
+      <p class="muted">Prüf es für jede Plattform. Kostenlos und ohne Anmeldung, das Ergebnis schaltest du mit deiner E-Mail-Adresse frei.</p>
+      <a class="btn big" href="tools.html">Meldegrenze für alle Plattformen prüfen
         <svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     </div>
   </section>
 </main>
 
-<footer class="on-dark" style="border-top:1px solid #262b33">
+<footer class="on-dark">
   <div class="wrap">
     <div class="cols">
       <div>
@@ -443,13 +423,14 @@
           <svg viewBox="12.8 4.8 38.4 54.4" aria-hidden="true"><path class="tag" d="M14 6H50V58L45 52.5 40 58 35 52.5 30 58 25 52.5 20 58 14 52.5Z"/><path class="tick" d="M22 30l7.5 7.5L43 22" fill="none" stroke-width="6.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
           <span>Sell<b>Check</b></span>
         </a>
-        <p style="margin-top:14px;color:#8a909b">Check, was wirklich bleibt.</p>
+        <p class="tagline">Check, was wirklich bleibt.</p>
       </div>
       <div>
         <h3>Seiten</h3>
         <ul>
           <li><a href="index.html">Startseite</a></li>
           <li><a href="tools.html">Gratis-Tools</a></li>
+          <li><a href="hilfe/index.html">Hilfe zu Exportdateien</a></li>
         </ul>
       </div>
       <div>
@@ -464,7 +445,7 @@
     </div>
     <div class="legal">
       <p>SellCheck ist ein unabhängiges Projekt und mit keiner der genannten Plattformen verbunden. Plattformnamen sind Marken ihrer jeweiligen Inhaber.</p>
-      <p style="margin:0">Keine Steuer- oder Rechtsberatung. Alle Angaben ohne Gewähr, Stand Oktober 2026. Bei individuellen Fragen helfen Finanzamt oder Steuerberatung.</p>
+      <p>Keine Steuer- oder Rechtsberatung. Alle Angaben ohne Gewähr, Stand Oktober 2026. Bei individuellen Fragen helfen Finanzamt oder Steuerberatung.</p>
     </div>
   </div>
 </footer>

@@ -363,6 +363,7 @@ def page_shell(title, desc, body, slug="", depth_home="../"):
   <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#0e1116">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="../fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="../style.css">
   <link rel="stylesheet" href="../hilfe.css">
 </head>
@@ -381,8 +382,14 @@ def page_shell(title, desc, body, slug="", depth_home="../"):
 {body}
 <footer class="on-dark help-footer">
   <div class="wrap">
-    <p>SellCheck gibt Orientierung und ist keine Steuer- oder Rechtsberatung. Alles läuft in deinem Browser.</p>
-    <p><a href="../index.html">Startseite</a> · <a href="../tools.html">Tools</a> · <a href="../impressum.html">Impressum</a> · <a href="../datenschutz.html">Datenschutz</a> · <a href="../agb.html">Nutzungsbedingungen</a></p>
+    <p class="help-footer-note">SellCheck gibt Orientierung und ist keine Steuer- oder Rechtsberatung. Alles läuft in deinem Browser.</p>
+    <ul class="help-footer-links">
+      <li><a href="../index.html">Startseite</a></li>
+      <li><a href="../tools.html">Tools</a></li>
+      <li><a href="../impressum.html">Impressum</a></li>
+      <li><a href="../datenschutz.html">Datenschutz</a></li>
+      <li><a href="../agb.html">Nutzungsbedingungen</a></li>
+    </ul>
   </div>
 </footer>
 </body>
@@ -412,16 +419,13 @@ def platform_page(d):
   <div class="wrap">
     <nav class="crumbs" aria-label="Brotkrumen"><a href="../index.html">Startseite</a> › <a href="index.html">Hilfe</a> › <span aria-current="page">{e(d["name"])}</span></nav>
     <a class="help-back" href="index.html">← Alle Datenquellen</a>
-    <span class="eyebrow">Hilfe · Datei besorgen</span>
     <h1>{e(d["headline"])}</h1>
     <p>{e(d["lead"])}</p>
+    <p class="help-status">{tag}</p>
   </div>
 </div>
 <div class="wrap help-main">
-  <div class="help-top">
-    <dl class="help-facts">{facts}</dl>
-    <div class="help-tag">{tag}</div>
-  </div>
+  <dl class="help-facts">{facts}</dl>
   <p class="help-note">Stand der Beschreibung: {STAND}. Anbieter ändern ihre Oberfläche gelegentlich, Menünamen können deshalb abweichen. {hint}</p>
   {"".join(sec)}
   <section class="help-next">
@@ -454,7 +458,6 @@ def hub_page():
 <div class="help-hero on-dark">
   <div class="wrap">
     <nav class="crumbs" aria-label="Brotkrumen"><a href="../index.html">Startseite</a> › <span aria-current="page">Hilfe</span></nav>
-    <span class="eyebrow">Hilfe · Datei besorgen</span>
     <h1>Wo finde ich meine Exportdatei?</h1>
     <p>Wähle deine Plattform. Du bekommst eine Schritt-für-Schritt-Anleitung, wo die Datei liegt und was du danach in SellCheck tust.</p>
   </div>

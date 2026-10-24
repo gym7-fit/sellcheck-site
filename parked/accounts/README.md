@@ -30,3 +30,7 @@ Stand 13. Oktober 2026. Die Tools laufen ohne Anmeldung, Ergebnis, Report und Do
 - Die Stile für die Anmelde-Seiten (`.auth-*`) liegen weiter in `site/style.css`.
 - Ehrlicher Hinweis aus `AUTH-SETUP.md`: Auf einer statischen Seite sperrt eine Anmeldung nur die Oberfläche. Echter Schutz entsteht erst mit serverseitigen Daten.
 - Der öffentliche Anon-Key in `auth-config.js` ist kein Geheimnis, gehört aber zu einem **eigenen** Supabase-Projekt für SellCheck.
+
+## Stile (seit dem Redesign 10/2026)
+
+Die Stile der Anmeldeseiten stehen nicht mehr in `site/style.css`, sondern in `auth.css` hier im Ordner. Beim Zurückholen `auth.css` mit nach `site/` kopieren; `login.html` und `register.html` binden sie schon ein.

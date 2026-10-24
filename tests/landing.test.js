@@ -19,7 +19,8 @@ test("Titel, Beschreibung und Link-Vorschau nennen die Meldegrenze", () => {
 });
 
 test("Hero: Meldegrenze ist der erste Aufruf, Überschrift (Claim) bleibt", () => {
-  assert.match(hero, /<h1>Check, was <em>wirklich bleibt\.<\/em><\/h1>/);
+  // Claim ohne einzeln eingefärbtes Wort (Redesign C: Betonung kommt aus Größe und Gewicht, nicht aus einer Akzentfarbe)
+  assert.match(hero, /<h1>Check, was wirklich bleibt\.<\/h1>/);
   assert.match(hero, /<p class="lead">Wie nah bist du an der Meldegrenze\?/);
   const buttons = [...hero.matchAll(/<a class="btn( secondary)?" href="([^"]+)">\s*([^<]+)/g)].map((m) => ({ secondary: !!m[1], href: m[2], text: m[3].trim() }));
   assert.equal(buttons[0].href, "#demo");
@@ -127,7 +128,7 @@ test("Meldegrenze: Startseite, Tools und Report sagen, dass die Plattform nach G
 test("Karten: Symbol steht neben der Überschrift, nicht als Kachel darüber (Entscheidung Louis 23.10.2026)", () => {
   assert.ok(!/<div class="icon-badge[^"]*"><svg[^\n]*<\/svg><\/div>\s*<h3>/.test(html), "Symbol-Kachel direkt über einer h3");
   assert.ok((html.match(/class="card-head"/g) || []).length >= 6, "Werkzeug- und Vertrauenskarten nutzen card-head");
-  const css = fs.readFileSync(path.join(SITE, "landing.css"), "utf8");
+  const css = fs.readFileSync(path.join(SITE, "style.css"), "utf8") + fs.readFileSync(path.join(SITE, "landing.css"), "utf8");
   assert.match(css, /\.card-head \{[^}]*display: flex/);
   assert.match(css, /\.bento > \.tool-wide \{ display: grid; grid-template-columns: auto 1fr;/, "breite Karte am Handy: Symbol neben dem Text");
 });

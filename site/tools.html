@@ -22,6 +22,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#0e1116">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="wizard.css">
   <link rel="stylesheet" href="gate.css">
@@ -39,6 +40,7 @@
     <nav class="nav" aria-label="Hauptnavigation">
       <a class="hide-sm" href="index.html">Startseite</a>
       <a class="hide-sm" href="tools.html" aria-current="page">Tools</a>
+      <a class="hide-sm" href="hilfe/index.html">Hilfe</a>
     </nav>
   </div>
 </header>
@@ -46,8 +48,8 @@
 <main id="main">
 <div class="wiz-hero on-dark">
   <div class="wrap">
-    <h1>Dein Überblick in sechs Schritten</h1>
-    <p>Sechs Schritte von den Grundangaben bis zum Report. Jeder Schritt schaltet den nächsten frei. Ergebnis, Report und Downloads schaltest du am Ende mit deiner E-Mail-Adresse frei.</p>
+    <h1>In sechs Schritten zum Überblick.</h1>
+    <p>Jahr, Plattformen, Verkäufe, Meldegrenzen: Jeder Schritt schaltet den nächsten frei. Danach prüfst du alles auf einen Blick und schaltest Ergebnis, Report und Downloads mit deiner E-Mail-Adresse frei.</p>
   </div>
 </div>
 
@@ -78,7 +80,7 @@
         <button class="btn secondary small step-edit" type="button" data-edit="1" aria-label="Schritt 1 ändern" hidden>Ändern</button>
       </header>
       <div class="step-body" id="body-1">
-        <div class="field-row" style="max-width:300px">
+        <div class="field-row w-s">
           <div>
             <label for="w-year">Steuerjahr</label>
             <select id="w-year"></select>
@@ -166,14 +168,14 @@
       </div>
     </div>
 
-    <h3 style="margin-top:28px">Datei auswählen</h3>
+    <h3>Datei auswählen</h3>
     <label class="drop" id="i-drop" for="i-file">
-      <svg class="ico" viewBox="0 0 24 24" style="width:32px;height:32px"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
+      <svg class="ico ico-lg" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
       <span><b>CSV- oder Textdatei hierher ziehen</b> oder klicken zum Auswählen</span>
       <small>.csv, .txt, .tsv · bis 5 MB · kein Excel (.xlsx), dort als CSV speichern</small>
       <input id="i-file" type="file" accept=".csv,.txt,.tsv,text/csv,text/plain,text/tab-separated-values">
     </label>
-    <details class="more-fields more-ways" style="margin-top:14px">
+    <details class="more-fields more-ways">
       <summary>Oder Tabelle aus der Zwischenablage einfügen</summary>
       <div class="more-ways-body">
         <div>
@@ -183,8 +185,8 @@
         </div>
       </div>
     </details>
-    <p id="i-curwarn" class="notice" hidden style="margin-top:8px"></p>
-    <p id="i-msg" class="small" role="status" aria-live="polite" style="min-height:1.4em"></p>
+    <p id="i-curwarn" class="notice mt-1" hidden></p>
+    <p id="i-msg" class="small reserve" role="status" aria-live="polite"></p>
 
     <div id="i-panel" hidden>
       <h3>Erkannte Daten</h3>
@@ -209,21 +211,21 @@
       <div class="table-scroll" id="i-prevwrap" hidden>
         <table><thead><tr><th>Datum</th><th>Artikel</th><th>Plattform</th><th class="num">Verkauf</th><th class="num">Kosten</th></tr></thead><tbody id="i-prev"></tbody></table>
       </div>
-      <p id="i-buywarn" class="notice" hidden style="margin-top:12px"></p>
+      <p id="i-buywarn" class="notice mt-2" hidden></p>
       <div class="toolbar">
         <button class="btn" id="i-go" type="button" disabled>Jetzt importieren</button>
       </div>
 
-      <details class="more-fields" id="i-adv" style="margin-top:18px">
+      <details class="more-fields mt-3" id="i-adv">
         <summary>Vorschau sieht falsch aus? Spalten selbst zuordnen</summary>
         <p id="i-adv-hint" class="small muted">Meist ist hier nichts zu tun. Wähle nur dann andere Spalten, wenn Datum oder Beträge in der Vorschau nicht stimmen.</p>
         <div class="map-grid" id="i-map"></div>
         <div id="i-types" class="types" hidden></div>
-        <label class="check-inline" style="margin-top:12px"><input id="i-positive" type="checkbox" checked> Nur Beträge über 0 importieren (ohne Erstattungen und Abbuchungen)</label>
+        <label class="check-inline mt-2"><input id="i-positive" type="checkbox" checked> Nur Beträge über 0 importieren (ohne Erstattungen und Abbuchungen)</label>
       </details>
     </div>
     <div class="toolbar"><button class="btn secondary small" id="i-undo" type="button" hidden>Letzten Import rückgängig machen</button></div>
-    <p class="small muted" style="margin:14px 0 0">Doppelte Einträge erkennt SellCheck an Bestellnummer, Datum, Artikel und Betrag und überspringt sie beim erneuten Import.</p>
+    <p class="small muted mt-3 mb-0">Doppelte Einträge erkennt SellCheck an Bestellnummer, Datum, Artikel und Betrag und überspringt sie beim erneuten Import.</p>
             </div>
             <div class="tab-panel" role="tabpanel" id="m-manual" aria-labelledby="m-manual-tab" hidden>
     <form id="t-form" novalidate>
@@ -257,7 +259,7 @@
         <p class="small muted">In der Einnahmen-Überschuss-Rechnung zählt der Zeitpunkt der Bezahlung: Ein Einkauf ist in dem Jahr abzugsfähig, in dem du ihn bezahlt hast, auch wenn die Ware erst später verkauft wird. Deshalb braucht der Steuer-Export das Einkaufsdatum.</p>
       </details>
       <button class="btn" type="submit">Eintrag hinzufügen</button>
-      <span id="t-msg" class="small muted" role="status" aria-live="polite" style="margin-left:10px"></span>
+      <span id="t-msg" class="small muted" role="status" aria-live="polite"></span>
     </form>
               <p class="live-profit" id="t-live" aria-live="polite"></p>
               <div class="add-toast" id="add-toast" role="status" aria-live="polite" hidden>
@@ -296,7 +298,7 @@
         </div>
         <details class="more-fields" id="all-entries">
           <summary>Alle Einträge ansehen und bearbeiten</summary>
-          <div class="field-row" style="max-width:300px;margin-top:12px"><div><label for="t-filter">Plattform</label><select id="t-filter"></select></div></div>
+          <div class="field-row w-s mt-2"><div><label for="t-filter">Plattform</label><select id="t-filter"></select></div></div>
           <div class="stats">
             <div class="stat"><div class="v" id="s-count">0</div><div class="l">Verkäufe</div></div>
             <div class="stat"><div class="v" id="s-sum">0,00 €</div><div class="l">Einnahmen</div></div>
@@ -310,8 +312,8 @@
               <tbody id="t-body"></tbody>
             </table>
           </div>
-          <p id="t-more" class="muted small" hidden style="margin-top:12px"></p>
-          <p id="t-empty" class="muted small" style="margin-top:12px">Noch keine Einträge für diese Auswahl.</p>
+          <p id="t-more" class="muted small mt-2" hidden></p>
+          <p id="t-empty" class="muted small mt-2">Noch keine Einträge für diese Auswahl.</p>
           <div class="toolbar">
             <button class="btn secondary small" id="t-export" type="button">Sicherung als CSV</button>
             <button class="btn danger small" id="t-clear" type="button">Alle Einträge löschen</button>
@@ -348,7 +350,7 @@
         <p class="small muted">Plattformen melden nur, was sie sicher kennen. Kleinanzeigen etwa meldet nur Verkäufe über sein Bezahlsystem. „Flohmarkt / bar“ und „Sonstige“ werden nicht gemeldet, zählen aber für dein Gesamtbild.</p>
         <details class="more-fields">
           <summary>Eigene Zahlen testen</summary>
-          <p class="small muted" style="margin-top:12px">Trage Verkäufe und Einnahmen einer Plattform ein und sieh, wie nah du an der Grenze bist.</p>
+          <p class="small muted mt-2">Trage Verkäufe und Einnahmen einer Plattform ein und sieh, wie nah du an der Grenze bist.</p>
     <div class="gauge-wrap">
       <div class="gauge">
         <svg viewBox="0 0 200 112" aria-hidden="true">
@@ -368,8 +370,8 @@
             <input id="a-sum" type="number" min="0" step="0.01" inputmode="decimal" value="0">
           </div>
         </div>
-        <label for="a-platform" style="margin-top:4px">Werte aus meinem Tracker übernehmen für</label>
-        <div class="inline-form"><select id="a-platform" style="flex:1 1 180px"></select><button class="btn secondary small" id="a-from-tracker" type="button">Aus meinen Einträgen übernehmen</button></div>
+        <label for="a-platform">Werte aus meinem Tracker übernehmen für</label>
+        <div class="inline-form"><select id="a-platform" class="grow"></select><button class="btn secondary small" id="a-from-tracker" type="button">Aus meinen Einträgen übernehmen</button></div>
       </div>
     </div>
 
@@ -377,13 +379,13 @@
       <strong></strong>
       <div class="small"></div>
     </div>
-    <div style="margin-top:18px">
+    <div class="mt-3">
       <div class="small muted">Verkäufe: <span id="a-count-txt"></span></div>
       <div class="meter"><div id="a-count-bar"></div></div>
       <div class="small muted">Einnahmen: <span id="a-sum-txt"></span></div>
       <div class="meter"><div id="a-sum-bar"></div></div>
     </div>
-    <p class="small muted" style="margin:0">Gezählt werden Transaktionen, nicht einzelne Artikel. Befreit sind nur Verkäufer mit weniger als 30 Verkäufen <em>und</em> weniger als 2.000 €. Sobald eine der beiden Grenzen erreicht ist, wird gemeldet. Prüfe die Schwellen vor wichtigen Entscheidungen im Gesetzestext (Plattformen-Steuertransparenzgesetz).</p>
+    <p class="small muted mb-0">Gezählt werden Transaktionen, nicht einzelne Artikel. Befreit sind nur Verkäufer mit weniger als 30 Verkäufen <em>und</em> weniger als 2.000 €. Sobald eine der beiden Grenzen erreicht ist, wird gemeldet. Prüfe die Schwellen vor wichtigen Entscheidungen im Gesetzestext (Plattformen-Steuertransparenzgesetz).</p>
         </details>
         <div class="step-foot">
           <span class="step-foot-note">Sobald du die Hinweise gelesen hast, geht es weiter.</span>
@@ -405,7 +407,7 @@
       </header>
       <div class="step-body" id="body-6">
         <p class="step-help">Name und Steuernummer erscheinen auf dem gedruckten Report. Sie werden nur in deinem Browser gespeichert. Wenn du sie nicht drucken möchtest, lass die Felder leer.</p>
-        <div class="field-row" style="max-width:640px">
+        <div class="field-row w-l">
           <div><label for="x-name">Name</label><input id="x-name" maxlength="80" autocomplete="name"></div>
           <div><label for="x-taxid">Steuernummer</label><input id="x-taxid" maxlength="40" autocomplete="off"></div>
         </div>
@@ -460,7 +462,7 @@
     <section class="review-card wide export-card" aria-labelledby="r-t5">
       <header><h3 id="r-t5">Report und Dateien erzeugen</h3></header>
       <p class="muted" id="r-export-note"></p>
-      <div class="toolbar" style="margin-top:0">
+      <div class="toolbar mt-0">
         <button class="btn big" id="x-report-dl" type="button">Report herunterladen</button>
         <a class="btn secondary big" id="x-report" href="report.html" target="_blank" rel="noopener">Report ansehen und drucken</a>
       </div>
@@ -474,12 +476,12 @@
         <button class="btn secondary" id="x-mail" type="button">Report per E-Mail senden</button>
         <a class="btn secondary" id="x-mailto" href="#" hidden>Zusammenfassung im Mailprogramm öffnen</a>
       </div>
-      <p id="x-msg" class="small muted" role="status" aria-live="polite" style="min-height:1.4em"></p>
+      <p id="x-msg" class="small muted reserve" role="status" aria-live="polite"></p>
     </section>
 
     <section class="review-card wide" aria-labelledby="r-t6">
       <header><h3 id="r-t6">Abgabe</h3></header>
-    <p class="muted" style="margin:0 0 4px">Du reichst nichts über SellCheck ein. Wähle den Abgabeweg, der zu deiner Situation passt.</p>
+    <p class="muted">Du reichst nichts über SellCheck ein. Wähle den Abgabeweg, der zu deiner Situation passt.</p>
     <div class="src-groups" data-tabs>
       <div class="src-group">
         <div class="src-group-label"><span class="dot ok"></span>Dein Abgabeweg</div>
@@ -537,12 +539,11 @@
     </section>
 
     <section class="review-card wide cta-card">
-      <span class="label" style="background:var(--lime);color:var(--ink)">In Vorbereitung</span>
-      <h3 style="margin-top:14px">Für regelmäßige Verkäufer: das Starter-Paket</h3>
-      <p class="muted" style="max-width:560px">Ein Starter-Paket mit Guide für alle Plattformen, Google-Sheet-Tracker und EÜR-Übersicht ist in Vorbereitung (9,99 € einmalig). Lass dich zum Start benachrichtigen.</p>
+      <div class="plan-top"><h3>Für regelmäßige Verkäufer: das Starter-Paket</h3><span class="label">In Vorbereitung</span></div>
+      <p class="muted w-m">Ein Starter-Paket mit Guide für alle Plattformen, Google-Sheet-Tracker und EÜR-Übersicht ist in Vorbereitung (9,99 € einmalig). Lass dich zum Start benachrichtigen.</p>
       <form class="waitlist" data-source="tools" novalidate>
         <label for="email-tools">E-Mail</label>
-        <div class="inline-form" style="max-width:520px">
+        <div class="inline-form w-m">
           <input id="email-tools" name="email" type="email" required autocomplete="email" placeholder="du@beispiel.de">
           <button class="btn" type="submit">Benachrichtigt werden</button>
         </div>
@@ -557,7 +558,7 @@
 
 <dialog id="e-dialog" class="edit-dialog" aria-labelledby="e-title">
   <form id="e-form" method="dialog" novalidate>
-    <h2 id="e-title" style="font-size:1.4rem">Eintrag bearbeiten</h2>
+    <h2 id="e-title">Eintrag bearbeiten</h2>
     <div class="field-row">
       <div><label for="e-name">Artikel</label><input id="e-name" maxlength="80" required></div>
       <div><label for="e-date">Datum (Verkauf bzw. Einkauf)</label><input id="e-date" type="date" required></div>
@@ -574,12 +575,12 @@
       <div><label for="e-receipt">Belegnummer</label><input id="e-receipt" maxlength="60"></div>
       <div><label for="e-kind">Gegenstandsart (nur privat)</label><select id="e-kind"><option value="">– nicht angegeben –</option><option value="everyday">Gebrauchsgegenstand</option><option value="other">Sonstiges</option></select></div>
     </div>
-    <p id="e-msg" class="small neg" role="alert" style="min-height:1.2em"></p>
-    <div class="toolbar" style="margin-top:0"><button class="btn" type="submit">Änderungen speichern</button><button class="btn secondary" id="e-cancel" type="button">Abbrechen</button></div>
+    <p id="e-msg" class="small neg reserve" role="alert"></p>
+    <div class="toolbar mt-0"><button class="btn" type="submit">Änderungen speichern</button><button class="btn secondary" id="e-cancel" type="button">Abbrechen</button></div>
   </form>
 </dialog>
 
-<footer class="on-dark" style="border-top:1px solid #262b33">
+<footer class="on-dark">
   <div class="wrap">
     <div class="cols">
       <div>
@@ -587,13 +588,14 @@
           <svg viewBox="12.8 4.8 38.4 54.4" aria-hidden="true"><path class="tag" d="M14 6H50V58L45 52.5 40 58 35 52.5 30 58 25 52.5 20 58 14 52.5Z"/><path class="tick" d="M22 30l7.5 7.5L43 22" fill="none" stroke-width="6.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
           <span>Sell<b>Check</b></span>
         </a>
-        <p style="margin-top:14px;color:#8a909b">Check, was wirklich bleibt.</p>
+        <p class="tagline">Check, was wirklich bleibt.</p>
       </div>
       <div>
         <h3>Seiten</h3>
         <ul>
           <li><a href="index.html">Startseite</a></li>
           <li><a href="tools.html">Gratis-Tools</a></li>
+          <li><a href="hilfe/index.html">Hilfe zu Exportdateien</a></li>
         </ul>
       </div>
       <div>
@@ -608,7 +610,7 @@
     </div>
     <div class="legal">
       <p>SellCheck ist ein unabhängiges Projekt und mit keiner der genannten Plattformen verbunden. Plattformnamen sind Marken ihrer jeweiligen Inhaber.</p>
-      <p style="margin:0">Keine Steuer- oder Rechtsberatung. Alle Angaben ohne Gewähr, Stand Oktober 2026.</p>
+      <p>Keine Steuer- oder Rechtsberatung. Alle Angaben ohne Gewähr, Stand Oktober 2026.</p>
     </div>
   </div>
 </footer>

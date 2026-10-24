@@ -130,9 +130,10 @@ test("Fehler: Formulare zeigen Fehler am Feld (fielderr.js eingebunden, SCField 
 });
 
 test("Tippflächen: Knöpfe, aufklappbare Fragen und Ja/Nein-Auswahl sind mindestens 44 px hoch", () => {
-  const css = fs.readFileSync(path.join(SITE, "style.css"), "utf8");
+  const css = ["style.css", "wizard.css"].map((f) => fs.readFileSync(path.join(SITE, f), "utf8")).join("\n");
   for (const sel of ["\\.btn", "summary", "\\.quiz-opt"]) {
-    assert.match(css, new RegExp(`(^|\\n)${sel} \\{[^}]*min-height: 44px`), `${sel} ohne min-height: 44px`);
+    const m = css.match(new RegExp(`(^|\\n)${sel} \\{[^}]*min-height: (\\d+)px`));
+    assert.ok(m && Number(m[2]) >= 44, `${sel}: min-height fehlt oder unter 44 px`);
   }
   const landing = fs.readFileSync(path.join(SITE, "landing.css"), "utf8");
   assert.match(landing, /\.demo-card input\[type="range"\] \{[^}]*height: 44px/);
