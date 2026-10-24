@@ -20,6 +20,24 @@
         ],
         "createdAt": "2026-10-24T16:34:21.460Z",
         "reason": "Fehlalarm: .trust-list li hat padding-top var(--s5) (24 px) unter der 2-px-Linie, im Browser geprüft"
+      },
+      {
+        "rule": "monotonous-spacing",
+        "value": "*",
+        "files": [
+          "design/richtungen/a-beleg.html"
+        ],
+        "createdAt": "2026-10-24T16:51:49.385Z",
+        "reason": "Prototyp der nicht gewählten Richtung A, wird nicht ausgeliefert; Louis hat am 24.10. Richtung C gewählt"
+      },
+      {
+        "rule": "cream-palette",
+        "value": "*",
+        "files": [
+          "design/richtungen/index.html"
+        ],
+        "createdAt": "2026-10-24T16:51:49.403Z",
+        "reason": "Vergleichsseite der Prototypen, nicht ausgeliefert; Hintergrund ist die feste Markenfarbe Papier #f6f4ee aus PRUEFAUFTRAG.md Abschnitt 6"
       }
     ]
   }
