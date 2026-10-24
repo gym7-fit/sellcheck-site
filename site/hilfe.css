@@ -1,5 +1,6 @@
 /* Hilfeseiten (hilfe/*.html): Anleitungen zum Auffinden der Exportdateien. Richtung C „Kontrast“. */
 .help-hero { padding: var(--s7) 0 var(--s6); background: var(--ink); }
+.help-hero .wrap { max-width: 900px; }
 .help-hero h1 { margin: var(--s3) 0 var(--s4); font-size: clamp(2.2rem, 5vw, 3.6rem); max-width: 20ch; }
 .help-hero p { max-width: 62ch; color: var(--on-ink-muted); margin: 0; font-size: 1.12rem; }
 .help-hero .help-status { margin-top: var(--s4); }
@@ -52,12 +53,10 @@
 .help-card .t { display: block; color: var(--muted); font-size: .95rem; margin: 2px 0 var(--s2); }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .help-card .mono, :root:not([data-theme="light"]) .help-step .n { background: var(--lime); color: var(--ink); } }
 
-.help-footer { padding: var(--s6) 0; }
-.help-footer-note { margin: 0 0 var(--s3); color: var(--on-ink-muted); font-size: .95rem; }
-.help-footer-links { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0 var(--s5); }
 
 @media (max-width: 600px) {
   .help-facts > div { grid-template-columns: 1fr; gap: 2px; padding: var(--s3) var(--s4); }
-  .help-step { grid-template-columns: 1fr; gap: var(--s3); padding: var(--s4); }
+  .help-step { grid-template-columns: 36px 1fr; gap: var(--s3); padding: var(--s4); }
+  .help-step .n { width: 36px; height: 36px; }
   .help-hero { padding: var(--s6) 0 var(--s5); }
 }

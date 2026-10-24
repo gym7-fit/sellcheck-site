@@ -115,11 +115,20 @@
           <label><input type="radio" name="d-plat" value="ebay"><span><i></i>eBay</span></label>
           <label><input type="radio" name="d-plat" value="etsy"><span><i></i>Etsy</span></label>
         </fieldset>
-        <div class="demo-row"><label for="d-count">Verkäufe in diesem Jahr</label><output id="d-count-out" for="d-count">21</output></div>
-        <input id="d-count" type="range" min="0" max="45" step="1" value="21">
-        <div class="demo-row"><label for="d-sum">Umsatz in diesem Jahr</label><output id="d-sum-out" for="d-sum">1.280 €</output></div>
-        <input id="d-sum" type="range" min="0" max="3000" step="10" value="1280">
-        <div class="demo-meter" aria-hidden="true"><div id="d-meter" class="yellow"></div></div>
+        <div class="readouts">
+          <div class="readout">
+            <label for="d-count">Verkäufe in diesem Jahr</label>
+            <p class="readout-num"><output id="d-count-out" for="d-count">21</output> <small>von 30</small></p>
+            <div class="demo-meter" aria-hidden="true"><div id="d-count-bar" class="yellow"></div></div>
+            <input id="d-count" type="range" min="0" max="45" step="1" value="21">
+          </div>
+          <div class="readout">
+            <label for="d-sum">Umsatz in diesem Jahr</label>
+            <p class="readout-num"><output id="d-sum-out" for="d-sum">1.280 €</output> <small>von 2.000 €</small></p>
+            <div class="demo-meter" aria-hidden="true"><div id="d-sum-bar" class="yellow"></div></div>
+            <input id="d-sum" type="range" min="0" max="3000" step="10" value="1280">
+          </div>
+        </div>
         <div id="d-result" class="ampel yellow" role="status" aria-live="polite">
           <strong>Gelb: Du näherst dich der Grenze</strong>
           <div>Es fehlen noch 9 Verkäufe oder 720 €. Danach meldet die Plattform.</div>
@@ -308,10 +317,10 @@
             <li><b>Erinnerung</b> vor der Meldegrenze</li>
             <li><b>Gewinn nach Umsatzsteuer</b> (auch Differenzbesteuerung)</li>
           </ul>
-          <p class="plan-cost"><b>Was Nichtstun kostet:</b> Eine Plattform-Meldung merkst du sonst erst hinterher. Liegende Ware bindet Geld.</p>
-          <p class="mb-0"><a class="btn secondary small" href="#demo">Mit Beispielwerten durchrechnen</a></p>
+          <p class="plan-action"><a class="btn secondary small" href="#demo">Mit Beispielwerten durchrechnen</a></p>
         </div>
       </div>
+      <p class="plan-cost"><b>Was Nichtstun kostet:</b> Eine Plattform-Meldung merkst du sonst erst hinterher. Liegende Ware bindet Geld.</p>
       <p class="muted small plan-note"><b>Noch nicht erhältlich:</b> Die iPhone-App ist in Entwicklung. Zum Start: 14 Tage kostenlos testen.</p>
       <p class="muted small plan-note">In der App bleibt Basic kostenlos: 50 Artikel pro Jahr, ohne Konto.</p>
     </div>
@@ -426,7 +435,7 @@
         <p class="tagline">Check, was wirklich bleibt.</p>
       </div>
       <div>
-        <h3>Seiten</h3>
+        <p class="foot-h">Seiten</p>
         <ul>
           <li><a href="index.html">Startseite</a></li>
           <li><a href="tools.html">Gratis-Tools</a></li>
@@ -434,7 +443,7 @@
         </ul>
       </div>
       <div>
-        <h3>Rechtliches</h3>
+        <p class="foot-h">Rechtliches</p>
         <ul>
           <li><a href="impressum.html">Impressum</a></li>
           <li><a href="impressum.html#kontakt">Kontakt</a></li>

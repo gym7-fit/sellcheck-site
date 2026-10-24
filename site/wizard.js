@@ -358,13 +358,14 @@
     items.forEach((it) => {
       const done = it.n <= 6 ? p.done[it.n] && it.n !== p.active : false;
       const locked = it.n <= 6 ? it.n > p.active : !p.canReview;
-      const current = it.n === Math.min(p.active, 7) && view === "wizard";
+      const current = view === "review" ? it.n === 7 : it.n === Math.min(p.active, 7);
       const li = el("li", undefined, "stepper-item" + (done ? " done" : "") + (locked ? " locked" : "") + (current ? " current" : ""));
       const b = document.createElement("button");
       b.type = "button";
       b.disabled = locked;
       if (current) b.setAttribute("aria-current", "step");
-      b.append(el("span", done ? "✓" : String(it.n), "stepper-dot"), el("span", it.label, "stepper-label"));
+      // Haken und Ziel als gezeichnete Symbole (CSS), „Prüfen“ ist kein siebter Schritt, sondern das Ziel
+      b.append(el("span", done || it.n === 7 ? "" : String(it.n), "stepper-dot" + (it.n === 7 ? " end" : "")), el("span", it.label, "stepper-label"));
       b.addEventListener("click", () => {
         if (it.n === 7) { showReview(); return; }
         showWizard();

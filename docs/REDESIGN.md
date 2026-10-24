@@ -91,4 +91,52 @@ python3 -m http.server 8771 --directory design/richtungen
 - **Geist:** Der Prüfer stuft Geist als zu oft benutzte KI-Standardschrift ein.
 - **Farbvorschläge aus `ui-ux-pro-max`** (Gold, Lila): passen nicht zur Marke. Lila steht auf der Kreuzliste.
 
-Entscheidung von Louis: _offen_
+Entscheidung von Louis am 24.10.2026: **C „Kontrast“**, dazu Texte und die komplette Aufmachung überarbeiten.
+
+## Phase 2 bis 4: Umsetzung (Zweig `redesign`)
+
+- **Design-System:**
+  - `site/style.css`, Regeln in `DESIGN.md`, Produktwahrheit in `PRODUCT.md`
+  - Schrift: Bricolage Grotesque, selbst gehostet (`site/fonts/`, 77 KB, OFL)
+- **Seiten:** Startseite neu, Tools, 9 Hilfeseiten (Vorlage in `scripts/build-hilfe.py`), Rechtsseiten, Danke, Bestätigt, 404, Markenseite (lebende Stilseite), Report.
+- **Texte:**
+  - Startseite und Tools-Einleitung überarbeitet.
+  - Preise, Stufen, Meldegrenzen-Fakten, Rechtstexte und geprüfte Aussagen sind unverändert.
+  - Korrigiert: „Gewinn, Marge und Rendite“ zu „Gewinn und Marge“, denn eine Rendite zeigt das Werkzeug nicht. Die Einleitung der Tools passt jetzt zur Leiste mit 6 Schritten plus „Prüfen“.
+- **Prüfungen:**
+  - 166 Tests grün, davon neu `tests/design.test.js`
+  - axe 0 Verstöße auf allen Seiten, hell und dunkel
+  - kein waagerechtes Scrollen bei 320 bis 1440 px und quer
+  - Tippflächen ab 44 px (außer Links im Fließtext)
+  - `impeccable detect`: 0 Befunde
+  - Konsole ohne Fehler
+  - Funktionsprobe: Ablauf mit eBay-Datei, Freischaltung, Journal und Report, Ampel bei 1.999,99 € Gelb und bei 2.000 € Rot
+- **Gewicht:** Beim ersten Besuch etwa 70 bis 77 KB mehr je Seite, das ist die Schrift. Danach liegt sie im Zwischenspeicher.
+
+### Abschlussprüfung durch den Prüf-Agenten (impeccable-finish-reviewer)
+
+Grundlage: vollständige Fotos in `.impeccable/review/` (lokal, nicht im Repo). Umgesetzt:
+
+1. **Prüf-Ampel wie im Prototyp:** zwei große Anzeigen mit je eigenem Balken, Regler darunter, Warnsymbol am Ampel-Titel.
+2. **Dunkelmodus:**
+   - keine graublauen Streifen mehr, Abschnitte nur durch eine Linie getrennt
+   - Auswahlfelder passend zum Modus (`color-scheme`)
+   - Starter-Karte mit Lime-Rahmen
+3. **Hilfeseiten:** Schrittnummer auch am Handy neben der Überschrift.
+4. **Preiskarten:** gleich hoch, Aktion unten. Der Satz „Was Nichtstun kostet“ steht als Text unter den Karten statt als Kasten in der Karte.
+5. **Ausrichtung:**
+   - Tools und Hilfe haben eine gemeinsame Kante für Kopf und Inhalt.
+   - Film und FAQ der Startseite stehen linksbündig wie alle anderen Abschnitte.
+6. **Ergebnis-Bildschirm:**
+   - Kennzahlen ohne Kästen
+   - Abgabewege mit gezeichneten Symbolen statt Buchstaben, 3 + 2 statt einer verwaisten Kachel
+   - Abgabe-Details ohne Karte in der Karte
+7. **Überall gleich:**
+   - eine Fußzeile auf allen Seiten außer der 404
+   - Fortschrittsleiste mit gezeichneten Haken, „Prüfen“ als Ziel mit Fahne statt Nummer 7, größere Beschriftung
+8. **Detector-Ausnahmen:** veraltete Ausnahmen entfernt. `impeccable detect` meldet weiterhin 0.
+
+Nicht umgesetzt (Vorschläge für später):
+- eigene Video-Bedienleiste (die native ist barrierefrei)
+- Zackenkante des Logos als Schmuck auf weiteren Karten
+- große Zahlen auch im Kopf der Tools und Hilfeseiten
