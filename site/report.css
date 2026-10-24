@@ -1,9 +1,9 @@
 /* Schrift wie auf der Seite; in der heruntergeladenen Einzeldatei greift die Systemschrift. */
-@font-face { font-family: "Bricolage"; src: url("fonts/bricolage-grotesque.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
+@font-face { font-family: "Archivo"; src: url("fonts/archivo.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
 /* Steuer-Report: hell, ruhig, druckoptimiert (A4). */
 :root { --ink: #111318; --muted: #565b66; --line: #cfd2d8; --soft: #f3f4f6; --lime: #c8f169; --warn: #8a5a00; --warn-bg: #fff6df; --bad: #a32929; --good: #17703f; }
 * { box-sizing: border-box; }
-body { margin: 0; background: #e9eaed; color: var(--ink); font: 11pt/1.45 "Bricolage", "Avenir Next", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { margin: 0; background: #e9eaed; color: var(--ink); font: 11pt/1.45 "Archivo", "Avenir Next", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 .toolbar-screen { max-width: 210mm; margin: 14px auto 0; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; padding: 0 4px; }
 .toolbar-screen .rbtn { text-align: center; }
 .rbtn { background: var(--lime); color: var(--ink); border: 0; border-radius: var(--radius-sm, 12px); padding: 10px 18px; font: inherit; font-weight: 700; cursor: pointer; text-decoration: none; }

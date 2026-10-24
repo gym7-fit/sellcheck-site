@@ -97,7 +97,7 @@ Entscheidung von Louis am 24.10.2026: **C „Kontrast“**, dazu Texte und die k
 
 - **Design-System:**
   - `site/style.css`, Regeln in `DESIGN.md`, Produktwahrheit in `PRODUCT.md`
-  - Schrift: Bricolage Grotesque, selbst gehostet (`site/fonts/`, 77 KB, OFL)
+  - Schrift zuerst Bricolage Grotesque, seit 24.10. Archivo (siehe unten)
 - **Seiten:** Startseite neu, Tools, 9 Hilfeseiten (Vorlage in `scripts/build-hilfe.py`), Rechtsseiten, Danke, Bestätigt, 404, Markenseite (lebende Stilseite), Report.
 - **Texte:**
   - Startseite und Tools-Einleitung überarbeitet.
@@ -140,3 +140,24 @@ Nicht umgesetzt (Vorschläge für später):
 - eigene Video-Bedienleiste (die native ist barrierefrei)
 - Zackenkante des Logos als Schmuck auf weiteren Karten
 - große Zahlen auch im Kopf der Tools und Hilfeseiten
+
+## Nachschärfung am 24.10.2026: „nicht vibecodet, nicht nach KI“
+
+Louis' Rückmeldung zur Version C: Die Schrift gefällt nicht, und die Seite soll nicht nach KI aussehen. Seine Entscheidungen:
+
+- **Schrift:** Archivo statt Bricolage Grotesque (35 statt 77 KB, OFL). Schriftprobe mit fünf Kandidaten in `design/schriften/`.
+- **Farben entschärft:** Weiß statt Creme, Tinte für Text und normale Knöpfe, dunkel nur noch der Fuß. Lime bleibt im Logo, am Hauptknopf (`.btn.signal`) und beim aktuellen Schritt.
+- **Weg vom Baukasten:**
+  - echte Bildschirmfotos der Tools mit Beispieldaten statt gebauter Vorschaukarten (`site/media/shot-*.webp`, hell und dunkel)
+  - Text und Listen statt Kartenraster mit Symbolen
+  - „In drei Schritten“ und die Vertrauens-Karten entfallen, ihre Aussagen stehen jetzt im Text (kein Kontozugriff, Grün ist auch ein Ergebnis)
+  - Überschriften ohne Schlusspunkt, keine Pfeile an Knöpfen, keine Mittelpunkte als Trenner
+  - keine Einblend-Animation im Hero, kaum Schatten
+
+Umgesetzt in `site/style.css`, `site/landing.css`, `site/wizard.css`, `site/hilfe.css`, `site/index.html` (neu geschrieben), den Kopfzeilen aller Seiten, `tools.js`, `wizard.js`, `import.js` und der Hilfe-Vorlage. Fakten, Preise und Rechtstexte sind unverändert. Tests angepasst und ergänzt (169 grün).
+
+**Bewusst gelassen:**
+- Menüwege in den Hilfeseiten und im Abgabe-Teil („Datei → Speichern unter“) zeigen die Klickfolge und behalten ihren Pfeil.
+- Das Vorschaubild für geteilte Links (`site/social/og-image.*`) bleibt dunkel, es ist ein eigenes Markenbild.
+
+**Bildschirmfotos neu aufnehmen** (zum Beispiel nach Änderungen an den Tools): lokalen Server auf Port 8772 starten, dann die Aufnahme-Skripte aus der Prüfrunde nutzen (Schritt 5 „Meldegrenzen prüfen“ mit Beispieldaten, Schritt 3 mit der eBay-Beispieldatei, je hell und dunkel, doppelte Auflösung, danach als WebP mit Breite 1280 speichern und `width`/`height` in `index.html` anpassen).

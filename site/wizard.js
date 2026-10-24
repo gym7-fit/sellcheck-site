@@ -130,7 +130,7 @@
     const modeText = state.mode === "business" ? "Gewerblich" : "Privat";
     switch (n) {
       case 1:
-        return `${state.year} · ${modeText}` + (state.mode === "business" ? ` · ${state.vat === "small" ? "Kleinunternehmer" : "Regelbesteuerung " + state.rate + " %"}` : "");
+        return `${state.year}, ${modeText}` + (state.mode === "business" ? `, ${state.vat === "small" ? "Kleinunternehmer" : "Regelbesteuerung " + state.rate + " %"}` : "");
       case 2:
         return state.platforms.join(", ");
       case 3: {
@@ -519,7 +519,7 @@
 
     const byPlat = new Map();
     sold.forEach((e) => { const r = byPlat.get(e.platform) || { n: 0, sum: 0 }; r.n++; r.sum += Math.round(e.sell * 100); byPlat.set(e.platform, r); });
-    $("r-platforms").replaceChildren(...[...byPlat].map(([name, r]) => { const li = el("li"); li.append(el("b", name), document.createTextNode(`: ${r.n} ${r.n === 1 ? "Verkauf" : "Verkäufe"} · ${money(r.sum)}`)); return li; }));
+    $("r-platforms").replaceChildren(...[...byPlat].map(([name, r]) => { const li = el("li"); li.append(el("b", name), document.createTextNode(`: ${r.n} ${r.n === 1 ? "Verkauf" : "Verkäufe"}, ${money(r.sum)}`)); return li; }));
 
     const checks = $("r-checks");
     checks.replaceChildren();
@@ -532,7 +532,7 @@
       const lvl = x.level; // aus SCTax.meldeStatus: none, green, yellow, red
       const txt = !x.reported ? "keine Meldung" : lvl === "red" ? "Grenze erreicht" : lvl === "yellow" ? "nähert sich" : "weit entfernt";
       const chip = el("div", undefined, "limit-chip " + lvl);
-      chip.append(el("b", x.platform), el("span", `${x.count} Verkäufe · ${money(x.revenue)} · ${txt}`));
+      chip.append(el("b", x.platform), el("span", `${x.count} Verkäufe, ${money(x.revenue)}, ${txt}`));
       lim.append(chip);
     });
     if (!r.byPlatform.length) lim.append(el("p", "Keine Verkäufe im gewählten Jahr.", "muted"));

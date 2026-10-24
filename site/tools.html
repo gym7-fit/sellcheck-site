@@ -20,9 +20,10 @@
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="SellCheck: Check, was wirklich bleibt.">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="theme-color" content="#0e1116">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0e1116" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="preload" href="fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="wizard.css">
   <link rel="stylesheet" href="gate.css">
@@ -31,7 +32,7 @@
 </head>
 <body>
 <a class="skip" href="#main">Zum Inhalt springen</a>
-<header class="site-header on-dark">
+<header class="site-header">
   <div class="wrap">
     <a class="brand" href="index.html" aria-label="SellCheck Startseite">
       <svg viewBox="12.8 4.8 38.4 54.4" aria-hidden="true"><path class="tag" d="M14 6H50V58L45 52.5 40 58 35 52.5 30 58 25 52.5 20 58 14 52.5Z"/><path class="tick" d="M22 30l7.5 7.5L43 22" fill="none" stroke-width="6.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -46,9 +47,9 @@
 </header>
 
 <main id="main">
-<div class="wiz-hero on-dark">
+<div class="wiz-hero">
   <div class="wrap">
-    <h1>In sechs Schritten zum Überblick.</h1>
+    <h1>In sechs Schritten zum Überblick</h1>
     <p>Jahr, Plattformen, Verkäufe, Meldegrenzen: Jeder Schritt schaltet den nächsten frei. Danach prüfst du alles auf einen Blick und schaltest Ergebnis, Report und Downloads mit deiner E-Mail-Adresse frei.</p>
   </div>
 </div>
@@ -172,7 +173,7 @@
     <label class="drop" id="i-drop" for="i-file">
       <svg class="ico ico-lg" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
       <span><b>CSV- oder Textdatei hierher ziehen</b> oder klicken zum Auswählen</span>
-      <small>.csv, .txt, .tsv · bis 5 MB · kein Excel (.xlsx), dort als CSV speichern</small>
+      <small>.csv, .txt oder .tsv bis 5 MB. Excel-Dateien (.xlsx) vorher als CSV speichern.</small>
       <input id="i-file" type="file" accept=".csv,.txt,.tsv,text/csv,text/plain,text/tab-separated-values">
     </label>
     <details class="more-fields more-ways">
@@ -430,7 +431,7 @@
   <!-- ==================== ÜBERPRÜFUNG ==================== -->
   <div id="view-review" hidden>
     <div class="review-head">
-      <button class="btn secondary small" id="back-wizard" type="button">← Zurück zu den Schritten</button>
+      <button class="btn secondary small" id="back-wizard" type="button">Zurück zu den Schritten</button>
       <h2 tabindex="-1" id="review-title">Überprüfe deine Angaben</h2>
       <p class="muted">Prüfe alle Angaben. Mit „Ändern“ korrigierst du sie direkt.</p>
       <p class="small muted gate-status" id="gate-status" role="status" aria-live="polite"></p>

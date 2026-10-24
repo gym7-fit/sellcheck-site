@@ -8,7 +8,7 @@ const Tax = require("../site/tax-lib.js");
 const SITE = path.join(__dirname, "..", "site");
 const html = fs.readFileSync(path.join(SITE, "index.html"), "utf8");
 const js = fs.readFileSync(path.join(SITE, "landing.js"), "utf8");
-const hero = html.slice(html.indexOf('<div class="hero on-dark">'), html.indexOf("<!-- PLATTFORMEN -->"));
+const hero = html.slice(html.indexOf('<div class="hero">'), html.indexOf("<!-- PLATTFORMEN -->"));
 const demo = html.slice(html.indexOf('<section id="demo"'), html.indexOf("</section>", html.indexOf('<section id="demo"')));
 
 test("Titel, Beschreibung und Link-Vorschau nennen die Meldegrenze", () => {
@@ -22,9 +22,9 @@ test("Hero: Meldegrenze ist der erste Aufruf, Überschrift (Claim) bleibt", () =
   // Claim ohne einzeln eingefärbtes Wort (Redesign C: Betonung kommt aus Größe und Gewicht, nicht aus einer Akzentfarbe)
   assert.match(hero, /<h1>Check, was wirklich bleibt\.<\/h1>/);
   assert.match(hero, /<p class="lead">Wie nah bist du an der Meldegrenze\?/);
-  const buttons = [...hero.matchAll(/<a class="btn( secondary)?" href="([^"]+)">\s*([^<]+)/g)].map((m) => ({ secondary: !!m[1], href: m[2], text: m[3].trim() }));
+  const buttons = [...hero.matchAll(/<a class="btn( secondary| signal)?" href="([^"]+)">\s*([^<]+)/g)].map((m) => ({ kind: (m[1] || "").trim(), href: m[2], text: m[3].trim() }));
   assert.equal(buttons[0].href, "#demo");
-  assert.equal(buttons[0].secondary, false);
+  assert.equal(buttons[0].kind, "signal", "Hauptknopf trägt das Lime-Signal");
   assert.match(buttons[0].text, /Meldegrenze prüfen/);
   assert.equal(buttons[1].href, "tools.html");
 });
@@ -86,7 +86,7 @@ test("Sprungmarken: Abschnitte haben einen Abstand nach oben, damit die feste Ko
 
 test("Angebot: Stufen Essential und Premium, Preis aufgeschlüsselt, nur Vorhandenes als Leistung, Geplantes als geplant markiert", () => {
   const html = fs.readFileSync(path.join(__dirname, "..", "site", "index.html"), "utf8");
-  const sec = html.slice(html.indexOf('<section id="angebot"'), html.indexOf("<!-- VERTRAUEN -->"));
+  const sec = html.slice(html.indexOf('<section id="angebot"'), html.indexOf("<!-- FAQ -->"));
   for (const h of ["Starter</h3>", "Essential</h3>", "Premium</h3>"]) assert.ok(sec.includes(h), `Karte ${h} fehlt`);
   assert.match(sec, /4,99 €[\s\S]*oder 39 € im Jahr/, "Essential-Preise");
   assert.match(sec, /6,99 €[\s\S]*oder 49 € im Jahr/, "Premium-Preise");
@@ -125,10 +125,26 @@ test("Meldegrenze: Startseite, Tools und Report sagen, dass die Plattform nach G
   }
 });
 
-test("Karten: Symbol steht neben der Überschrift, nicht als Kachel darüber (Entscheidung Louis 23.10.2026)", () => {
-  assert.ok(!/<div class="icon-badge[^"]*"><svg[^\n]*<\/svg><\/div>\s*<h3>/.test(html), "Symbol-Kachel direkt über einer h3");
-  assert.ok((html.match(/class="card-head"/g) || []).length >= 6, "Werkzeug- und Vertrauenskarten nutzen card-head");
-  const css = fs.readFileSync(path.join(SITE, "style.css"), "utf8") + fs.readFileSync(path.join(SITE, "landing.css"), "utf8");
-  assert.match(css, /\.card-head \{[^}]*display: flex/);
-  assert.match(css, /\.bento > \.tool-wide \{ display: grid; grid-template-columns: auto 1fr;/, "breite Karte am Handy: Symbol neben dem Text");
+test("Weg vom Baukasten (Entscheidung Louis 24.10.2026): echte Bildschirmfotos statt gebauter Vorschaukarten, Text statt Kartenraster", () => {
+  assert.ok(!/class="[^"]*\b(bento|tool-card|tickets|trust-list|steps|icon-badge)\b/.test(html), "Kartenraster, Vorschaukarten oder Symbol-Kacheln auf der Startseite");
+  assert.ok(!/In drei Schritten/.test(html), "Abschnitt „In drei Schritten“ ist entfallen");
+  const shots = [...html.matchAll(/<img src="(media\/shot-[^"]+)" width="(\d+)" height="(\d+)"[^>]*alt="([^"]{40,})"/g)];
+  assert.ok(shots.length >= 2, "mindestens zwei echte Bildschirmfotos mit Maßen und ausführlichem Alternativtext");
+  for (const m of shots) {
+    assert.ok(fs.existsSync(path.join(SITE, m[1])), `${m[1]} fehlt`);
+    assert.ok(fs.statSync(path.join(SITE, m[1])).size < 150 * 1024, `${m[1]} über 150 KB`);
+    assert.match(m[4], /Beispiel/, "Alternativtext sagt, dass es Beispieldaten sind");
+  }
+  const figs = [...html.matchAll(/<figure class="shot[^"]*">([\s\S]*?)<\/figure>/g)].map((m) => m[1]);
+  assert.ok(figs.length >= 2 && figs.every((f) => /<figcaption>[^<]*Beispiel/.test(f)), "Bildunterschrift nennt Beispieldaten");
+  for (const f of figs) {
+    const dark = f.match(/<source srcset="(media\/[^"]+)" media="\(prefers-color-scheme: dark\)">/);
+    assert.ok(dark && fs.existsSync(path.join(SITE, dark[1])), "dunkle Variante des Bildschirmfotos fehlt");
+  }
+});
+
+test("Abschnittsüberschriften ohne Schlusspunkt, nur der Claim endet mit Punkt", () => {
+  const heads = [...html.matchAll(/<h([12])>([^<]+)<\/h\1>/g)].map((m) => m[2].trim());
+  assert.ok(heads.length >= 6);
+  for (const h of heads) if (h !== "Check, was wirklich bleibt.") assert.ok(!/\.$/.test(h), `Überschrift mit Punkt: ${h}`);
 });

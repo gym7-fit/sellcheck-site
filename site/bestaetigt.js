@@ -7,7 +7,7 @@
   if (failed) {
     document.getElementById("ok").hidden = true;
     document.getElementById("fehler").hidden = false;
-    document.getElementById("titel").textContent = "Der Link funktioniert nicht mehr.";
+    document.getElementById("titel").textContent = "Der Link funktioniert nicht mehr";
     return;
   }
   setTimeout(function () { location.href = "sellcheck://bestaetigt"; }, 400);

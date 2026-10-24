@@ -211,14 +211,14 @@
     if (s.keyword) parts.push(`${s.keyword} ohne Stichwort`);
     if (s.noAmount) parts.push(`${s.noAmount} ohne gültigen Betrag (z. B. Erstattungen)`);
     if (s.noDate) parts.push(`${s.noDate} ohne lesbares Datum`);
-    $("i-summary").textContent = parts.join(" · ");
+    $("i-summary").textContent = parts.join(", ") + ".";
     // Kurz sagen, was erkannt wurde, damit niemand das Raster öffnen muss, um es zu prüfen
     const nm = (c) => (c >= 0 && state.headers[c] ? `„${state.headers[c]}“` : null);
     const seen = [["Datum", nm(state.map.date)], ["Verkaufsbetrag", nm(state.map.amount)], ["Artikel", nm(state.map.name)]]
       .filter((x) => x[1]).map((x) => `${x[0]} = ${x[1]}`);
     const feeCols = (state.map.fees || []).map(nm).filter(Boolean);
     if (feeCols.length) seen.push(`Gebühren = ${feeCols.join(", ")}`);
-    $("i-recognized").textContent = seen.length ? "Spalten: " + seen.join(" · ") : "";
+    $("i-recognized").textContent = seen.length ? "Erkannte Spalten: " + seen.join("; ") : "";
     // Ist nichts importierbar, die Anpassungen gleich aufklappen
     if (s.ok === 0 && s.keyword < s.total && $("i-adv")) $("i-adv").open = true;
     $("i-go").disabled = s.ok === 0;
@@ -284,7 +284,7 @@
       return;
     }
     if (/\.(xlsx|xls|numbers|pdf|zip)$/i.test(file.name)) {
-      $("i-msg").textContent = "Dieses Format kann ich nicht lesen. Speichere die Tabelle bitte als CSV (Excel: Speichern unter → CSV).";
+      $("i-msg").textContent = "Dieses Format kann ich nicht lesen. Speichere die Tabelle bitte als CSV (in Excel über „Speichern unter“ mit dem Dateityp CSV).";
       return;
     }
     const fr = new FileReader();

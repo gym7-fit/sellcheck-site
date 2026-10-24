@@ -1,14 +1,14 @@
-/* Hilfeseiten (hilfe/*.html): Anleitungen zum Auffinden der Exportdateien. Richtung C „Kontrast“. */
-.help-hero { padding: var(--s7) 0 var(--s6); background: var(--ink); }
+/* Hilfeseiten (hilfe/*.html): Anleitungen zum Auffinden der Exportdateien. Hell, ruhig, zum Lesen. */
+.help-hero { padding: var(--s7) 0 var(--s6); border-bottom: 1px solid var(--line); }
 .help-hero .wrap { max-width: 900px; }
 .help-hero h1 { margin: var(--s3) 0 var(--s4); font-size: clamp(2.2rem, 5vw, 3.6rem); max-width: 20ch; }
-.help-hero p { max-width: 62ch; color: var(--on-ink-muted); margin: 0; font-size: 1.12rem; }
+.help-hero p { max-width: 62ch; color: var(--muted); margin: 0; font-size: 1.12rem; }
 .help-hero .help-status { margin-top: var(--s4); }
-.help-back { display: inline-flex; align-items: center; min-height: 44px; font-weight: 680; color: var(--lime); text-decoration: none; }
+.help-back { display: inline-flex; align-items: center; min-height: 44px; font-weight: 650; color: var(--link); text-decoration: none; }
 .help-back:hover { text-decoration: underline; }
-.crumbs { font-size: .92rem; margin-bottom: var(--s2); color: var(--on-ink-muted); }
-.crumbs a { color: var(--on-ink) !important; }
-.crumbs [aria-current] { color: #fff; font-weight: 620; }
+.crumbs { font-size: .92rem; margin-bottom: var(--s2); color: var(--muted); }
+.crumbs a { color: var(--text); }
+.crumbs [aria-current] { color: var(--text); font-weight: 620; }
 
 .help-main { padding-top: var(--s6); padding-bottom: var(--s8); display: grid; gap: var(--s6); max-width: 900px; }
 .help-main h2 { margin: 0 0 var(--s4); font-size: clamp(1.6rem, 3vw, 2.1rem); letter-spacing: -.025em; }
@@ -22,7 +22,7 @@
 .help-way { padding: 0; }
 .help-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s3); }
 .help-step { display: grid; grid-template-columns: 40px 1fr; gap: var(--s4); padding: var(--s5); border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
-.help-step .n { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--ink); color: var(--lime); font-weight: 780; }
+.help-step .n { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); color: var(--text); font-weight: 720; box-shadow: inset 0 0 0 1.5px var(--line-strong); }
 .help-step h3 { margin: 6px 0 var(--s2); font-size: 1.2rem; }
 .help-step p { margin: 0 0 var(--s2); }
 .help-step ul { margin: var(--s2) 0 0; padding-left: 20px; }
@@ -31,7 +31,7 @@
 /* Menüweg als Kette: zeigt, wo man klickt, ohne ein Abbild der fremden Oberfläche zu behaupten */
 .help-path { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: var(--s3) 0 0 !important; }
 .help-path .chip { padding: 5px 10px; border-radius: var(--radius-xs); border: 2px solid var(--text); background: var(--surface); font-weight: 680; font-size: .92rem; line-height: 1.2; }
-.help-path .chip:last-child { background: var(--lime); border-color: var(--lime); color: var(--ink); }
+.help-path .chip:last-child { background: var(--text); border-color: var(--text); color: var(--bg); }
 .help-path .sep { color: var(--muted); font-weight: 780; }
 
 .help-shot { margin: var(--s3) 0 0; }
@@ -39,19 +39,17 @@
 .help-shot figcaption { margin-top: 6px; font-size: .88rem; color: var(--muted); }
 
 .help-next, .help-good, .help-alt, .help-sources { padding: var(--s5); border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
-.help-next { background: var(--ink); border-color: var(--ink); color: var(--on-ink); --muted: var(--on-ink-muted); }
-.help-next h2 { color: var(--on-ink); }
+.help-next { background: var(--surface-2); border-color: var(--line); }
 .help-next ol, .help-next ul, .help-good ul, .help-sources ul { margin: 0; padding-left: 22px; display: grid; gap: var(--s2); }
 .help-next .btn { margin-top: var(--s5); }
 .help-alt p { margin: 0; }
 
 .help-cards { display: grid; gap: var(--s3); grid-template-columns: repeat(auto-fill, minmax(min(270px, 100%), 1fr)); }
-.help-card { display: flex; gap: var(--s4); align-items: flex-start; padding: var(--s5); border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); color: var(--text); text-decoration: none; transition: border-color .15s var(--ease), transform .15s var(--ease); }
-.help-card:hover { border-color: var(--text); transform: translateY(-1px); }
-.help-card .mono { flex: none; width: 42px; height: 42px; border-radius: var(--radius-sm); display: grid; place-items: center; background: var(--ink); color: var(--lime); font-weight: 780; font-size: 1.15rem; }
+.help-card { display: flex; gap: var(--s4); align-items: flex-start; padding: var(--s5); border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); color: var(--text); text-decoration: none; transition: border-color .15s var(--ease); }
+.help-card:hover { border-color: var(--text); }
+.help-card .mono { flex: none; width: 42px; height: 42px; border-radius: var(--radius-sm); display: grid; place-items: center; background: var(--surface-2); color: var(--text); font-weight: 720; font-size: 1.15rem; }
 .help-card b { display: block; font-size: 1.12rem; font-weight: 720; }
 .help-card .t { display: block; color: var(--muted); font-size: .95rem; margin: 2px 0 var(--s2); }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .help-card .mono, :root:not([data-theme="light"]) .help-step .n { background: var(--lime); color: var(--ink); } }
 
 
 @media (max-width: 600px) {

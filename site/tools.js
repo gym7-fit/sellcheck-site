@@ -147,7 +147,7 @@ function renderLive() {
     return;
   }
   const profit = sell - buy - cost;
-  const margin = sell > 0 ? " · Marge " + pct.format((profit / sell) * 100) + " %" : "";
+  const margin = sell > 0 ? ", Marge " + pct.format((profit / sell) * 100) + " %" : "";
   out.textContent = `Gewinn bei diesem Artikel: ${eur.format(profit)}${margin}`;
 }
 ["t-buy", "t-sell", "t-cost", "t-status"].forEach((id) => $(id).addEventListener("input", renderLive));
@@ -206,7 +206,7 @@ function renderOverview() {
         const row = el("div", undefined, "plat-row " + lvl);
         const nameBox = el("div", name, "name");
         nameBox.append(
-          el("small", reported ? `${mine.length} von ${LIMIT_COUNT} Verkäufen · ${eur.format(psum)} von ${eur.format(LIMIT_SUM)}` : `${mine.length} Verkäufe · ${eur.format(psum)}`)
+          el("small", reported ? `${mine.length} von ${LIMIT_COUNT} Verkäufen, ${eur.format(psum)} von ${eur.format(LIMIT_SUM)}` : `${mine.length} Verkäufe, ${eur.format(psum)}`)
         );
         const meter = el("div", undefined, "meter");
         const bar = el("div");
@@ -218,8 +218,8 @@ function renderOverview() {
         const status = el(
           "div",
           reported
-            ? `${LEVEL_TEXT[lvl]} (${st.percent} %)` + (mineStock.length ? ` · ${mineStock.length} im Bestand` : "")
-            : "Keine Plattform-Meldung" + (mineStock.length ? ` · ${mineStock.length} im Bestand` : ""),
+            ? `${LEVEL_TEXT[lvl]} (${st.percent} %)` + (mineStock.length ? `, ${mineStock.length} im Bestand` : "")
+            : "Keine Plattform-Meldung" + (mineStock.length ? `, ${mineStock.length} im Bestand` : ""),
           "status"
         );
         row.append(nameBox, meter, nums, status);

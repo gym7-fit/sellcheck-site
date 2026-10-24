@@ -361,15 +361,16 @@ def page_shell(title, desc, body, slug="", depth_home="../"):
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="SellCheck: Check, was wirklich bleibt.">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="theme-color" content="#0e1116">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0e1116" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
-  <link rel="preload" href="../fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="../style.css">
   <link rel="stylesheet" href="../hilfe.css">
 </head>
 <body>
 <a class="skip" href="#main">Zum Inhalt springen</a>
-<header class="site-header on-dark">
+<header class="site-header">
   <div class="wrap">
     {brand_block()}
     <nav class="nav" aria-label="Hauptnavigation">
@@ -437,10 +438,10 @@ def platform_page(d):
     tag = ('<span class="tag ok">Export vorhanden</span>' if d["kind"] == "export"
            else '<span class="tag no">Kein Verkaufsexport belegt</span>')
     body = f"""<main id="main">
-<div class="help-hero on-dark">
+<div class="help-hero">
   <div class="wrap">
     <nav class="crumbs" aria-label="Brotkrumen"><a href="../index.html">Startseite</a> › <a href="index.html">Hilfe</a> › <span aria-current="page">{e(d["name"])}</span></nav>
-    <a class="help-back" href="index.html">← Alle Datenquellen</a>
+    <a class="help-back" href="index.html">Alle Datenquellen</a>
     <h1>{e(d["headline"])}</h1>
     <p>{e(d["lead"])}</p>
     <p class="help-status">{tag}</p>
@@ -477,7 +478,7 @@ def hub_page():
             f'<span><b>{e(d["name"])}</b><span class="t">{e(d["teaser"])}</span>'
             f'<span class="tag {cls}">{tag}</span></span></a>')
     body = f"""<main id="main">
-<div class="help-hero on-dark">
+<div class="help-hero">
   <div class="wrap">
     <nav class="crumbs" aria-label="Brotkrumen"><a href="../index.html">Startseite</a> › <span aria-current="page">Hilfe</span></nav>
     <h1>Wo finde ich meine Exportdatei?</h1>

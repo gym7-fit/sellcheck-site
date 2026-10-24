@@ -1,37 +1,35 @@
-# DESIGN.md: Richtung C „Kontrast“ (Redesign Oktober 2026)
+# DESIGN.md: Weiß, Tinte, Archivo (Redesign Oktober 2026, Stand 24.10.)
 
-Gewählt von Louis am 24.10.2026 aus drei Prototypen (`design/richtungen/`). Lebende Stilseite: `site/brand.html`. Backup des alten Designs und Rückweg: `docs/REDESIGN.md`.
+Ausgangspunkt war Richtung C „Kontrast“ aus drei Prototypen (`design/richtungen/`). Am 24.10.2026 hat Louis nachgeschärft: andere Schrift, entschärfte Farben, weg vom Baukasten. Die Seite soll nicht nach KI aussehen. Lebende Stilseite: `site/brand.html`. Backup des alten Designs und Rückweg: `docs/REDESIGN.md`.
 
 ## Idee
 
-Dunkel zuerst, sehr große Schrift, Lime als einziges Signal. Die Seite wirkt wie eine Marke, nicht wie ein Baukasten. Der dunkle Rahmen trägt die Aufmerksamkeit: Hero, Plattform-Karten, Prüf-Ampel. Lesen und Entscheiden passiert auf Papier.
+Eine ruhige, helle Seite, die das echte Produkt zeigt. Weiß und Tinte tragen alles, Lime ist ein kleines Signal. Statt gebauter Vorschaukarten stehen echte Bildschirmfotos der Tools mit Beispieldaten auf der Startseite. Inhalte stehen als Text und Listen, nicht als Kartenraster. Auffällig ist nur eine Sache: der große Claim.
 
 ## Rhythmus
 
 | Bereich | Hell (Standard) | Dunkel (Gerät) |
 | --- | --- | --- |
-| Kopf, Hero, Plattformen, Ampel | Tinte | Tinte |
-| Inhalt (Problem, Film, Werkzeuge, Schritte, Angebot, Vertrauen, FAQ) | Papier, im Wechsel mit `section.tint` | Tinte |
-| Abschluss, Fuß | Tinte | Tinte |
+| Kopf, Hero, Inhalt | Weiß | Tinte |
+| Ruhige Abschnitte (Ampel, Film) | Grau `section.tint` | Tinte mit Linie oben |
+| Fuß | Tinte | Tinte |
 
-- **Keine dunklen Inseln mitten im Papierteil.** Ausnahmen sind einzelne Karten mit eigener Rolle:
-  - Starter-Karte (Hervorhebung)
-  - Werkzeug-Vorschauen (Produkt)
-  - „Danach in SellCheck“ (nächster Schritt)
-  - Abschluss des Ablaufs
-- Test: `tests/design.test.js`.
+- **Dunkle Fläche nur im Fuß.** `.on-dark` ist nur an `<footer>` erlaubt. Test: `tests/design.test.js`.
+- Unterseiten (Tools, Hilfe, Rechtliches, Stilseite) haben einen hellen Kopf.
 
 ## Tokens (`site/style.css`, `:root`)
 
 **Marke:**
-- `--ink` #0e1116, `--ink-2` #171b22, `--ink-3` #222832
-- `--lime` #c8f169, `--lime-hover` #d6f784
-- `--paper` #f6f4ee
+- Tinte `--ink` #0e1116 (Text auf Lime, Fuß), Lime `--lime` #c8f169, `--lime-hover` #d6f784
+- Logo: `--logo-tag`, `--logo-tick`, `--logo-word`. Hell: Beleg Tinte, Haken Lime, „Check“ grün #2a7a18. Dunkel: Beleg Lime, Haken Tinte, „Check“ Lime.
 
-**Flächen und Text:**
-- `--bg`, `--surface`, `--surface-2`, `--text`, `--muted`, `--line`, `--line-strong`, `--link`
-- Je ein Satz für hell und dunkel.
-- `.on-dark` setzt sie für immer dunkle Bereiche neu, auch im hellen Modus.
+**Flächen und Text (hell):**
+- `--bg` #ffffff, `--surface` #ffffff, `--surface-2` #f3f4f6
+- `--text` #111418, `--muted` #555a63, `--line` #e1e3e7, `--line-strong` #c3c7ce, `--link` #1e6b3a
+- Je ein Satz für hell und dunkel. `.on-dark` setzt sie für den Fuß neu.
+
+**Knopf und Fokus:**
+- `--btn-bg` Tinte, im dunklen Modus Lime. `--focus` Tinte, im dunklen Modus Lime.
 
 **Status:**
 - Textfarben `--green`, `--yellow`, `--red` mit `-soft` als Fläche
@@ -42,36 +40,42 @@ Dunkel zuerst, sehr große Schrift, Lime als einziges Signal. Die Seite wirkt wi
 - `--radius` 20 (Karte), `--radius-sm` 12 (Bedienelement), `--radius-xs` 8 (klein)
 - Kreise mit 50 %, kleine Marken bis 6 px. Nichts anderes.
 
+**Schatten:** fast keine. `--shadow` ist eine Haarlinie, Karten haben nur einen Rahmen.
+
 **Abstände:** `--s1` bis `--s9` = 4, 8, 12, 16, 24, 36, 56, 88, 128 px.
 
-**Bewegung:** `--ease` cubic-bezier(.2, .8, .2, 1), höchstens 300 ms.
+**Bewegung:** `--ease` cubic-bezier(.2, .8, .2, 1), höchstens 300 ms. Keine Einblend- oder Scroll-Effekte.
 
 ## Schrift
 
-- **Bricolage Grotesque, variabel:** Gewicht 200 bis 800 und optische Größe. Lizenz SIL OFL, selbst gehostet in `site/fonts/` (77 KB), `font-display: swap`. Vorab geladen auf Startseite, Tools, Hilfe und Rechtsseiten.
-- **Display:** Hero `clamp(3rem, 9vw, 6rem)`, Gewicht 800, Laufweite −0,03 em, Zeilenhöhe 0,96.
+- **Archivo, variabel:** Gewicht 100 bis 900. Lizenz SIL OFL, selbst gehostet in `site/fonts/archivo.woff2` (35 KB), `font-display: swap`. Vorab geladen auf allen Seiten.
+- **Claim im Hero:** `clamp(2.9rem, 6.2vw, 5.2rem)`, Gewicht 800, Laufweite −0,03 em.
 - **Überschriften:**
-  - h1 `clamp(2.5rem, 6vw, 4.4rem)`
-  - h2 `clamp(2rem, 4.4vw, 3.3rem)`, Gewicht 780
-  - h3 1,3 rem / 720
-- **Text:** 17 px, Zeilenhöhe 1,6. Fett 680.
+  - h1 `clamp(2.5rem, 6vw, 4.2rem)` / 750
+  - h2 `clamp(1.9rem, 3.8vw, 2.8rem)` / 720
+  - h3 1,25 rem / 680
+  - Ohne Schlusspunkt. Nur der Claim endet mit Punkt.
+- **Text:** 17 px, Zeilenhöhe 1,6. Fett 650.
 - **Ziffern:** Zahlen und Beträge mit fester Ziffernbreite (`.num`, `output`, Tabellen, Kennzahlen, Preise).
 - **Etiketten** in normaler Schreibweise. Keine Versalien, kein Vorspann über Überschriften.
 
 ## Bauteile
 
 - **Knopf `.btn`:**
-  - Lime, 48 px hoch, Radius 12. Sekundär mit 2-px-Rahmen.
-  - Klein 44 px, groß 56 px.
-  - Gesperrt grau, nicht durchscheinend. Nie als Pille.
-- **Feld:** 48 px, 2-px-Rahmen, Fokus mit Lime-Ring. Fehler darunter mit Zeichen (`.field-error`, `fielderr.js`).
-- **Karte `.card`:** Fläche, 1-px-Linie, Radius 20, weicher Schatten. Symbole stehen neben der Überschrift (`.card-head`), nie als Kachel darüber.
-- **Ampel `.ampel`:** Fläche in Status-Soft, Titel in Statusfarbe, Satz darunter. Balken `.meter`, `.bar`, `.demo-meter` mit den Balkenfarben.
+  - Tinte mit weißer Schrift, 48 px hoch, Radius 12. Sekundär mit 2-px-Rahmen.
+  - `.btn.signal` in Lime: nur der eine Hauptknopf einer Seite (Startseite: „Meldegrenze prüfen“ und der Abschluss).
+  - Klein 44 px, groß 56 px. Gesperrt grau, nicht durchscheinend. Nie als Pille, nie mit Pfeil.
+- **Feld:** 48 px, 2-px-Rahmen, Fokus mit Tinte-Rahmen und Lime-Schein. Fehler darunter mit Zeichen (`.field-error`, `fielderr.js`).
+- **Karte `.card`:** nur wo eine Fläche etwas bedeutet (Ampel-Demo, Schritte im Ablauf). Weiß, 1-px-Linie, Radius 20, kein Schatten.
+- **Bildschirmfoto `.shot`:** echtes Foto der Tools mit Beispieldaten, WebP unter 150 KB, helle und dunkle Variante über `<picture>`, Maße im `<img>`, Bildunterschrift nennt Beispieldaten. Aufnahme mit den Skripten aus der Prüfrunde (gstack-Browser, doppelte Auflösung).
+- **Liste `.tool-list` / `.prose`:** Werkzeuge und Erklärungen als Text mit feinen Linien statt Karten und Symbolen.
+- **Ampel `.ampel`:** Fläche in Status-Soft, Titel in Statusfarbe, Satz darunter. Balken `.meter`, `.demo-meter` mit den Balkenfarben.
 - **Schritte im Ablauf:**
-  - aktiv mit Textfarbe als Rahmen
-  - erledigt mit Lime-Nummer
+  - aktiv mit Textfarbe als Rahmen und Lime-Nummer
+  - erledigt mit Tinte-Nummer
   - gesperrt als ruhige gestrichelte Zeile
-- **Fortschrittsleiste:** dunkel, Lime für aktuell und erledigt.
+- **Fortschrittsleiste:** hell, Tinte für erledigt und den Balken, Lime nur für den aktuellen Schritt.
+- **Preise:** drei Spalten mit Linie oben statt Kartentürmen. Starter mit kräftiger Linie.
 - **Etikett `.tag` / `.label` / `.step-status`:** klein, Radius 8, normale Schreibweise.
 - **Hilfsklassen statt `style="…"`:** `.mt-0` bis `.mt-4`, `.mb-0`, `.w-s`, `.w-m`, `.w-l`, `.grow`, `.reserve`, `.ico-lg`.
 
@@ -80,22 +84,26 @@ Dunkel zuerst, sehr große Schrift, Lime als einziges Signal. Die Seite wirkt wi
 - lila Verlauf, Pillenknöpfe
 - Emoji als Symbole, KI-Bilder
 - Gedankenstriche
+- Pfeile an Knöpfen und Links, Mittelpunkte als Trenner (Menüwege in den Hilfeseiten dürfen die Klickfolge zeigen)
 - erfundene Zähler, Bewertungen, Kennzahlen
-- Scroll- und Cursor-Animationen
+- Scroll- und Cursor-Animationen, Einblend-Effekte
 - Textwände
 - Vorspann-Etiketten über Überschriften
-- Symbol-Kacheln über Überschriften
+- Kartenraster mit Symbol-Kacheln, gebaute Vorschaukarten statt echter Bildschirmfotos
+- große dunkle Flächen mitten in der Seite
 - einseitig dicke Farbränder an Karten
 - einzelne eingefärbte Wörter in Überschriften
 
 ## Prüfen
 
-- `npm test`: 166 Tests, darunter `design.test.js`:
-  - keine Inline-Styles
-  - nur Radius-Tokens
-  - Schrift lokal und unter 100 KB
+- `npm test`: 169 Tests, darunter `design.test.js` und `landing.test.js`:
+  - keine Inline-Styles, nur Radius-Tokens
+  - Archivo lokal und unter 100 KB
   - keine Versalien und kein Vorspann
-  - Rhythmus der Startseite
+  - weißer Grund, dunkel nur der Fuß, Tinte als normaler Knopf
+  - keine Pfeile, keine Mittelpunkte
+  - echte Bildschirmfotos mit Maßen, Alternativtext und dunkler Variante
+  - Überschriften ohne Schlusspunkt
   - feste Ziffernbreite
 - **axe** hell und dunkel, Breiten 320 bis 1440 ohne Überlauf, Tippflächen ab 44 px.
 - `impeccable detect site`: 0 Befunde. Begründete Ausnahmen stehen in `.impeccable/config.json`.

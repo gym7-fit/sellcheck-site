@@ -1,4 +1,4 @@
-// Design-System Richtung C (Redesign 10/2026): Regeln aus DESIGN.md, die sich maschinell prüfen lassen.
+// Design-System (Redesign 10/2026, Stand 24.10.): Regeln aus DESIGN.md, die sich maschinell prüfen lassen.
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
@@ -29,14 +29,18 @@ test("Eckradien nur aus den Tokens (20, 12, 8), Kreise oder kleine Marken bis 6 
   assert.match(root, /--radius-xs: 8px/);
 });
 
-test("Schrift: Bricolage Grotesque liegt lokal, mit Lizenz, unter 100 KB, kein Abruf von fremden Servern", () => {
-  const woff = path.join(SITE, "fonts", "bricolage-grotesque.woff2");
+test("Schrift: Archivo liegt lokal, mit Lizenz, unter 100 KB, kein Abruf von fremden Servern", () => {
+  const woff = path.join(SITE, "fonts", "archivo.woff2");
   assert.ok(fs.existsSync(woff), "Schriftdatei fehlt");
   assert.ok(fs.statSync(woff).size < 100 * 1024, "Schrift über 100 KB");
-  assert.match(read(path.join(SITE, "fonts", "LICENSE-bricolage-grotesque.txt")), /SIL Open Font License/);
+  assert.match(read(path.join(SITE, "fonts", "LICENSE-archivo.txt")), /SIL Open Font License/);
   const style = read(path.join(SITE, "style.css"));
-  assert.match(style, /@font-face\s*\{[^}]*font-family: "Bricolage";[^}]*url\("fonts\/bricolage-grotesque\.woff2"\)/);
-  assert.match(style, /--font: "Bricolage"/);
+  assert.match(style, /@font-face\s*\{[^}]*font-family: "Archivo";[^}]*url\("fonts\/archivo\.woff2"\)/);
+  assert.match(style, /--font: "Archivo"/);
+  for (const f of html) {
+    const pre = read(f).match(/<link rel="preload" href="([^"]+)" as="font"/);
+    if (pre) assert.match(pre[1], /archivo\.woff2$/, `${rel(f)}: lädt eine andere Schrift vor`);
+  }
   for (const f of css) assert.ok(!/url\(["']?https?:/.test(read(f)), `${rel(f)}: Schrift oder Bild von außen`);
 });
 
@@ -45,15 +49,36 @@ test("Keine Versal-Etiketten und kein Vorspann über Überschriften (eyebrow)", 
   for (const f of html) assert.ok(!/class="[^"]*\beyebrow\b/.test(read(f)), `${rel(f)}: eyebrow-Vorspann`);
 });
 
-test("Rhythmus der Startseite: dunkler Block oben, Inhalt auf Papier, dunkler Abschluss", () => {
-  const s = read(path.join(SITE, "index.html"));
-  const order = [...s.matchAll(/<(?:div|section|footer)\b[^>]*class="([^"]*)"[^>]*>/g)].map((m) => m[1]).filter((c) => c.split(/\s+/).some((t) => ["hero", "platform-strip", "demo", "problem", "film", "tint", "final", "on-dark", "trust"].includes(t)));
-  const dark = order.map((c) => /\bon-dark\b/.test(c));
-  const firstLight = dark.indexOf(false);
-  assert.ok(firstLight > 2, "Hero, Plattformen und Ampel sind ein durchgehender dunkler Block");
-  const lastLight = dark.lastIndexOf(false);
-  assert.ok(dark.slice(firstLight, lastLight + 1).every((d) => !d), "keine dunklen Inseln zwischen den Papier-Abschnitten");
-  assert.ok(dark.slice(lastLight + 1).length >= 2, "Abschluss und Fuß sind dunkel");
+test("Farben entschärft (Entscheidung Louis 24.10.2026): weißer Grund, dunkel ist nur der Fuß", () => {
+  const style = read(path.join(SITE, "style.css"));
+  const root = style.slice(style.indexOf(":root {"), style.indexOf("}", style.indexOf(":root {")));
+  assert.match(root, /--bg: #ffffff;/, "heller Grund ist Weiß, kein Creme");
+  for (const f of html) {
+    const s = read(f);
+    for (const m of s.matchAll(/<(\w+)\b[^>]*class="([^"]*\bon-dark\b[^"]*)"/g)) assert.equal(m[1], "footer", `${rel(f)}: dunkle Fläche außerhalb des Fußes (${m[1]}.${m[2]})`);
+    assert.ok(!/<body[^>]*class="[^"]*on-dark/.test(s), `${rel(f)}: ganze Seite dunkel`);
+  }
+  // Lime ist Signal, keine Fläche: der normale Knopf ist Tinte, Lime nur über .btn.signal und im dunklen Modus
+  assert.match(style, /\.btn \{[^}]*background: var\(--btn-bg\)/);
+  assert.match(style, /--btn-bg: #111418;/);
+});
+
+test("Seitenüberschriften ohne Schlusspunkt, nur der Claim behält ihn", () => {
+  for (const f of html) {
+    for (const m of read(f).matchAll(/<h([1-3])[^>]*>([^<]+)<\/h\1>/g)) {
+      if (m[2].trim() !== "Check, was wirklich bleibt.") assert.ok(!/\.$/.test(m[2].trim()), `${rel(f)}: Überschrift mit Punkt: ${m[2].trim()}`);
+    }
+  }
+});
+
+test("Keine Pfeile an Knöpfen und Links, keine Mittelpunkte als Trenner", () => {
+  for (const f of files.filter((x) => /\.(html|js)$/.test(x))) {
+    const s = read(f);
+    assert.ok(!/←/.test(s), `${rel(f)}: Pfeil ←`);
+    assert.ok(!/ · /.test(s), `${rel(f)}: Mittelpunkt als Trenner`);
+    assert.ok(!/M5 12h14M13 6l6 6-6 6/.test(s), `${rel(f)}: Pfeil-Symbol`);
+    for (const m of s.matchAll(/<(a|button)\b[^>]*class="[^"]*\bbtn\b[^"]*"[^>]*>([^<]*)</g)) assert.ok(!/→/.test(m[2]), `${rel(f)}: Pfeil im Knopf ${m[2].trim()}`);
+  }
 });
 
 test("Beträge und Zähler haben Ziffern mit fester Breite", () => {
