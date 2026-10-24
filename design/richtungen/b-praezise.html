@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Richtung B: Ruhig und präzise</title>
+<style>
+@font-face { font-family: "Hanken Grotesk"; src: url(fonts/hanken-grotesk-latin-wght-normal.woff2) format("woff2"); font-weight: 100 900; font-display: swap; }
+
+:root {
+  --ink: #0e1116; --lime: #c8f169; --paper: #f6f4ee;
+  --bg: #f8f7f3; --surface: #ffffff; --sunk: #f1efe8; --text: #0e1116; --muted: #565c67; --line: #e4e1d8; --line-strong: #cbc7bb;
+  --link: #1e6b3a; --green: #1b7a45; --yellow: #8a5a00; --red: #b3261e;
+  --dot-g: #2f9e5f; --dot-y: #d99a1b; --dot-r: #c8382f;
+  --r-card: 20px; --r-ctl: 12px;
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px; --s7: 48px; --s8: 80px; --s9: 128px;
+  --sans: "Hanken Grotesk", system-ui, sans-serif;
+  --ease: cubic-bezier(.2,.8,.2,1);
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #0c0e12; --surface: #14171c; --sunk: #191d23; --text: #eeede8; --muted: #a0a6b0; --line: #252a31; --line-strong: #353b44;
+    --link: #c8f169; --green: #6fd394; --yellow: #f0c25a; --red: #f2908a; }
+}
+* { box-sizing: border-box; }
+figure { margin: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 400 17px/1.65 var(--sans); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--lime); color: var(--ink); }
+:focus-visible { outline: 2px solid var(--text); outline-offset: 3px; border-radius: 6px; }
+a { color: var(--link); text-underline-offset: .22em; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 var(--s5); }
+.num { font-variant-numeric: tabular-nums lining-nums; font-weight: 520; letter-spacing: -.02em; }
+
+.top { border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 88%, transparent); position: sticky; top: 0; backdrop-filter: saturate(1.4) blur(10px); z-index: 2; }
+.top .wrap { display: flex; align-items: center; justify-content: space-between; min-height: 64px; }
+.brand { display: inline-flex; align-items: center; gap: 9px; min-height: 44px; text-decoration: none; color: var(--text); font-weight: 650; font-size: 1.18rem; letter-spacing: -.02em; }
+.brand svg { height: 28px; width: auto; }
+.brand b { font-weight: inherit; color: var(--green); }
+@media (prefers-color-scheme: dark) { .brand b { color: var(--lime); } }
+.brand .tag { fill: var(--ink); } .brand .tick { stroke: var(--lime); }
+@media (prefers-color-scheme: dark) { .brand .tag { fill: var(--lime); } .brand .tick { stroke: var(--ink); } }
+.nav { display: flex; align-items: center; gap: var(--s6); }
+.nav a:not(.btn) { color: var(--muted); text-decoration: none; padding: 10px 0; font-size: .95rem; }
+.nav a:not(.btn):hover { color: var(--text); }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 0 22px; border-radius: var(--r-ctl); border: 0; cursor: pointer;
+  font: 550 .98rem/1 var(--sans); text-decoration: none; background: var(--ink); color: var(--paper); transition: background-color .15s var(--ease), transform .12s var(--ease); }
+.btn:hover { background: #262b33; } .btn:active { transform: translateY(1px); }
+.btn.signal { background: var(--lime); color: var(--ink); } .btn.signal:hover { background: #bbe75c; }
+.btn.quiet { background: transparent; color: var(--text); box-shadow: inset 0 0 0 1px var(--line-strong); }
+.btn.quiet:hover { background: transparent; box-shadow: inset 0 0 0 1px var(--text); }
+@media (prefers-color-scheme: dark) { .btn { background: var(--paper); color: var(--ink); } .btn:hover { background: #fff; } .btn.signal { background: var(--lime); } }
+.top .btn { min-height: 44px; padding: 0 var(--s4); font-size: .93rem; }
+
+.hero { padding: var(--s8) 0 var(--s9); }
+h1 { font-weight: 640; font-size: clamp(2.5rem, 5.6vw, 4.6rem); line-height: 1.03; letter-spacing: -.045em; margin: 0 0 var(--s5); max-width: 13ch; text-wrap: balance; }
+.lead { font-size: 1.18rem; color: var(--muted); max-width: 31em; margin: 0 0 var(--s6); }
+.cta { display: flex; flex-wrap: wrap; gap: var(--s3); }
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: var(--s8); align-items: end; }
+.small-print { margin-top: var(--s5); font-size: .92rem; color: var(--muted); }
+
+/* Produkt-Ansicht */
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-card); box-shadow: 0 1px 0 rgba(14,17,22,.03), 0 24px 48px -28px rgba(14,17,22,.28); overflow: hidden; }
+.panel-head { display: flex; justify-content: space-between; align-items: baseline; padding: var(--s5) var(--s6) var(--s4); }
+.panel-title { margin: 0; font-size: 1.02rem; font-weight: 600; letter-spacing: -.01em; }
+.panel-head span { font-size: .85rem; color: var(--muted); }
+.plat { display: grid; grid-template-columns: 9.5rem 1fr auto; gap: var(--s4); align-items: center; padding: var(--s4) var(--s6); border-top: 1px solid var(--line); }
+.plat b { font-weight: 560; }
+.plat small { display: block; color: var(--muted); font-size: .84rem; }
+.scale { position: relative; height: 6px; border-radius: 3px; background: var(--sunk); }
+.scale i { position: absolute; inset: 0 auto 0 0; border-radius: 3px; }
+.scale::before, .scale::after { content: ""; position: absolute; top: -5px; bottom: -5px; width: 1px; background: var(--line-strong); }
+.scale::before { left: 60%; } .scale::after { right: 0; }
+.status { display: inline-flex; align-items: center; gap: var(--s2); font-size: .88rem; font-weight: 550; white-space: nowrap; }
+.status::before { content: ""; width: 8px; height: 8px; border-radius: 2px; background: currentColor; }
+.st-g { color: var(--green); } .st-y { color: var(--yellow); }
+.panel-foot { display: flex; justify-content: space-between; padding: var(--s4) var(--s6); background: var(--sunk); font-size: .92rem; }
+.panel-foot .num { font-size: 1.05rem; }
+
+section.block { padding: var(--s9) 0; }
+section.block + section.block { border-top: 1px solid var(--line); }
+h2 { font-weight: 630; font-size: clamp(1.9rem, 3.6vw, 2.8rem); line-height: 1.1; letter-spacing: -.035em; margin: 0 0 var(--s4); max-width: 18ch; text-wrap: balance; }
+.intro { color: var(--muted); max-width: 34em; margin: 0; font-size: 1.08rem; }
+.two { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: var(--s8); align-items: start; }
+
+/* Ampel */
+.check { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-card); padding: var(--s6); }
+.seg { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 3px; border-radius: var(--r-ctl); background: var(--sunk); margin-bottom: var(--s6); }
+.seg label { position: relative; }
+.seg input { position: absolute; inset: 0; opacity: 0; }
+.seg span { display: inline-flex; align-items: center; min-height: 44px; padding: 0 var(--s4); border-radius: 9px; font-size: .94rem; font-weight: 520; color: var(--muted); cursor: pointer; }
+.seg input:checked + span { background: var(--surface); color: var(--text); box-shadow: 0 1px 2px rgba(14,17,22,.1); }
+.seg input:focus-visible + span { outline: 2px solid var(--text); outline-offset: 2px; }
+.reading { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s5); margin-bottom: var(--s6); }
+.reading div { display: grid; gap: var(--s2); }
+.reading .label { font-size: .9rem; color: var(--muted); }
+.reading .num { font-size: 2rem; font-weight: 450; letter-spacing: -.04em; line-height: 1.1; }
+.reading .num small { font-size: .95rem; color: var(--muted); letter-spacing: 0; }
+.verdict { border-top: 1px solid var(--line); padding-top: var(--s5); }
+.verdict strong { display: inline-flex; align-items: center; gap: var(--s2); color: var(--yellow); font-weight: 600; }
+.verdict strong::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: currentColor; }
+.verdict p { margin: var(--s1) 0 0; color: var(--muted); }
+.notes { display: grid; gap: var(--s5); margin-top: var(--s7); }
+.notes p { margin: 0; color: var(--muted); max-width: 30em; }
+.notes b { color: var(--text); font-weight: 600; }
+
+/* Preis */
+.plan { border: 1px solid var(--line); border-radius: var(--r-card); background: var(--surface); padding: var(--s6); }
+.plan-top { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s4); }
+.plan h3 { margin: 0; font-size: 1.3rem; font-weight: 620; letter-spacing: -.02em; }
+.plan .state { font-size: .88rem; color: var(--muted); }
+.price { margin: var(--s5) 0 var(--s1); display: flex; align-items: baseline; gap: var(--s2); }
+.price .num { font-size: 2.8rem; font-weight: 450; letter-spacing: -.05em; line-height: 1; }
+.price small { color: var(--muted); }
+.plan .year { color: var(--muted); margin: 0 0 var(--s5); font-size: .95rem; }
+.plan ul { list-style: none; margin: 0; padding: var(--s5) 0 0; border-top: 1px solid var(--line); display: grid; gap: var(--s3); }
+.plan li { display: grid; grid-template-columns: 20px 1fr; gap: var(--s3); }
+.plan li svg { width: 18px; height: 18px; margin-top: 4px; stroke: var(--green); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Formular */
+.form { max-width: 440px; }
+.field { display: grid; gap: 6px; margin-bottom: var(--s5); }
+.field label { font-weight: 560; font-size: .97rem; }
+.field input { font: inherit; font-size: 1rem; min-height: 48px; padding: 0 14px; border-radius: var(--r-ctl); border: 1px solid var(--line-strong); background: var(--surface); color: var(--text); transition: border-color .15s var(--ease), box-shadow .15s var(--ease); }
+.field input:focus { outline: none; border-color: var(--text); box-shadow: 0 0 0 3px color-mix(in srgb, var(--lime) 70%, transparent); }
+.field input[aria-invalid="true"] { border-color: var(--red); }
+.err { display: flex; gap: var(--s2); margin: 0; color: var(--red); font-size: .9rem; font-weight: 520; }
+.err svg { width: 17px; height: 17px; flex: none; margin-top: 3px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
+.opt { display: grid; grid-template-columns: 22px 1fr; gap: var(--s3); min-height: 44px; margin-bottom: var(--s5); cursor: pointer; }
+.opt input { width: 18px; height: 18px; margin: 4px 0 0; accent-color: var(--ink); }
+.opt small { display: block; color: var(--muted); }
+
+footer { border-top: 1px solid var(--line); padding: var(--s7) 0; color: var(--muted); font-size: .92rem; }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--s5); }
+footer nav { display: flex; flex-wrap: wrap; gap: var(--s5); }
+footer a { color: var(--muted); text-decoration: none; padding: 10px 0; }
+footer a:hover { color: var(--text); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .scale i { animation: fill .3s var(--ease) .1s both; }
+  @keyframes fill { from { width: 0 !important; } }
+}
+@media (max-width: 880px) {
+  .hero-grid, .two { grid-template-columns: 1fr; gap: var(--s7); }
+  .nav .hide-sm { display: none; }
+  .hero { padding: var(--s7) 0 var(--s8); }
+  section.block { padding: var(--s8) 0; }
+  .plat { grid-template-columns: 1fr auto; padding: var(--s4) var(--s5); }
+  .plat .scale { grid-column: 1 / -1; grid-row: 2; }
+  .panel-head, .panel-foot { padding-left: var(--s5); padding-right: var(--s5); }
+  .check, .plan { padding: var(--s5); }
+  .reading .num { font-size: 1.7rem; }
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#"><svg viewBox="12.8 4.8 38.4 54.4" aria-hidden="true"><path class="tag" d="M14 6H50V58L45 52.5 40 58 35 52.5 30 58 25 52.5 20 58 14 52.5Z"/><path class="tick" d="M22 30l7.5 7.5L43 22" fill="none" stroke-width="6.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Sell<b>Check</b></span></a>
+    <nav class="nav" aria-label="Hauptnavigation">
+      <a class="hide-sm" href="#check">Meldegrenze</a><a class="hide-sm" href="#preis">Angebot</a><a class="hide-sm" href="#form">FAQ</a>
+      <a class="btn signal" href="#">Tools öffnen</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <h1>Check, was wirklich bleibt.</h1>
+        <p class="lead">Wie nah bist du an der Meldegrenze? SellCheck zeigt es für jede Plattform, dazu Gewinn pro Artikel und Bestand. Ohne Tabellenpflege und ohne Zugriff auf deine Konten.</p>
+        <div class="cta"><a class="btn" href="#check">Meldegrenze prüfen</a><a class="btn quiet" href="#">Kostenlos starten</a></div>
+        <p class="small-print">Kostenlos, ohne Anmeldung. Deine Daten bleiben auf deinem Gerät.</p>
+      </div>
+      <figure class="panel" aria-label="Vorschau mit Beispieldaten: Meldegrenze je Plattform">
+        <div class="panel-head"><p class="panel-title">Meldegrenze 2026</p><span>Beispieldaten</span></div>
+        <div class="plat"><span><b>Vinted</b><small><span class="num">21</span> von 30 Verkäufen</small></span><div class="scale"><i style="width:70%;background:var(--dot-y)"></i></div><span class="status st-y">nähert sich</span></div>
+        <div class="plat"><span><b>Kleinanzeigen</b><small><span class="num">8</span> von 30 Verkäufen</small></span><div class="scale"><i style="width:27%;background:var(--dot-g)"></i></div><span class="status st-g">weit entfernt</span></div>
+        <div class="plat"><span><b>eBay</b><small><span class="num">2</span> von 30 Verkäufen</small></span><div class="scale"><i style="width:7%;background:var(--dot-g)"></i></div><span class="status st-g">weit entfernt</span></div>
+        <div class="panel-foot"><span>Gewinn nach Kosten</span><span class="num">842,50 €</span></div>
+      </figure>
+    </div>
+  </section>
+
+  <section class="block" id="check">
+    <div class="wrap two">
+      <div>
+        <h2>Meldegrenze prüfen.</h2>
+        <p class="intro">Wähle eine Plattform und trage Verkäufe und Umsatz ein. Jede Plattform zählt für sich.</p>
+        <div class="notes">
+          <p><b>Eine Grenze genügt.</b> Ab 30 Verkäufen oder 2.000 € Einnahmen meldet die Plattform.</p>
+          <p><b>Meldung ist keine Steuerforderung.</b> Ob Steuern anfallen, entscheidet das Finanzamt.</p>
+          <p><b>SellCheck warnt eher früher.</b> Die Plattform zählt deine Einnahmen nach Abzug ihrer Gebühren. SellCheck nimmt den Verkaufspreis.</p>
+        </div>
+      </div>
+      <div class="check">
+        <div class="seg" role="radiogroup" aria-label="Plattform">
+          <label><input type="radio" name="p" checked><span>Vinted</span></label><label><input type="radio" name="p"><span>Kleinanzeigen</span></label><label><input type="radio" name="p"><span>eBay</span></label><label><input type="radio" name="p"><span>Etsy</span></label>
+        </div>
+        <div class="reading">
+          <div><span class="label">Verkäufe in diesem Jahr</span><span class="num">21 <small>von 30</small></span><div class="scale"><i style="width:70%;background:var(--dot-y)"></i></div></div>
+          <div><span class="label">Umsatz in diesem Jahr</span><span class="num">1.280 € <small>von 2.000 €</small></span><div class="scale"><i style="width:64%;background:var(--dot-y)"></i></div></div>
+        </div>
+        <div class="verdict" role="status"><strong>Gelb: Du näherst dich der Grenze</strong><p>Es fehlen noch 9 Verkäufe oder 720,00 €. Danach meldet die Plattform.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="preis">
+    <div class="wrap two">
+      <div><h2>Für alle, die regelmäßig verkaufen.</h2><p class="intro">Die Gratis-Tools genügen für gelegentliche Verkäufe. Die iPhone-App mit Essential und Premium ist in Vorbereitung.</p></div>
+      <article class="plan">
+        <div class="plan-top"><h3>Essential</h3><span class="state">Geplant, noch nicht erhältlich</span></div>
+        <div class="price"><span class="num">4,99 €</span><small>im Monat</small></div>
+        <p class="year">oder 39 € im Jahr (3,25 € im Monat)</p>
+        <ul>
+          <li><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Alles aus Basic</b>, dazu:</span></li>
+          <li><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>150 statt 50 Artikel</b> pro Jahr</span></li>
+          <li><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Sicherung</b> im Konto, freiwillig</span></li>
+          <li><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>PDF</b> für die Steuer</span></li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section class="block" id="form">
+    <div class="wrap two">
+      <div><h2>Ergebnis freischalten.</h2><p class="intro">Ergebnis, Report und Downloads schaltest du mit deiner E-Mail-Adresse frei. Deine Eingaben bleiben auf deinem Gerät.</p></div>
+      <form class="form" onsubmit="return false">
+        <div class="field"><label for="b-mail">E-Mail-Adresse</label><input id="b-mail" type="email" value="lisa@beispiel" aria-invalid="true" aria-describedby="b-err"><p class="err" id="b-err"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.5"/></svg>Das ist keine gültige E-Mail-Adresse. Beispiel: du@beispiel.de</p></div>
+        <label class="opt"><input type="checkbox"><span>Tipps und Tricks per E-Mail erhalten (optional)<small>Hinweise zu Meldegrenzen, Fristen und neuen Funktionen. Jederzeit abbestellbar.</small></span></label>
+        <button class="btn" type="submit">Ergebnis freischalten</button>
+      </form>
+    </div>
+  </section>
+</main>
+<footer><div class="wrap"><span>SellCheck. Keine Steuer- oder Rechtsberatung.</span><nav aria-label="Rechtliches"><a href="#">Impressum</a><a href="#">Datenschutz</a><a href="#">Nutzungsbedingungen</a></nav></div></footer>
+</body>
+</html>

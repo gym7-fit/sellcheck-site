@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Richtung C: Kontrast</title>
+<style>
+@font-face { font-family: "Bricolage"; src: url(fonts/bricolage-grotesque-latin-opsz-normal.woff2) format("woff2"); font-weight: 200 800; font-display: swap; }
+
+:root {
+  --ink: #0e1116; --ink-2: #171b22; --ink-3: #222832; --lime: #c8f169; --paper: #f6f4ee;
+  --on-ink: #f3f1ea; --on-ink-muted: #a9aeb7; --ink-line: #2c323c;
+  --text: #0e1116; --muted: #575d68; --line: #dcd8cc; --sheet: #ffffff;
+  --green: #5fcf8a; --yellow: #f0bd4f; --red: #f08a82;
+  --green-d: #177a42; --yellow-d: #7d5300; --red-d: #b3261e;
+  --r-card: 20px; --r-ctl: 12px;
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 36px; --s7: 56px; --s8: 88px; --s9: 136px;
+  --font: "Bricolage", system-ui, sans-serif;
+  --ease: cubic-bezier(.2,.8,.2,1);
+}
+/* Hell: Papier als Grund, Kopf und Prüfbereich bleiben dunkel. Dunkel: alles auf Tinte. */
+@media (prefers-color-scheme: dark) {
+  :root { --paper-bg: var(--ink); --text: var(--on-ink); --muted: var(--on-ink-muted); --line: var(--ink-line); --sheet: var(--ink-2);
+    --green-d: #6fd394; --yellow-d: #f0c25a; --red-d: #f2908a; }
+}
+* { box-sizing: border-box; }
+figure { margin: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--paper-bg, var(--paper)); color: var(--text); font: 400 17px/1.6 var(--font); font-variation-settings: "opsz" 14; -webkit-font-smoothing: antialiased; }
+::selection { background: var(--lime); color: var(--ink); }
+:focus-visible { outline: 3px solid var(--lime); outline-offset: 3px; border-radius: 6px; }
+a { color: inherit; text-underline-offset: .2em; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 var(--s5); }
+.num { font-variant-numeric: tabular-nums lining-nums; }
+.dark { background: var(--ink); color: var(--on-ink); }
+
+.top .wrap { display: flex; align-items: center; justify-content: space-between; min-height: 72px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; text-decoration: none; font-weight: 750; font-size: 1.35rem; letter-spacing: -.03em; font-variation-settings: "opsz" 32; }
+.brand svg { height: 34px; width: auto; }
+.brand b { font-weight: inherit; color: var(--lime); }
+.brand .tag { fill: var(--lime); } .brand .tick { stroke: var(--ink); }
+.nav { display: flex; align-items: center; gap: var(--s5); }
+.nav a:not(.btn) { color: var(--on-ink-muted); text-decoration: none; padding: 10px 0; }
+.nav a:not(.btn):hover { color: var(--on-ink); }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--s2); min-height: 52px; padding: 0 28px; border-radius: var(--r-ctl); border: 0; cursor: pointer;
+  font: 700 1.02rem/1 var(--font); text-decoration: none; background: var(--lime); color: var(--ink); transition: transform .12s var(--ease), background-color .12s var(--ease); }
+.btn:hover { background: #d6f784; } .btn:active { transform: scale(.98); }
+.btn.line { background: transparent; color: var(--on-ink); box-shadow: inset 0 0 0 2px var(--ink-line); }
+.btn.line:hover { background: transparent; box-shadow: inset 0 0 0 2px var(--on-ink); }
+.top .btn { min-height: 44px; padding: 0 var(--s4); font-size: .95rem; }
+
+.hero { padding: var(--s7) 0 var(--s8); }
+h1 { font-weight: 800; font-size: clamp(3rem, 9vw, 6rem); line-height: .98; letter-spacing: -.028em; margin: 0 0 var(--s6); font-variation-settings: "opsz" 96; max-width: 11ch; text-wrap: balance; }
+.hero-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--s7); align-items: end; }
+.lead { font-size: 1.22rem; color: var(--on-ink-muted); max-width: 30em; margin: 0; }
+.cta { display: flex; flex-wrap: wrap; gap: var(--s3); }
+
+/* Plattform-Belege */
+.tickets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s4); margin-top: var(--s8); }
+.ticket { background: var(--ink-2); border: 1px solid var(--ink-line); border-radius: var(--r-card); padding: var(--s5); display: grid; gap: var(--s3); }
+.ticket header { display: flex; justify-content: space-between; align-items: baseline; }
+.ticket h2 { margin: 0; font-size: 1.15rem; font-weight: 700; letter-spacing: -.01em; font-variation-settings: "opsz" 24; }
+.ticket .count { font-size: clamp(2.8rem, 5vw, 3.8rem); font-weight: 750; letter-spacing: -.05em; line-height: 1; font-variation-settings: "opsz" 72; }
+.ticket .count small { font-size: 1rem; font-weight: 500; letter-spacing: 0; color: var(--on-ink-muted); }
+.bar { height: 8px; border-radius: 4px; background: var(--ink-3); overflow: hidden; }
+.bar i { display: block; height: 100%; border-radius: 4px; }
+.ticket p { margin: 0; font-size: .95rem; color: var(--on-ink-muted); }
+.ticket .st { font-weight: 650; }
+.st-y { color: var(--yellow); } .st-g { color: var(--green); }
+.example { color: var(--on-ink-muted); font-size: .88rem; margin-top: var(--s3); }
+
+section.block { padding: var(--s9) 0; }
+h2.big { font-weight: 780; font-size: clamp(2.2rem, 5vw, 3.8rem); line-height: 1.02; letter-spacing: -.028em; margin: 0 0 var(--s4); font-variation-settings: "opsz" 72; max-width: 14ch; text-wrap: balance; }
+.intro { color: var(--muted); max-width: 32em; margin: 0; font-size: 1.12rem; }
+.dark .intro { color: var(--on-ink-muted); }
+.two { display: grid; grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); gap: var(--s8); align-items: start; }
+
+/* Prüfen */
+.check { background: var(--ink-2); border: 1px solid var(--ink-line); border-radius: var(--r-card); padding: var(--s6); }
+.seg { display: flex; flex-wrap: wrap; gap: var(--s2); margin-bottom: var(--s6); }
+.seg label { flex: 1 1 auto; }
+.seg label { position: relative; }
+.seg input { position: absolute; inset: 0; opacity: 0; }
+.seg span { display: flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 var(--s4); border-radius: var(--r-ctl); background: var(--ink-3); color: var(--on-ink-muted); font-weight: 650; cursor: pointer; transition: background-color .15s var(--ease), color .15s var(--ease); }
+.seg input:checked + span { background: var(--on-ink); color: var(--ink); }
+.seg input:focus-visible + span { outline: 3px solid var(--lime); outline-offset: 2px; }
+.dial { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s5); margin-bottom: var(--s5); }
+.dial .label { display: block; color: var(--on-ink-muted); font-size: .92rem; margin-bottom: var(--s1); }
+.dial .num { display: block; font-size: 2.6rem; font-weight: 750; letter-spacing: -.04em; line-height: 1.05; margin-bottom: var(--s3); font-variation-settings: "opsz" 60; }
+.dial .num small { font-size: 1rem; font-weight: 500; color: var(--on-ink-muted); letter-spacing: 0; }
+.verdict { display: grid; grid-template-columns: auto 1fr; gap: var(--s3); padding: var(--s4) var(--s5); border-radius: var(--r-ctl); background: #3a2e10; color: #fbe3a6; }
+.verdict svg { width: 22px; height: 22px; margin-top: 3px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; }
+.verdict strong { display: block; color: #fff1cc; }
+.verdict p { margin: 2px 0 0; font-size: .95rem; }
+.facts { display: grid; gap: var(--s5); margin: var(--s7) 0 0; padding: 0; list-style: none; }
+.facts li { display: grid; grid-template-columns: 28px 1fr; gap: var(--s3); }
+.facts svg { width: 22px; height: 22px; margin-top: 3px; stroke: var(--lime); fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.facts b { display: block; color: var(--on-ink); }
+.facts p { margin: 0; color: var(--on-ink-muted); }
+
+/* Preis */
+.plan { background: var(--sheet); border: 1px solid var(--line); border-radius: var(--r-card); padding: var(--s6); }
+.plan-top { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s4); flex-wrap: wrap; }
+.plan h3 { margin: 0; font-size: 1.6rem; font-weight: 760; letter-spacing: -.03em; font-variation-settings: "opsz" 40; }
+.plan .state { color: var(--muted); font-size: .92rem; }
+.price { display: flex; align-items: baseline; gap: var(--s2); margin: var(--s5) 0 var(--s1); }
+.price .num { font-size: 3.4rem; font-weight: 780; letter-spacing: -.05em; line-height: 1; font-variation-settings: "opsz" 72; }
+.price small { color: var(--muted); }
+.plan .year { color: var(--muted); margin: 0 0 var(--s5); }
+.plan ul { list-style: none; margin: 0; padding: var(--s5) 0 0; border-top: 1px solid var(--line); display: grid; gap: var(--s3); }
+.plan li { display: grid; grid-template-columns: 22px 1fr; gap: var(--s3); }
+.plan li svg { width: 20px; height: 20px; margin-top: 3px; stroke: var(--green-d); fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Formular */
+.form { max-width: 460px; }
+.field { display: grid; gap: 6px; margin-bottom: var(--s5); }
+.field label { font-weight: 650; }
+.field input { font: inherit; font-size: 1rem; min-height: 52px; padding: 0 var(--s4); border-radius: var(--r-ctl); border: 2px solid var(--line); background: var(--sheet); color: var(--text); }
+.field input[aria-invalid="true"] { border-color: var(--red-d); }
+.err { display: flex; gap: var(--s2); margin: 0; color: var(--red-d); font-size: .93rem; font-weight: 600; }
+.err svg { width: 18px; height: 18px; flex: none; margin-top: 3px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; }
+.opt { display: grid; grid-template-columns: 24px 1fr; gap: var(--s3); min-height: 44px; margin-bottom: var(--s5); cursor: pointer; }
+.opt input { width: 20px; height: 20px; margin: 3px 0 0; accent-color: var(--ink); }
+.opt small { display: block; color: var(--muted); }
+.form .btn { width: 100%; }
+
+footer { padding: var(--s7) 0; color: var(--on-ink-muted); font-size: .92rem; }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--s5); }
+footer nav { display: flex; flex-wrap: wrap; gap: var(--s5); }
+footer a { text-decoration: none; padding: 10px 0; }
+footer a:hover { color: var(--on-ink); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .bar i { animation: fill .3s var(--ease) .12s both; transform-origin: left; }
+  @keyframes fill { from { transform: scaleX(0); } }
+}
+@media (max-width: 900px) {
+  .hero-row, .two { grid-template-columns: 1fr; gap: var(--s6); }
+  .tickets { grid-template-columns: 1fr; margin-top: var(--s7); }
+  .nav .hide-sm { display: none; }
+  section.block { padding: var(--s8) 0; }
+  .check, .plan { padding: var(--s5); }
+  .dial .num { font-size: 2.1rem; }
+}
+</style>
+</head>
+<body>
+<div class="dark">
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#"><svg viewBox="12.8 4.8 38.4 54.4" aria-hidden="true"><path class="tag" d="M14 6H50V58L45 52.5 40 58 35 52.5 30 58 25 52.5 20 58 14 52.5Z"/><path class="tick" d="M22 30l7.5 7.5L43 22" fill="none" stroke-width="6.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Sell<b>Check</b></span></a>
+    <nav class="nav" aria-label="Hauptnavigation">
+      <a class="hide-sm" href="#check">Meldegrenze</a><a class="hide-sm" href="#preis">Angebot</a><a class="hide-sm" href="#form">FAQ</a>
+      <a class="btn" href="#">Tools öffnen</a>
+    </nav>
+  </div>
+</header>
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <h1>Check, was wirklich bleibt.</h1>
+      <div class="hero-row">
+        <p class="lead">Wie nah bist du an der Meldegrenze? SellCheck zeigt es für jede Plattform, dazu Gewinn pro Artikel und Bestand. Ohne Tabellenpflege und ohne Zugriff auf deine Konten.</p>
+        <div class="cta"><a class="btn" href="#check">Meldegrenze prüfen</a><a class="btn line" href="#">Kostenlos starten</a></div>
+      </div>
+      <div class="tickets" aria-label="Vorschau mit Beispieldaten">
+        <article class="ticket"><header><h2>Vinted</h2><span class="st st-y">nähert sich</span></header><span class="count num">21 <small>von 30 Verkäufen</small></span><div class="bar"><i style="width:70%;background:var(--yellow)"></i></div><p class="num">1.280 € von 2.000 €</p></article>
+        <article class="ticket"><header><h2>Kleinanzeigen</h2><span class="st st-g">weit entfernt</span></header><span class="count num">8 <small>von 30 Verkäufen</small></span><div class="bar"><i style="width:27%;background:var(--green)"></i></div><p class="num">420 € von 2.000 €</p></article>
+        <article class="ticket"><header><h2>eBay</h2><span class="st st-g">weit entfernt</span></header><span class="count num">2 <small>von 30 Verkäufen</small></span><div class="bar"><i style="width:7%;background:var(--green)"></i></div><p class="num">90 € von 2.000 €</p></article>
+      </div>
+      <p class="example">Beispieldaten. Jede Plattform zählt für sich.</p>
+    </div>
+  </section>
+
+  <section class="block" id="check">
+    <div class="wrap two">
+      <div>
+        <h2 class="big">Meldegrenze prüfen.</h2>
+        <p class="intro">Wähle eine Plattform und trage Verkäufe und Umsatz ein.</p>
+        <ul class="facts">
+          <li><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><div><b>Eine Grenze genügt.</b><p>Ab 30 Verkäufen oder 2.000 € Einnahmen meldet die Plattform.</p></div></li>
+          <li><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><div><b>Meldung ist keine Steuerforderung.</b><p>Ob Steuern anfallen, entscheidet das Finanzamt.</p></div></li>
+          <li><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><div><b>SellCheck warnt eher früher.</b><p>Die Plattform zählt deine Einnahmen nach Abzug ihrer Gebühren. SellCheck nimmt den Verkaufspreis.</p></div></li>
+        </ul>
+      </div>
+      <div class="check">
+        <div class="seg" role="radiogroup" aria-label="Plattform">
+          <label><input type="radio" name="p" checked><span>Vinted</span></label><label><input type="radio" name="p"><span>Kleinanzeigen</span></label><label><input type="radio" name="p"><span>eBay</span></label><label><input type="radio" name="p"><span>Etsy</span></label>
+        </div>
+        <div class="dial">
+          <div><span class="label">Verkäufe in diesem Jahr</span><span class="num">21 <small>von 30</small></span><div class="bar"><i style="width:70%;background:var(--yellow)"></i></div></div>
+          <div><span class="label">Umsatz in diesem Jahr</span><span class="num">1.280 € <small>von 2.000</small></span><div class="bar"><i style="width:64%;background:var(--yellow)"></i></div></div>
+        </div>
+        <div class="verdict" role="status"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg><div><strong>Gelb: Du näherst dich der Grenze</strong><p>Es fehlen noch 9 Verkäufe oder 720,00 €. Danach meldet die Plattform.</p></div></div>
+      </div>
+    </div>
+  </section>
+</main>
+</div>
+
+<section class="block" id="preis">
+  <div class="wrap two">
+    <div><h2 class="big">Für alle, die regelmäßig verkaufen.</h2><p class="intro">Die Gratis-Tools genügen für gelegentliche Verkäufe. Die iPhone-App mit Essential und Premium ist in Vorbereitung.</p></div>
+    <article class="plan">
+      <div class="plan-top"><h3>Essential</h3><span class="state">Geplant, noch nicht erhältlich</span></div>
+      <div class="price"><span class="num">4,99 €</span><small>im Monat</small></div>
+      <p class="year">oder 39 € im Jahr (3,25 € im Monat)</p>
+      <ul>
+        <li><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Alles aus Basic</b>, dazu:</span></li>
+        <li><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>150 statt 50 Artikel</b> pro Jahr</span></li>
+        <li><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Sicherung</b> im Konto, freiwillig</span></li>
+        <li><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>PDF</b> für die Steuer</span></li>
+      </ul>
+    </article>
+  </div>
+</section>
+
+<section class="block" id="form">
+  <div class="wrap two">
+    <div><h2 class="big">Ergebnis freischalten.</h2><p class="intro">Ergebnis, Report und Downloads schaltest du mit deiner E-Mail-Adresse frei. Deine Eingaben bleiben auf deinem Gerät.</p></div>
+    <form class="form" onsubmit="return false">
+      <div class="field"><label for="c-mail">E-Mail-Adresse</label><input id="c-mail" type="email" value="lisa@beispiel" aria-invalid="true" aria-describedby="c-err"><p class="err" id="c-err"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.5"/></svg>Das ist keine gültige E-Mail-Adresse. Beispiel: du@beispiel.de</p></div>
+      <label class="opt"><input type="checkbox"><span>Tipps und Tricks per E-Mail erhalten (optional)<small>Hinweise zu Meldegrenzen, Fristen und neuen Funktionen. Jederzeit abbestellbar.</small></span></label>
+      <button class="btn" type="submit">Ergebnis freischalten</button>
+    </form>
+  </div>
+</section>
+<footer class="dark"><div class="wrap"><span>SellCheck. Keine Steuer- oder Rechtsberatung.</span><nav aria-label="Rechtliches"><a href="#">Impressum</a><a href="#">Datenschutz</a><a href="#">Nutzungsbedingungen</a></nav></div></footer>
+</body>
+</html>
