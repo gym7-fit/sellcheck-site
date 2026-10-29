@@ -21,7 +21,8 @@
     var out = {
       count: document.getElementById("d-count-out"),
       sum: document.getElementById("d-sum-out"),
-      meter: document.getElementById("d-meter"),
+      countBar: document.getElementById("d-count-bar"),
+      sumBar: document.getElementById("d-sum-bar"),
       box: document.getElementById("d-result"),
     };
     // Beispielstände je Plattform: eine gelb, zwei grün, eine rot, damit alle drei Stufen sofort sichtbar sind
@@ -47,8 +48,13 @@
       var level = lv.level;
       out.count.textContent = String(c);
       out.sum.textContent = eur.format(s);
-      out.meter.style.width = Math.min(100, lv.worst * 100) + "%";
-      out.meter.className = level === "green" ? "" : level;
+      // Je Grenze ein eigener Balken, Farbe nach der jeweiligen Grenze
+      var bar = function (el, ratio) {
+        el.style.width = Math.min(100, ratio * 100) + "%";
+        el.className = ratio >= 1 ? "red" : ratio >= 0.6 ? "yellow" : "";
+      };
+      bar(out.countBar, c / LIMIT_COUNT);
+      bar(out.sumBar, s / LIMIT_SUM);
       var text;
       if (level === "red") {
         text = ["Rot: Grenze erreicht", "Die Plattform meldet dich voraussichtlich ans BZSt. Das ist noch keine Steuerforderung. Halte Einkaufsbelege und Verkaufsdaten bereit."];

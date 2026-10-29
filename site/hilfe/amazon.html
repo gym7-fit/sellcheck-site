@@ -20,14 +20,16 @@
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="SellCheck: Check, was wirklich bleibt.">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="theme-color" content="#0e1116">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0e1116" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="../fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="../style.css">
   <link rel="stylesheet" href="../hilfe.css">
 </head>
 <body>
 <a class="skip" href="#main">Zum Inhalt springen</a>
-<header class="site-header on-dark">
+<header class="site-header">
   <div class="wrap">
     <a class="brand" href="../index.html" aria-label="SellCheck Startseite">
       <svg viewBox="12.8 4.8 38.4 54.4" aria-hidden="true"><path class="tag" d="M14 6H50V58L45 52.5 40 58 35 52.5 30 58 25 52.5 20 58 14 52.5Z"/><path class="tick" d="M22 30l7.5 7.5L43 22" fill="none" stroke-width="6.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -41,20 +43,17 @@
   </div>
 </header>
 <main id="main">
-<div class="help-hero on-dark">
+<div class="help-hero">
   <div class="wrap">
     <nav class="crumbs" aria-label="Brotkrumen"><a href="../index.html">Startseite</a> › <a href="index.html">Hilfe</a> › <span aria-current="page">Amazon</span></nav>
-    <a class="help-back" href="index.html">← Alle Datenquellen</a>
-    <span class="eyebrow">Hilfe · Datei besorgen</span>
+    <a class="help-back" href="index.html">Alle Datenquellen</a>
     <h1>Amazon: So findest du deine Berichte in Seller Central</h1>
     <p>Als Verkäufer bei Amazon gibt es zwei brauchbare Berichte: den Bestellbericht (Textdatei) und den Zahlungsbericht (CSV). Du brauchst ein Verkäuferkonto in Seller Central.</p>
+    <p class="help-status"><span class="tag ok">Export vorhanden</span></p>
   </div>
 </div>
 <div class="wrap help-main">
-  <div class="help-top">
-    <dl class="help-facts"><div><dt>Datei</dt><dd>Bestellbericht (.txt mit Tabulatoren) oder Zahlungsbericht (CSV)</dd></div><div><dt>Zeitraum</dt><dd>Bestellbericht: letzte Tage; Zahlungen: Monat oder freier Zeitraum</dd></div><div><dt>Dauer</dt><dd>bis zu 45 Minuten bzw. bis zu 3 Stunden</dd></div></dl>
-    <div class="help-tag"><span class="tag ok">Export vorhanden</span></div>
-  </div>
+  <dl class="help-facts"><div><dt>Datei</dt><dd>Bestellbericht (.txt mit Tabulatoren) oder Zahlungsbericht (CSV)</dd></div><div><dt>Zeitraum</dt><dd>Bestellbericht: letzte Tage; Zahlungen: Monat oder freier Zeitraum</dd></div><div><dt>Dauer</dt><dd>bis zu 45 Minuten bzw. bis zu 3 Stunden</dd></div></dl>
   <p class="help-note">Stand der Beschreibung: Oktober 2026. Anbieter ändern ihre Oberfläche gelegentlich, Menünamen können deshalb abweichen. Findest du einen Menüpunkt nicht, suche im Hilfe-Center von Amazon nach „Berichts-Repository“.</p>
   <section class="help-way"><h2>Weg 1: Bestellbericht</h2><ol class="help-steps"><li class="help-step"><span class="n" aria-hidden="true">1</span><div><h3>Bestellberichte öffnen</h3><p>Öffne in Seller Central im Menü „Bestellungen“ den Punkt „Bestellberichte“.</p><p class="help-path" aria-label="Menüweg"><span class="chip">Seller Central</span><span class="sep" aria-hidden="true">›</span><span class="chip">Bestellungen</span><span class="sep" aria-hidden="true">›</span><span class="chip">Bestellberichte</span></p></div></li><li class="help-step"><span class="n" aria-hidden="true">2</span><div><h3>Neue Bestellungen wählen</h3><p>Wähle die Option „Neue Bestellungen“.</p><p class="help-path" aria-label="Menüweg"><span class="chip">Bestellberichte</span><span class="sep" aria-hidden="true">›</span><span class="chip">Neue Bestellungen</span></p></div></li><li class="help-step"><span class="n" aria-hidden="true">3</span><div><h3>Zeitraum in Tagen festlegen</h3><p>Wähle im Bereich „Anfordern eines Bestellberichts“ die Anzahl der Tage, die der Bericht abdecken soll. Klicke dann auf „Bericht anfordern“.</p></div></li><li class="help-step"><span class="n" aria-hidden="true">4</span><div><h3>Bericht herunterladen</h3><p>Der Bericht erscheint nach kurzer Zeit im Bereich „Berichtsstatus prüfen und herunterladen“. Das dauert bis zu 45 Minuten. Lade die Textdatei herunter.</p></div></li></ol></section><section class="help-way"><h2>Weg 2: Zahlungsbericht (CSV)</h2><ol class="help-steps"><li class="help-step"><span class="n" aria-hidden="true">1</span><div><h3>Berichts-Repository öffnen</h3><p>Wähle im Menü „Zahlungen“ den Punkt „Berichts-Repository“.</p><p class="help-path" aria-label="Menüweg"><span class="chip">Seller Central</span><span class="sep" aria-hidden="true">›</span><span class="chip">Zahlungen</span><span class="sep" aria-hidden="true">›</span><span class="chip">Berichts-Repository</span></p></div></li><li class="help-step"><span class="n" aria-hidden="true">2</span><div><h3>Berichtstyp wählen</h3><p>Wähle bei mehreren Kontotypen ggf. „Alle“. Wähle als Berichtstyp den „Umsatzsteuer-Transaktionsbericht (CSV)“. Er enthält eine detaillierte Transaktionsliste.</p></div></li><li class="help-step"><span class="n" aria-hidden="true">3</span><div><h3>Zeitraum festlegen</h3><p>Wähle entweder einen Monat oder einen „Benutzerdefinierten Datumsbereich“ mit Start- und Enddatum. Klicke auf „Bericht anfordern“.</p></div></li><li class="help-step"><span class="n" aria-hidden="true">4</span><div><h3>Bericht herunterladen</h3><p>Es kann bis zu drei Stunden dauern, bis der Bericht in der Liste erscheint. Schau später noch einmal nach und lade die Datei herunter.</p></div></li></ol></section>
   <section class="help-next">
@@ -71,10 +70,38 @@
   <section class="help-sources"><h2>Quellen</h2><ul><li><a href="https://sellercentral.amazon.de/seller-forums/discussions/t/298e53f5-be61-4a5e-9900-6f5e34c8e03c" target="_blank" rel="noopener noreferrer">Amazon Seller-Forum (Amazon): Quick Tip Berichte nach Zeitraum</a></li><li><a href="https://sellercentral.amazon.de/seller-forums/discussions/t/e0afe45c-5f88-4c53-a67f-7875c3325b5f" target="_blank" rel="noopener noreferrer">Amazon Seller-Forum (Amazon): Quick Tip Bestellberichte</a></li></ul></section>
 </div>
 </main>
-<footer class="on-dark help-footer">
+<footer class="on-dark">
   <div class="wrap">
-    <p>SellCheck gibt Orientierung und ist keine Steuer- oder Rechtsberatung. Alles läuft in deinem Browser.</p>
-    <p><a href="../index.html">Startseite</a> · <a href="../tools.html">Tools</a> · <a href="../impressum.html">Impressum</a> · <a href="../datenschutz.html">Datenschutz</a> · <a href="../agb.html">Nutzungsbedingungen</a></p>
+    <div class="cols">
+      <div>
+        <a class="brand" href="../index.html" aria-label="SellCheck Startseite">
+          <svg viewBox="12.8 4.8 38.4 54.4" aria-hidden="true"><path class="tag" d="M14 6H50V58L45 52.5 40 58 35 52.5 30 58 25 52.5 20 58 14 52.5Z"/><path class="tick" d="M22 30l7.5 7.5L43 22" fill="none" stroke-width="6.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Sell<b>Check</b></span>
+        </a>
+        <p class="tagline">Check, was wirklich bleibt.</p>
+      </div>
+      <div>
+        <p class="foot-h">Seiten</p>
+        <ul>
+          <li><a href="../index.html">Startseite</a></li>
+          <li><a href="../tools.html">Gratis-Tools</a></li>
+          <li><a href="../hilfe/index.html">Hilfe zu Exportdateien</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot-h">Rechtliches</p>
+        <ul>
+          <li><a href="../impressum.html">Impressum</a></li>
+          <li><a href="../impressum.html#kontakt">Kontakt</a></li>
+          <li><a href="../datenschutz.html">Datenschutz</a></li>
+          <li><a href="../agb.html">Nutzungsbedingungen</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="legal">
+      <p>SellCheck ist ein unabhängiges Projekt und mit keiner der genannten Plattformen verbunden. Plattformnamen sind Marken ihrer jeweiligen Inhaber.</p>
+      <p>Keine Steuer- oder Rechtsberatung. Alle Angaben ohne Gewähr, Stand Oktober 2026.</p>
+    </div>
   </div>
 </footer>
 </body>

@@ -20,14 +20,16 @@
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="SellCheck: Check, was wirklich bleibt.">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="theme-color" content="#0e1116">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0e1116" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="../fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="../style.css">
   <link rel="stylesheet" href="../hilfe.css">
 </head>
 <body>
 <a class="skip" href="#main">Zum Inhalt springen</a>
-<header class="site-header on-dark">
+<header class="site-header">
   <div class="wrap">
     <a class="brand" href="../index.html" aria-label="SellCheck Startseite">
       <svg viewBox="12.8 4.8 38.4 54.4" aria-hidden="true"><path class="tag" d="M14 6H50V58L45 52.5 40 58 35 52.5 30 58 25 52.5 20 58 14 52.5Z"/><path class="tick" d="M22 30l7.5 7.5L43 22" fill="none" stroke-width="6.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -41,20 +43,17 @@
   </div>
 </header>
 <main id="main">
-<div class="help-hero on-dark">
+<div class="help-hero">
   <div class="wrap">
     <nav class="crumbs" aria-label="Brotkrumen"><a href="../index.html">Startseite</a> › <a href="index.html">Hilfe</a> › <span aria-current="page">Etsy</span></nav>
-    <a class="help-back" href="index.html">← Alle Datenquellen</a>
-    <span class="eyebrow">Hilfe · Datei besorgen</span>
+    <a class="help-back" href="index.html">Alle Datenquellen</a>
     <h1>Etsy: So findest du deine Verkaufsdatei</h1>
     <p>Im Shop-Manager kannst du deine Bestellungen als CSV herunterladen, für einen Monat oder für ein ganzes Jahr.</p>
+    <p class="help-status"><span class="tag ok">Export vorhanden</span></p>
   </div>
 </div>
 <div class="wrap help-main">
-  <div class="help-top">
-    <dl class="help-facts"><div><dt>Datei</dt><dd>CSV (Bestellungen oder Bestellpositionen)</dd></div><div><dt>Zeitraum</dt><dd>Monat und Jahr, ohne Monat = ganzes Jahr</dd></div><div><dt>Dauer</dt><dd>direkter Download</dd></div></dl>
-    <div class="help-tag"><span class="tag ok">Export vorhanden</span></div>
-  </div>
+  <dl class="help-facts"><div><dt>Datei</dt><dd>CSV (Bestellungen oder Bestellpositionen)</dd></div><div><dt>Zeitraum</dt><dd>Monat und Jahr, ohne Monat = ganzes Jahr</dd></div><div><dt>Dauer</dt><dd>direkter Download</dd></div></dl>
   <p class="help-note">Stand der Beschreibung: Oktober 2026. Anbieter ändern ihre Oberfläche gelegentlich, Menünamen können deshalb abweichen. Findest du einen Menüpunkt nicht, suche im Hilfe-Center von Etsy nach „Daten herunterladen“.</p>
   <section class="help-way"><h2>So geht es</h2><ol class="help-steps"><li class="help-step"><span class="n" aria-hidden="true">1</span><div><h3>Shop-Manager öffnen</h3><p>Melde dich auf etsy.com an und öffne den Shop-Manager.</p><p class="help-path" aria-label="Menüweg"><span class="chip">Etsy.com</span><span class="sep" aria-hidden="true">›</span><span class="chip">Shop-Manager</span></p></div></li><li class="help-step"><span class="n" aria-hidden="true">2</span><div><h3>Optionen aufrufen</h3><p>Wähle „Einstellungen“ und dann „Optionen“.</p><p class="help-path" aria-label="Menüweg"><span class="chip">Einstellungen</span><span class="sep" aria-hidden="true">›</span><span class="chip">Optionen</span></p></div></li><li class="help-step"><span class="n" aria-hidden="true">3</span><div><h3>Tab „Daten herunterladen“</h3><p>Wechsle auf den Tab „Daten herunterladen“.</p><p class="help-path" aria-label="Menüweg"><span class="chip">Optionen</span><span class="sep" aria-hidden="true">›</span><span class="chip">Daten herunterladen</span></p></div></li><li class="help-step"><span class="n" aria-hidden="true">4</span><div><h3>CSV-Typ und Zeitraum wählen</h3><p>Wähle bei „Bestellungen“ den CSV-Typ, zum Beispiel „Bestellungen“ (eine Zeile je Bestellung) oder „Bestellpositionen“ (eine Zeile je Artikel). Wähle Jahr und Monat. Für das ganze Jahr lässt du den Monat leer.</p></div></li><li class="help-step"><span class="n" aria-hidden="true">5</span><div><h3>CSV herunterladen</h3><p>Klicke auf „CSV herunterladen“.</p></div></li></ol></section>
   <section class="help-next">
@@ -71,10 +70,38 @@
   <section class="help-sources"><h2>Quellen</h2><ul><li><a href="https://help.etsy.com/hc/de/articles/360000343328-Arbeitsblatt-mit-einer-Liste-deiner-Verk%C3%A4ufe-herunterladen" target="_blank" rel="noopener noreferrer">Etsy-Hilfe: Arbeitsblatt mit einer Liste deiner Verkäufe herunterladen</a></li><li><a href="https://help.etsy.com/hc/de/articles/360035753053-Wie-kann-ich-meine-Etsy-Daten-herunterladen" target="_blank" rel="noopener noreferrer">Etsy-Hilfe: Wie kann ich meine Etsy-Daten herunterladen?</a></li></ul></section>
 </div>
 </main>
-<footer class="on-dark help-footer">
+<footer class="on-dark">
   <div class="wrap">
-    <p>SellCheck gibt Orientierung und ist keine Steuer- oder Rechtsberatung. Alles läuft in deinem Browser.</p>
-    <p><a href="../index.html">Startseite</a> · <a href="../tools.html">Tools</a> · <a href="../impressum.html">Impressum</a> · <a href="../datenschutz.html">Datenschutz</a> · <a href="../agb.html">Nutzungsbedingungen</a></p>
+    <div class="cols">
+      <div>
+        <a class="brand" href="../index.html" aria-label="SellCheck Startseite">
+          <svg viewBox="12.8 4.8 38.4 54.4" aria-hidden="true"><path class="tag" d="M14 6H50V58L45 52.5 40 58 35 52.5 30 58 25 52.5 20 58 14 52.5Z"/><path class="tick" d="M22 30l7.5 7.5L43 22" fill="none" stroke-width="6.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Sell<b>Check</b></span>
+        </a>
+        <p class="tagline">Check, was wirklich bleibt.</p>
+      </div>
+      <div>
+        <p class="foot-h">Seiten</p>
+        <ul>
+          <li><a href="../index.html">Startseite</a></li>
+          <li><a href="../tools.html">Gratis-Tools</a></li>
+          <li><a href="../hilfe/index.html">Hilfe zu Exportdateien</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot-h">Rechtliches</p>
+        <ul>
+          <li><a href="../impressum.html">Impressum</a></li>
+          <li><a href="../impressum.html#kontakt">Kontakt</a></li>
+          <li><a href="../datenschutz.html">Datenschutz</a></li>
+          <li><a href="../agb.html">Nutzungsbedingungen</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="legal">
+      <p>SellCheck ist ein unabhängiges Projekt und mit keiner der genannten Plattformen verbunden. Plattformnamen sind Marken ihrer jeweiligen Inhaber.</p>
+      <p>Keine Steuer- oder Rechtsberatung. Alle Angaben ohne Gewähr, Stand Oktober 2026.</p>
+    </div>
   </div>
 </footer>
 </body>

@@ -130,7 +130,7 @@
     const modeText = state.mode === "business" ? "Gewerblich" : "Privat";
     switch (n) {
       case 1:
-        return `${state.year} · ${modeText}` + (state.mode === "business" ? ` · ${state.vat === "small" ? "Kleinunternehmer" : "Regelbesteuerung " + state.rate + " %"}` : "");
+        return `${state.year}, ${modeText}` + (state.mode === "business" ? `, ${state.vat === "small" ? "Kleinunternehmer" : "Regelbesteuerung " + state.rate + " %"}` : "");
       case 2:
         return state.platforms.join(", ");
       case 3: {
@@ -358,13 +358,14 @@
     items.forEach((it) => {
       const done = it.n <= 6 ? p.done[it.n] && it.n !== p.active : false;
       const locked = it.n <= 6 ? it.n > p.active : !p.canReview;
-      const current = it.n === Math.min(p.active, 7) && view === "wizard";
+      const current = view === "review" ? it.n === 7 : it.n === Math.min(p.active, 7);
       const li = el("li", undefined, "stepper-item" + (done ? " done" : "") + (locked ? " locked" : "") + (current ? " current" : ""));
       const b = document.createElement("button");
       b.type = "button";
       b.disabled = locked;
       if (current) b.setAttribute("aria-current", "step");
-      b.append(el("span", done ? "✓" : String(it.n), "stepper-dot"), el("span", it.label, "stepper-label"));
+      // Haken und Ziel als gezeichnete Symbole (CSS), „Prüfen“ ist kein siebter Schritt, sondern das Ziel
+      b.append(el("span", done || it.n === 7 ? "" : String(it.n), "stepper-dot" + (it.n === 7 ? " end" : "")), el("span", it.label, "stepper-label"));
       b.addEventListener("click", () => {
         if (it.n === 7) { showReview(); return; }
         showWizard();
@@ -518,7 +519,7 @@
 
     const byPlat = new Map();
     sold.forEach((e) => { const r = byPlat.get(e.platform) || { n: 0, sum: 0 }; r.n++; r.sum += Math.round(e.sell * 100); byPlat.set(e.platform, r); });
-    $("r-platforms").replaceChildren(...[...byPlat].map(([name, r]) => { const li = el("li"); li.append(el("b", name), document.createTextNode(`: ${r.n} ${r.n === 1 ? "Verkauf" : "Verkäufe"} · ${money(r.sum)}`)); return li; }));
+    $("r-platforms").replaceChildren(...[...byPlat].map(([name, r]) => { const li = el("li"); li.append(el("b", name), document.createTextNode(`: ${r.n} ${r.n === 1 ? "Verkauf" : "Verkäufe"}, ${money(r.sum)}`)); return li; }));
 
     const checks = $("r-checks");
     checks.replaceChildren();
@@ -531,7 +532,7 @@
       const lvl = x.level; // aus SCTax.meldeStatus: none, green, yellow, red
       const txt = !x.reported ? "keine Meldung" : lvl === "red" ? "Grenze erreicht" : lvl === "yellow" ? "nähert sich" : "weit entfernt";
       const chip = el("div", undefined, "limit-chip " + lvl);
-      chip.append(el("b", x.platform), el("span", `${x.count} Verkäufe · ${money(x.revenue)} · ${txt}`));
+      chip.append(el("b", x.platform), el("span", `${x.count} Verkäufe, ${money(x.revenue)}, ${txt}`));
       lim.append(chip);
     });
     if (!r.byPlatform.length) lim.append(el("p", "Keine Verkäufe im gewählten Jahr.", "muted"));

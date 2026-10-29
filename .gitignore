@@ -12,3 +12,5 @@ Businessplan/
 # Zwischenspeicher der impeccable-Designprüfung (die Regeln in .impeccable/config.json werden geteilt)
 .impeccable/hook.cache.json
 .impeccable/config.local.json
+.impeccable/review/
+.impeccable/shots/

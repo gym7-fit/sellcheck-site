@@ -20,14 +20,16 @@
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="SellCheck: Check, was wirklich bleibt.">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="theme-color" content="#0e1116">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0e1116" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="../fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="../style.css">
   <link rel="stylesheet" href="../hilfe.css">
 </head>
 <body>
 <a class="skip" href="#main">Zum Inhalt springen</a>
-<header class="site-header on-dark">
+<header class="site-header">
   <div class="wrap">
     <a class="brand" href="../index.html" aria-label="SellCheck Startseite">
       <svg viewBox="12.8 4.8 38.4 54.4" aria-hidden="true"><path class="tag" d="M14 6H50V58L45 52.5 40 58 35 52.5 30 58 25 52.5 20 58 14 52.5Z"/><path class="tick" d="M22 30l7.5 7.5L43 22" fill="none" stroke-width="6.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -41,20 +43,17 @@
   </div>
 </header>
 <main id="main">
-<div class="help-hero on-dark">
+<div class="help-hero">
   <div class="wrap">
     <nav class="crumbs" aria-label="Brotkrumen"><a href="../index.html">Startseite</a> › <a href="index.html">Hilfe</a> › <span aria-current="page">eBay</span></nav>
-    <a class="help-back" href="index.html">← Alle Datenquellen</a>
-    <span class="eyebrow">Hilfe · Datei besorgen</span>
+    <a class="help-back" href="index.html">Alle Datenquellen</a>
     <h1>eBay: So findest du deinen Transaktionsbericht</h1>
     <p>eBay stellt deine Verkäufe, Gebühren und Auszahlungen als CSV-Datei bereit. Sie heißt „Transaktionsbericht“ und liegt im Verkäufer-Cockpit Pro.</p>
+    <p class="help-status"><span class="tag ok">Export vorhanden</span></p>
   </div>
 </div>
 <div class="wrap help-main">
-  <div class="help-top">
-    <dl class="help-facts"><div><dt>Datei</dt><dd>Transaktionsbericht (CSV)</dd></div><div><dt>Zeitraum</dt><dd>Start und Ende frei wählbar</dd></div><div><dt>Dauer</dt><dd>eBay schickt eine E-Mail, wenn er fertig ist</dd></div></dl>
-    <div class="help-tag"><span class="tag ok">Export vorhanden</span></div>
-  </div>
+  <dl class="help-facts"><div><dt>Datei</dt><dd>Transaktionsbericht (CSV)</dd></div><div><dt>Zeitraum</dt><dd>Start und Ende frei wählbar</dd></div><div><dt>Dauer</dt><dd>eBay schickt eine E-Mail, wenn er fertig ist</dd></div></dl>
   <p class="help-note">Stand der Beschreibung: Oktober 2026. Anbieter ändern ihre Oberfläche gelegentlich, Menünamen können deshalb abweichen. Findest du einen Menüpunkt nicht, suche im Hilfe-Center von eBay nach „Transaktionsbericht“.</p>
   <section class="help-way"><h2>So geht es</h2><ol class="help-steps"><li class="help-step"><span class="n" aria-hidden="true">1</span><div><h3>Verkäufer-Cockpit Pro öffnen</h3><p>Melde dich bei eBay an und öffne das Verkäufer-Cockpit Pro.</p><p class="help-path" aria-label="Menüweg"><span class="chip">eBay-Konto</span><span class="sep" aria-hidden="true">›</span><span class="chip">Verkäufer-Cockpit Pro</span></p></div></li><li class="help-step"><span class="n" aria-hidden="true">2</span><div><h3>Zu den Berichten wechseln</h3><p>Öffne den Tab „Zahlungen“. Wähle im Menü links „Berichte“.</p><p class="help-path" aria-label="Menüweg"><span class="chip">Zahlungen</span><span class="sep" aria-hidden="true">›</span><span class="chip">Berichte</span></p></div></li><li class="help-step"><span class="n" aria-hidden="true">3</span><div><h3>Transaktionsbericht auswählen</h3><p>Klicke im Bereich „Download“ auf „Transaktionsbericht“.</p><p class="help-path" aria-label="Menüweg"><span class="chip">Berichte</span><span class="sep" aria-hidden="true">›</span><span class="chip">Download</span><span class="sep" aria-hidden="true">›</span><span class="chip">Transaktionsbericht</span></p></div></li><li class="help-step"><span class="n" aria-hidden="true">4</span><div><h3>Typ und Zeitraum einstellen</h3><p>Wähle den Transaktionstyp und trage bei „Start“ und „Ende“ deinen Zeitraum ein, zum Beispiel den 01.01. bis 31.12. deines Steuerjahres. Klicke dann auf „Bericht erstellen“.</p></div></li><li class="help-step"><span class="n" aria-hidden="true">5</span><div><h3>Datei herunterladen</h3><p>Sobald der Bericht bereit ist, bekommst du eine E-Mail von eBay. Lade die CSV-Datei dann herunter.</p></div></li></ol></section>
   <section class="help-next">
@@ -71,10 +70,38 @@
   <section class="help-sources"><h2>Quellen</h2><ul><li><a href="https://www.ebay.de/help/selling/fees-credits-invoices/reconciling-ebay-sales-transactions?id=4847" target="_blank" rel="noopener noreferrer">eBay-Hilfe: Abgleichen Ihrer eBay-Verkaufstransaktionen</a></li></ul></section>
 </div>
 </main>
-<footer class="on-dark help-footer">
+<footer class="on-dark">
   <div class="wrap">
-    <p>SellCheck gibt Orientierung und ist keine Steuer- oder Rechtsberatung. Alles läuft in deinem Browser.</p>
-    <p><a href="../index.html">Startseite</a> · <a href="../tools.html">Tools</a> · <a href="../impressum.html">Impressum</a> · <a href="../datenschutz.html">Datenschutz</a> · <a href="../agb.html">Nutzungsbedingungen</a></p>
+    <div class="cols">
+      <div>
+        <a class="brand" href="../index.html" aria-label="SellCheck Startseite">
+          <svg viewBox="12.8 4.8 38.4 54.4" aria-hidden="true"><path class="tag" d="M14 6H50V58L45 52.5 40 58 35 52.5 30 58 25 52.5 20 58 14 52.5Z"/><path class="tick" d="M22 30l7.5 7.5L43 22" fill="none" stroke-width="6.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Sell<b>Check</b></span>
+        </a>
+        <p class="tagline">Check, was wirklich bleibt.</p>
+      </div>
+      <div>
+        <p class="foot-h">Seiten</p>
+        <ul>
+          <li><a href="../index.html">Startseite</a></li>
+          <li><a href="../tools.html">Gratis-Tools</a></li>
+          <li><a href="../hilfe/index.html">Hilfe zu Exportdateien</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot-h">Rechtliches</p>
+        <ul>
+          <li><a href="../impressum.html">Impressum</a></li>
+          <li><a href="../impressum.html#kontakt">Kontakt</a></li>
+          <li><a href="../datenschutz.html">Datenschutz</a></li>
+          <li><a href="../agb.html">Nutzungsbedingungen</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="legal">
+      <p>SellCheck ist ein unabhängiges Projekt und mit keiner der genannten Plattformen verbunden. Plattformnamen sind Marken ihrer jeweiligen Inhaber.</p>
+      <p>Keine Steuer- oder Rechtsberatung. Alle Angaben ohne Gewähr, Stand Oktober 2026.</p>
+    </div>
   </div>
 </footer>
 </body>

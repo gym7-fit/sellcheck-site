@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Schriftprobe</title>
+<style>
+@font-face { font-family: "Archivo"; src: url(fonts/archivo-latin-wght-normal.woff2) format("woff2"); font-weight: 100 900; }
+@font-face { font-family: "Schibsted"; src: url(fonts/schibsted-grotesk-latin-wght-normal.woff2) format("woff2"); font-weight: 400 900; }
+@font-face { font-family: "Franklin"; src: url(fonts/libre-franklin-latin-wght-normal.woff2) format("woff2"); font-weight: 100 900; }
+@font-face { font-family: "Plex"; src: url(fonts/ibm-plex-sans-latin-400-normal.woff2) format("woff2"); font-weight: 400; }
+@font-face { font-family: "Plex"; src: url(fonts/ibm-plex-sans-latin-600-normal.woff2) format("woff2"); font-weight: 600; }
+@font-face { font-family: "Plex"; src: url(fonts/ibm-plex-sans-latin-700-normal.woff2) format("woff2"); font-weight: 700; }
+@font-face { font-family: "SourceSerif"; src: url(fonts/source-serif-4-latin-wght-normal.woff2) format("woff2"); font-weight: 200 900; }
+@font-face { font-family: "SourceSans"; src: url(fonts/source-sans-3-latin-wght-normal.woff2) format("woff2"); font-weight: 200 900; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #ffffff; color: #111; font: 16px/1.5 system-ui, sans-serif; }
+.intro { padding: 32px 40px 8px; max-width: 980px; }
+.intro h1 { font: 700 1.5rem/1.2 system-ui, sans-serif; margin: 0 0 6px; }
+.intro p { margin: 0; color: #555; }
+.probe { border-top: 1px solid #ddd; padding: 28px 40px 40px; }
+.tag { font: 600 .95rem system-ui, sans-serif; color: #444; margin: 0 0 16px; }
+.tag b { color: #111; font-size: 1.05rem; }
+.pair { display: grid; grid-template-columns: 1.15fr 1fr; gap: 0; border: 1px solid #ddd; }
+.dark { background: #111418; color: #f2f2ef; padding: 36px 36px 32px; }
+.light { background: #fff; color: #16181c; padding: 36px; border-left: 1px solid #ddd; }
+.claim { margin: 0 0 18px; font-size: 3.6rem; line-height: 1; }
+.lead { margin: 0 0 22px; font-size: 1.12rem; line-height: 1.55; color: #c3c6cc; max-width: 30em; }
+.zeile { display: flex; gap: 28px; align-items: baseline; margin-bottom: 24px; flex-wrap: wrap; }
+.zahl { font-size: 2.6rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.zahl small { font-size: .95rem; color: #a9acb2; margin-left: 6px; letter-spacing: 0; }
+.knopf { display: inline-block; padding: 13px 22px; border-radius: 10px; background: #c8f169; color: #111; font-size: 1rem; text-decoration: none; }
+.light h2 { margin: 0 0 10px; font-size: 1.9rem; line-height: 1.12; }
+.light p { margin: 0 0 16px; line-height: 1.6; color: #3a3d44; }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+td { padding: 7px 0; border-top: 1px solid #e3e3e3; }
+td:last-child { text-align: right; }
+/* Schriften und ihre Feinjustierung */
+.f-archivo { font-family: "Archivo", sans-serif; } .f-archivo .claim { font-weight: 800; letter-spacing: -.025em; font-stretch: 100%; } .f-archivo .zahl, .f-archivo h2 { font-weight: 700; letter-spacing: -.02em; } .f-archivo .knopf { font-weight: 650; }
+.f-schibsted { font-family: "Schibsted", sans-serif; } .f-schibsted .claim { font-weight: 800; letter-spacing: -.035em; } .f-schibsted .zahl, .f-schibsted h2 { font-weight: 700; letter-spacing: -.025em; } .f-schibsted .knopf { font-weight: 650; }
+.f-franklin { font-family: "Franklin", sans-serif; } .f-franklin .claim { font-weight: 800; letter-spacing: -.035em; } .f-franklin .zahl, .f-franklin h2 { font-weight: 700; letter-spacing: -.025em; } .f-franklin .knopf { font-weight: 650; }
+.f-plex { font-family: "Plex", sans-serif; } .f-plex .claim { font-weight: 700; letter-spacing: -.03em; } .f-plex .zahl, .f-plex h2 { font-weight: 600; letter-spacing: -.02em; } .f-plex .knopf { font-weight: 600; }
+.f-serif { font-family: "SourceSans", sans-serif; } .f-serif .claim, .f-serif h2, .f-serif .zahl { font-family: "SourceSerif", serif; } .f-serif .claim { font-weight: 600; letter-spacing: -.02em; } .f-serif .zahl, .f-serif h2 { font-weight: 600; letter-spacing: -.015em; } .f-serif .knopf { font-weight: 600; }
+@media (max-width: 860px) { .pair { grid-template-columns: 1fr; } .light { border-left: 0; border-top: 1px solid #ddd; } .claim { font-size: 2.6rem; } .probe, .intro { padding-left: 20px; padding-right: 20px; } }
+</style>
+</head>
+<body>
+<div class="intro">
+  <h1>Schriftprobe für SellCheck</h1>
+  <p>Fünf frei lizenzierte Schriften, die nicht zu den aktuellen KI-Modeschriften gehören. Gleiche Inhalte, gleiche Farben, nur die Schrift wechselt. Alle Zahlen sind Beispieldaten.</p>
+</div>
+
+<section class="probe f-archivo">
+  <p class="tag"><b>1. Archivo</b>: kräftige Grotesk, sachlich, wie Beschilderung. 35 KB.</p>
+  <div class="pair">
+    <div class="dark"><p class="claim">Check, was wirklich bleibt.</p><p class="lead">Wie nah bist du an der Meldegrenze? SellCheck zeigt es für jede Plattform.</p><div class="zeile"><span class="zahl">21<small>von 30 Verkäufen</small></span><span class="zahl">1.280 €<small>von 2.000 €</small></span></div><a class="knopf" href="#">Meldegrenze prüfen</a></div>
+    <div class="light"><h2>Jede Plattform zählt getrennt</h2><p>Wer auf mehreren Plattformen verkauft, hat mehrere Zähler, aber nirgends das Gesamtbild. Eine Meldung ist noch keine Steuerforderung.</p><table><tr><td>Vinted</td><td>21 Verkäufe, 1.280,00 €</td></tr><tr><td>Kleinanzeigen</td><td>8 Verkäufe, 420,00 €</td></tr><tr><td>eBay</td><td>2 Verkäufe, 90,00 €</td></tr></table></div>
+  </div>
+</section>
+
+<section class="probe f-schibsted">
+  <p class="tag"><b>2. Schibsted Grotesk</b>: redaktionell, wie eine Zeitung (von einem norwegischen Verlag). 47 KB.</p>
+  <div class="pair">
+    <div class="dark"><p class="claim">Check, was wirklich bleibt.</p><p class="lead">Wie nah bist du an der Meldegrenze? SellCheck zeigt es für jede Plattform.</p><div class="zeile"><span class="zahl">21<small>von 30 Verkäufen</small></span><span class="zahl">1.280 €<small>von 2.000 €</small></span></div><a class="knopf" href="#">Meldegrenze prüfen</a></div>
+    <div class="light"><h2>Jede Plattform zählt getrennt</h2><p>Wer auf mehreren Plattformen verkauft, hat mehrere Zähler, aber nirgends das Gesamtbild. Eine Meldung ist noch keine Steuerforderung.</p><table><tr><td>Vinted</td><td>21 Verkäufe, 1.280,00 €</td></tr><tr><td>Kleinanzeigen</td><td>8 Verkäufe, 420,00 €</td></tr><tr><td>eBay</td><td>2 Verkäufe, 90,00 €</td></tr></table></div>
+  </div>
+</section>
+
+<section class="probe f-franklin">
+  <p class="tag"><b>3. Libre Franklin</b>: klassische amerikanische Grotesk, vertraut und ehrlich. 29 KB.</p>
+  <div class="pair">
+    <div class="dark"><p class="claim">Check, was wirklich bleibt.</p><p class="lead">Wie nah bist du an der Meldegrenze? SellCheck zeigt es für jede Plattform.</p><div class="zeile"><span class="zahl">21<small>von 30 Verkäufen</small></span><span class="zahl">1.280 €<small>von 2.000 €</small></span></div><a class="knopf" href="#">Meldegrenze prüfen</a></div>
+    <div class="light"><h2>Jede Plattform zählt getrennt</h2><p>Wer auf mehreren Plattformen verkauft, hat mehrere Zähler, aber nirgends das Gesamtbild. Eine Meldung ist noch keine Steuerforderung.</p><table><tr><td>Vinted</td><td>21 Verkäufe, 1.280,00 €</td></tr><tr><td>Kleinanzeigen</td><td>8 Verkäufe, 420,00 €</td></tr><tr><td>eBay</td><td>2 Verkäufe, 90,00 €</td></tr></table></div>
+  </div>
+</section>
+
+<section class="probe f-plex">
+  <p class="tag"><b>4. IBM Plex Sans</b>: technisch und ruhig, wie Banken und Behörden-Software. 59 KB.</p>
+  <div class="pair">
+    <div class="dark"><p class="claim">Check, was wirklich bleibt.</p><p class="lead">Wie nah bist du an der Meldegrenze? SellCheck zeigt es für jede Plattform.</p><div class="zeile"><span class="zahl">21<small>von 30 Verkäufen</small></span><span class="zahl">1.280 €<small>von 2.000 €</small></span></div><a class="knopf" href="#">Meldegrenze prüfen</a></div>
+    <div class="light"><h2>Jede Plattform zählt getrennt</h2><p>Wer auf mehreren Plattformen verkauft, hat mehrere Zähler, aber nirgends das Gesamtbild. Eine Meldung ist noch keine Steuerforderung.</p><table><tr><td>Vinted</td><td>21 Verkäufe, 1.280,00 €</td></tr><tr><td>Kleinanzeigen</td><td>8 Verkäufe, 420,00 €</td></tr><tr><td>eBay</td><td>2 Verkäufe, 90,00 €</td></tr></table></div>
+  </div>
+</section>
+
+<section class="probe f-serif">
+  <p class="tag"><b>5. Source Serif und Source Sans</b>: Überschriften und Zahlen mit Serifen, Text ohne. Wirkt wie ein gutes Magazin. 80 KB.</p>
+  <div class="pair">
+    <div class="dark"><p class="claim">Check, was wirklich bleibt.</p><p class="lead">Wie nah bist du an der Meldegrenze? SellCheck zeigt es für jede Plattform.</p><div class="zeile"><span class="zahl">21<small>von 30 Verkäufen</small></span><span class="zahl">1.280 €<small>von 2.000 €</small></span></div><a class="knopf" href="#">Meldegrenze prüfen</a></div>
+    <div class="light"><h2>Jede Plattform zählt getrennt</h2><p>Wer auf mehreren Plattformen verkauft, hat mehrere Zähler, aber nirgends das Gesamtbild. Eine Meldung ist noch keine Steuerforderung.</p><table><tr><td>Vinted</td><td>21 Verkäufe, 1.280,00 €</td></tr><tr><td>Kleinanzeigen</td><td>8 Verkäufe, 420,00 €</td></tr><tr><td>eBay</td><td>2 Verkäufe, 90,00 €</td></tr></table></div>
+  </div>
+</section>
+</body>
+</html>

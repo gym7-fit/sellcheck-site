@@ -4,15 +4,6 @@
     "ignoreFiles": [],
     "ignoreValues": [
       {
-        "rule": "kicker-above-heading",
-        "value": "*",
-        "files": [
-          "site/index.html"
-        ],
-        "createdAt": "2026-10-23T11:51:37.247Z",
-        "reason": "Labels Geplant/In Vorbereitung sind Pflicht-Kennzeichnung für noch nicht erhältliche Angebote (UWG/PAngV, PRUEFAUFTRAG.md 3.4, Test in landing.test.js), kein Deko-Kicker"
-      },
-      {
         "rule": "cramped-padding",
         "value": "*",
         "files": [
@@ -25,10 +16,28 @@
         "rule": "cramped-padding",
         "value": "*",
         "files": [
-          "site/datenschutz.html"
+          "site/index.html"
         ],
-        "createdAt": "2026-10-23T11:51:37.282Z",
-        "reason": "Fehlalarm: div.legal am Seitenende hat style=border:0, es gibt keine Kante"
+        "createdAt": "2026-10-24T16:34:21.460Z",
+        "reason": "Fehlalarm: .trust-list li hat padding-top var(--s5) (24 px) unter der 2-px-Linie, im Browser geprüft"
+      },
+      {
+        "rule": "monotonous-spacing",
+        "value": "*",
+        "files": [
+          "design/richtungen/a-beleg.html"
+        ],
+        "createdAt": "2026-10-24T16:51:49.385Z",
+        "reason": "Prototyp der nicht gewählten Richtung A, wird nicht ausgeliefert; Louis hat am 24.10. Richtung C gewählt"
+      },
+      {
+        "rule": "cream-palette",
+        "value": "*",
+        "files": [
+          "design/richtungen/index.html"
+        ],
+        "createdAt": "2026-10-24T16:51:49.403Z",
+        "reason": "Vergleichsseite der Prototypen, nicht ausgeliefert; Hintergrund ist die feste Markenfarbe Papier #f6f4ee aus PRUEFAUFTRAG.md Abschnitt 6"
       }
     ]
   }

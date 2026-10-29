@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Drei Richtungen</title>
+<style>
+:root { --ink: #0e1116; --lime: #c8f169; --paper: #f6f4ee; --muted: #565c67; --line: #dcd8cc; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+header { background: var(--ink); color: var(--paper); padding: 28px 24px; }
+header h1 { margin: 0 0 6px; font-size: 1.6rem; letter-spacing: -.02em; }
+header p { margin: 0; color: #b7bcc5; max-width: 60em; }
+main { padding: 24px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+article { background: #fff; border: 1px solid var(--line); border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; }
+.frame { position: relative; height: 560px; overflow: hidden; border-bottom: 1px solid var(--line); background: var(--paper); }
+.frame iframe { position: absolute; top: 0; left: 0; width: 1280px; height: 1600px; border: 0; transform: scale(.34); transform-origin: 0 0; pointer-events: none; }
+.text { padding: 20px 22px 24px; display: grid; gap: 10px; }
+h2 { margin: 0; font-size: 1.25rem; letter-spacing: -.01em; }
+.text p { margin: 0; color: var(--muted); }
+dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: .94rem; }
+dt { font-weight: 600; } dd { margin: 0; color: var(--muted); }
+.open { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 18px; border-radius: 12px; background: var(--ink); color: var(--paper); text-decoration: none; font-weight: 600; width: fit-content; margin-top: 6px; }
+.open:focus-visible { outline: 3px solid var(--lime); outline-offset: 3px; }
+footer { padding: 0 24px 32px; color: var(--muted); font-size: .94rem; }
+@media (max-width: 1100px) { main { grid-template-columns: 1fr; } .frame { height: 480px; } .frame iframe { transform: scale(.5); } }
+@media (max-width: 640px) { .frame iframe { transform: scale(.27); } .frame { height: 420px; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Drei Richtungen für das Redesign</h1>
+  <p>Alle drei behalten Marke, Texte und Preise. Sie unterscheiden sich in Schrift, Aufbau und Stimmung. Jede Seite zeigt Hero, Meldegrenzen-Ampel, eine Preiskarte und ein Formularfeld mit Fehler. Hell und dunkel folgen der Einstellung deines Geräts.</p>
+</header>
+<main>
+  <article>
+    <div class="frame"><iframe src="a-beleg.html" title="Vorschau Richtung A" tabindex="-1" loading="lazy"></iframe></div>
+    <div class="text">
+      <h2>A: Beleg</h2>
+      <p>Die Seite wird zum Kassenbon. Im Hero rechnet ein Beleg vor, was vom Verkauf bleibt, mit Zackenkante wie im Logo und Lime als Textmarker.</p>
+      <dl><dt>Schrift</dt><dd>IBM Plex Sans, Beträge in IBM Plex Mono</dd><dt>Größe</dt><dd>etwa 74 KB</dd><dt>Stärke</dt><dd>am eigenständigsten, erzählt die Marke</dd></dl>
+      <a class="open" href="a-beleg.html">Richtung A ansehen</a>
+    </div>
+  </article>
+  <article>
+    <div class="frame"><iframe src="b-praezise.html" title="Vorschau Richtung B" tabindex="-1" loading="lazy"></iframe></div>
+    <div class="text">
+      <h2>B: Ruhig und präzise</h2>
+      <p>Viel Weißraum, feine Linien, Messskalen mit Markierung bei 60 und 100 Prozent. Nüchtern wie eine gute Finanz-App, Lime nur als Signal.</p>
+      <dl><dt>Schrift</dt><dd>Hanken Grotesk</dd><dt>Größe</dt><dd>etwa 35 KB</dd><dt>Stärke</dt><dd>wirkt am seriösesten, passt zur App</dd></dl>
+      <a class="open" href="b-praezise.html">Richtung B ansehen</a>
+    </div>
+  </article>
+  <article>
+    <div class="frame"><iframe src="c-kontrast.html" title="Vorschau Richtung C" tabindex="-1" loading="lazy"></iframe></div>
+    <div class="text">
+      <h2>C: Kontrast</h2>
+      <p>Dunkel zuerst, sehr große Schrift, je Plattform eine Karte mit großer Zahl. Lime als Signal für Knöpfe. Laut und selbstbewusst.</p>
+      <dl><dt>Schrift</dt><dd>Bricolage Grotesque</dd><dt>Größe</dt><dd>etwa 77 KB</dd><dt>Stärke</dt><dd>stärkster erster Eindruck, wirkt wie eine Marke</dd></dl>
+      <a class="open" href="c-kontrast.html">Richtung C ansehen</a>
+    </div>
+  </article>
+</main>
+<footer>Alle Zahlen sind Beispieldaten. Schriften frei lizenziert (SIL Open Font License), selbst gehostet, nichts wird von fremden Servern geladen.</footer>
+</body>
+</html>

@@ -20,7 +20,7 @@ test("1 eigene 404-Seite mit Wegen weiter (Startseite, Tools, Hilfe, Kontakt)", 
 });
 
 test("2 klarer Handlungsknopf auf Startseite, Tools und Danke-Seite", () => {
-  assert.match(read("index.html"), /class="btn"[^>]*href="#demo"/);
+  assert.match(read("index.html"), /class="btn(?: signal)?"[^>]*href="#demo"/);
   assert.match(read("tools.html"), /class="btn/);
   assert.match(read("danke.html"), /class="btn"/);
 });

@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Richtung A: Beleg</title>
+<style>
+@font-face { font-family: "Plex"; src: url(fonts/ibm-plex-sans-latin-400-normal.woff2) format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Plex"; src: url(fonts/ibm-plex-sans-latin-600-normal.woff2) format("woff2"); font-weight: 600; font-display: swap; }
+@font-face { font-family: "Plex"; src: url(fonts/ibm-plex-sans-latin-700-normal.woff2) format("woff2"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "Plex Mono"; src: url(fonts/ibm-plex-mono-latin-500-normal.woff2) format("woff2"); font-weight: 500; font-display: swap; }
+
+:root {
+  --ink: #0e1116; --lime: #c8f169; --paper: #f6f4ee;
+  --bg: var(--paper); --slip: #fffdf8; --text: #0e1116; --muted: #555b66; --rule: #d6d1c3;
+  --green: #177a42; --green-soft: #e3f3e7; --yellow: #7d5300; --yellow-soft: #fbefcf; --red: #b3261e; --red-soft: #fbe4e2;
+  --r-card: 20px; --r-ctl: 12px;
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px; --s7: 48px; --s8: 72px; --s9: 112px;
+  --sans: "Plex", system-ui, sans-serif; --mono: "Plex Mono", ui-monospace, monospace;
+  --shadow: 0 1px 1px rgba(14,17,22,.04), 0 10px 30px -12px rgba(60,48,20,.22);
+  --ease: cubic-bezier(.2,.8,.2,1);
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #0e1116; --text: #f1efe8; --muted: #a3a8b1; --rule: #2a2f37;
+    --green: #6fd394; --green-soft: #12291b; --yellow: #f0c25a; --yellow-soft: #2c2410; --red: #f2908a; --red-soft: #2e1716;
+    --shadow: 0 1px 1px rgba(0,0,0,.3), 0 18px 40px -16px rgba(0,0,0,.7); }
+}
+* { box-sizing: border-box; }
+figure { margin: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 400 17px/1.6 var(--sans); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--lime); color: var(--ink); }
+:focus-visible { outline: 3px solid var(--lime); outline-offset: 3px; border-radius: 6px; }
+a { color: inherit; text-underline-offset: .2em; }
+.wrap { max-width: 1160px; margin: 0 auto; padding: 0 var(--s5); }
+.num { font-family: var(--mono); font-weight: 500; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+
+/* Kopf */
+.top { background: var(--ink); color: var(--paper); }
+.top .wrap { display: flex; align-items: center; justify-content: space-between; min-height: 68px; gap: var(--s4); }
+.brand { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; text-decoration: none; font-weight: 700; font-size: 1.3rem; letter-spacing: -.02em; }
+.brand svg { height: 34px; width: auto; }
+.brand .tag { fill: var(--lime); } .brand .tick { stroke: var(--ink); }
+.brand b { color: var(--lime); font-weight: 700; }
+.nav { display: flex; align-items: center; gap: var(--s5); }
+.nav a:not(.btn) { text-decoration: none; color: #c9cdd4; padding: 10px 0; font-size: .97rem; }
+.nav a:not(.btn):hover { color: #fff; }
+
+/* Knöpfe */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--s2); min-height: 48px; padding: 0 var(--s5); border: 0; border-radius: var(--r-ctl);
+  font: 600 1rem/1 var(--sans); text-decoration: none; cursor: pointer; background: var(--lime); color: var(--ink);
+  box-shadow: inset 0 -2px 0 rgba(14,17,22,.12); transition: transform .12s var(--ease), background-color .12s var(--ease); }
+.btn:hover { background: #b9e65a; } .btn:active { transform: translateY(1px); }
+.btn.ghost { background: transparent; color: var(--text); box-shadow: inset 0 0 0 1.5px var(--rule); }
+.btn.ghost:hover { box-shadow: inset 0 0 0 1.5px var(--text); }
+.top .btn { min-height: 44px; padding: 0 var(--s4); font-size: .95rem; }
+
+/* Hero */
+.hero { padding: var(--s8) 0 var(--s9); }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: var(--s8); align-items: start; }
+h1 { font-weight: 700; font-size: clamp(2.6rem, 6.2vw, 5.1rem); line-height: 1.02; letter-spacing: -.035em; margin: 0 0 var(--s5); text-wrap: balance; }
+.lead { font-size: 1.2rem; color: var(--muted); max-width: 32em; margin: 0 0 var(--s6); text-wrap: pretty; }
+.cta { display: flex; flex-wrap: wrap; gap: var(--s3); margin-bottom: var(--s6); }
+.facts { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--s2); color: var(--muted); font-size: .98rem; }
+.facts li { display: flex; gap: var(--s3); align-items: center; }
+.facts svg { width: 20px; height: 20px; flex: none; stroke: var(--green); fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Der Beleg */
+.slip { position: relative; background: var(--slip); color: #0e1116; padding: var(--s6) var(--s6) var(--s7); box-shadow: var(--shadow);
+  --zz: 14px; clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--zz)), 95% 100%, 90% calc(100% - var(--zz)), 85% 100%, 80% calc(100% - var(--zz)), 75% 100%, 70% calc(100% - var(--zz)), 65% 100%, 60% calc(100% - var(--zz)), 55% 100%, 50% calc(100% - var(--zz)), 45% 100%, 40% calc(100% - var(--zz)), 35% 100%, 30% calc(100% - var(--zz)), 25% 100%, 20% calc(100% - var(--zz)), 15% 100%, 10% calc(100% - var(--zz)), 5% 100%, 0 calc(100% - var(--zz))); }
+.slip-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s4); padding-bottom: var(--s4); border-bottom: 1.5px dashed #cfc9b8; margin-bottom: var(--s4); }
+.slip-head strong { font-size: 1.05rem; }
+.slip-head span { font-size: .85rem; color: #5d636f; }
+.item { font-weight: 600; margin: var(--s4) 0 var(--s2); }
+.item small { display: block; font-weight: 400; color: #5d636f; font-size: .85rem; }
+.line { display: flex; align-items: baseline; gap: var(--s2); font-size: .98rem; padding: 3px 0; }
+.line .lbl { white-space: nowrap; }
+.line .dots { flex: 1; border-bottom: 2px dotted #cfc9b8; transform: translateY(-4px); min-width: 24px; }
+.line .num { white-space: nowrap; }
+.total { margin-top: var(--s3); padding-top: var(--s3); border-top: 1.5px dashed #cfc9b8; font-weight: 700; font-size: 1.15rem; }
+.total .mark { background: linear-gradient(transparent 18%, var(--lime) 18%, var(--lime) 88%, transparent 88%); padding: 0 6px; margin-right: -6px; }
+.stamp { margin-top: var(--s5); display: grid; gap: var(--s2); padding: var(--s4); border-radius: var(--r-ctl); background: #fbefcf; color: #5c3d00; }
+.stamp b { font-size: .98rem; }
+.stamp p { margin: 0; font-size: .9rem; }
+
+/* Abschnitte */
+section.block { padding: var(--s9) 0; border-top: 1px solid var(--rule); }
+h2 { font-weight: 700; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.08; letter-spacing: -.03em; margin: 0 0 var(--s4); text-wrap: balance; }
+.intro { color: var(--muted); max-width: 36em; margin: 0 0 var(--s7); font-size: 1.1rem; }
+.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s7); align-items: start; }
+
+/* Ampel */
+.check { background: var(--slip); color: #0e1116; border-radius: var(--r-card); padding: var(--s6); box-shadow: var(--shadow); }
+.seg { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s1); padding: var(--s1); background: #efeadd; border-radius: var(--r-ctl); margin-bottom: var(--s6); }
+.seg label { position: relative; }
+.seg input { position: absolute; opacity: 0; inset: 0; }
+.seg span { display: flex; align-items: center; justify-content: center; gap: var(--s2); min-height: 44px; border-radius: 9px; font-weight: 600; font-size: .95rem; cursor: pointer; transition: background-color .15s var(--ease); }
+.seg input:checked + span { background: #fff; box-shadow: 0 1px 2px rgba(14,17,22,.12); }
+.seg input:focus-visible + span { outline: 3px solid var(--ink); outline-offset: 2px; }
+.seg i { width: 9px; height: 9px; border-radius: 2px; flex: none; }
+.g { background: #2f9e5f; } .y { background: #d99a1b; } .r { background: #c8382f; }
+.measure { margin-bottom: var(--s5); }
+.measure .row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: var(--s2); }
+.measure .row span { font-weight: 600; }
+.measure .row .num { font-size: 1.15rem; }
+.track { position: relative; height: 12px; background: #ece7da; border-radius: 3px; overflow: hidden; }
+.track i { position: absolute; inset: 0 auto 0 0; background: #d99a1b; border-radius: 3px; }
+.track::after { content: ""; position: absolute; left: 60%; top: 0; bottom: 0; width: 2px; background: rgba(14,17,22,.35); }
+.ticks { display: flex; justify-content: space-between; font-size: .8rem; color: #5d636f; margin-top: 6px; }
+.verdict { display: grid; grid-template-columns: auto 1fr; gap: var(--s3); align-items: start; padding: var(--s4); border-radius: var(--r-ctl); background: #fbefcf; color: #4d3400; }
+.verdict svg { width: 22px; height: 22px; margin-top: 2px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; }
+.verdict strong { display: block; }
+.verdict p { margin: 2px 0 0; font-size: .95rem; }
+.rules { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--s5); }
+.rules li { padding-left: var(--s5); border-left: 1px solid var(--rule); }
+.rules b { display: block; font-size: 1.1rem; margin-bottom: 2px; }
+.rules p { margin: 0; color: var(--muted); }
+
+/* Preis */
+.plan { background: var(--slip); color: #0e1116; border-radius: var(--r-card); padding: var(--s6); box-shadow: var(--shadow); max-width: 420px; }
+.plan h3 { font-size: 1.5rem; margin: 0; letter-spacing: -.02em; }
+.plan .state { color: #5d636f; font-size: .92rem; margin: 2px 0 var(--s5); }
+.price { display: flex; align-items: baseline; gap: var(--s2); }
+.price .num { font-family: var(--sans); font-weight: 700; font-size: 2.6rem; letter-spacing: -.03em; }
+.price small { color: #5d636f; }
+.plan .year { color: #5d636f; margin: var(--s1) 0 var(--s5); font-size: .95rem; }
+.plan ul { list-style: none; padding: var(--s4) 0 0; margin: 0; border-top: 1.5px dashed #cfc9b8; display: grid; gap: var(--s2); }
+.plan li { display: flex; gap: var(--s3); }
+.plan li svg { width: 20px; height: 20px; flex: none; margin-top: 3px; stroke: #177a42; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Formular */
+.form { max-width: 460px; }
+.field { display: grid; gap: 6px; margin-bottom: var(--s5); }
+.field label { font-weight: 600; }
+.field input { font: inherit; font-size: 1rem; min-height: 48px; padding: 0 var(--s4); border-radius: var(--r-ctl); border: 1.5px solid var(--rule); background: var(--slip); color: #0e1116; }
+.field input[aria-invalid="true"] { border-color: var(--red); }
+.err { display: flex; gap: var(--s2); color: var(--red); font-size: .92rem; font-weight: 600; margin: 0; }
+.err svg { width: 18px; height: 18px; flex: none; margin-top: 2px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; }
+.opt { display: flex; gap: var(--s3); align-items: flex-start; min-height: 44px; margin-bottom: var(--s5); cursor: pointer; }
+.opt input { width: 20px; height: 20px; margin: 3px 0 0; accent-color: var(--ink); }
+.opt small { display: block; color: var(--muted); }
+
+footer { padding: var(--s7) 0; border-top: 1px solid var(--rule); color: var(--muted); font-size: .92rem; }
+footer .wrap { display: flex; flex-wrap: wrap; gap: var(--s5); justify-content: space-between; }
+footer nav { display: flex; flex-wrap: wrap; gap: var(--s5); }
+footer a { text-decoration: none; padding: 10px 0; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .slip { animation: print .3s var(--ease) both; }
+  @keyframes print { from { transform: translateY(-10px); opacity: 0; } }
+}
+@media (max-width: 860px) {
+  .hero .wrap, .split { grid-template-columns: 1fr; gap: var(--s7); }
+  .nav .hide-sm { display: none; }
+  .hero { padding: var(--s7) 0 var(--s8); }
+  section.block { padding: var(--s8) 0; }
+  .slip, .check, .plan { padding: var(--s5); }
+  .seg { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#"><svg viewBox="12.8 4.8 38.4 54.4" aria-hidden="true"><path class="tag" d="M14 6H50V58L45 52.5 40 58 35 52.5 30 58 25 52.5 20 58 14 52.5Z"/><path class="tick" d="M22 30l7.5 7.5L43 22" fill="none" stroke-width="6.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Sell<b>Check</b></span></a>
+    <nav class="nav" aria-label="Hauptnavigation">
+      <a class="hide-sm" href="#check">Meldegrenze</a><a class="hide-sm" href="#preis">Angebot</a><a class="hide-sm" href="#form">FAQ</a>
+      <a class="btn" href="#">Tools öffnen</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <h1>Check, was wirklich bleibt.</h1>
+        <p class="lead">Wie nah bist du an der Meldegrenze? SellCheck zeigt es für jede Plattform, dazu Gewinn pro Artikel und Bestand. Ohne Tabellenpflege und ohne Zugriff auf deine Konten.</p>
+        <div class="cta"><a class="btn" href="#check">Meldegrenze prüfen</a><a class="btn ghost" href="#">Kostenlos starten</a></div>
+        <ul class="facts">
+          <li><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Meldegrenze für jede Plattform</li>
+          <li><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Kostenlos, ohne Anmeldung</li>
+          <li><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Daten bleiben bei dir</li>
+        </ul>
+      </div>
+      <figure class="slip" aria-label="Beispiel-Beleg: Nike Air Max 90 auf Vinted, Verkauf 61 Euro, es bleiben 33,50 Euro">
+        <div class="slip-head"><strong>Dein Beleg</strong><span>Beispieldaten, Oktober 2026</span></div>
+        <p class="item">Nike Air Max 90<small>verkauft auf Vinted</small></p>
+        <div class="line"><span class="lbl">Verkauf</span><span class="dots"></span><span class="num">61,00 €</span></div>
+        <div class="line"><span class="lbl">Einkauf</span><span class="dots"></span><span class="num">−24,00 €</span></div>
+        <div class="line"><span class="lbl">Versand</span><span class="dots"></span><span class="num">−3,50 €</span></div>
+        <div class="line total"><span class="lbl">Bleibt</span><span class="dots"></span><span class="num mark">33,50 €</span></div>
+        <div class="stamp"><b>Vinted: 21 von 30 Verkäufen</b><p>1.280 € von 2.000 €. Gelb, du näherst dich der Meldegrenze.</p></div>
+      </figure>
+    </div>
+  </section>
+
+  <section class="block" id="check">
+    <div class="wrap split">
+      <div>
+        <h2>Meldegrenze prüfen.</h2>
+        <p class="intro">Wähle eine Plattform und trage Verkäufe und Umsatz ein. Jede Plattform zählt für sich.</p>
+        <ul class="rules">
+          <li><b>Eine Grenze genügt.</b><p>Ab 30 Verkäufen oder 2.000 € Einnahmen meldet die Plattform.</p></li>
+          <li><b>Meldung ist keine Steuerforderung.</b><p>Ob Steuern anfallen, entscheidet das Finanzamt.</p></li>
+          <li><b>SellCheck warnt eher früher.</b><p>Die Plattform zählt deine Einnahmen nach Abzug ihrer Gebühren. SellCheck nimmt den Verkaufspreis.</p></li>
+        </ul>
+      </div>
+      <div class="check">
+        <div class="seg" role="radiogroup" aria-label="Plattform">
+          <label><input type="radio" name="p" checked><span><i class="y"></i>Vinted</span></label>
+          <label><input type="radio" name="p"><span><i class="g"></i>Kleinanzeigen</span></label>
+          <label><input type="radio" name="p"><span><i class="g"></i>eBay</span></label>
+          <label><input type="radio" name="p"><span><i class="r"></i>Etsy</span></label>
+        </div>
+        <div class="measure"><div class="row"><span>Verkäufe in diesem Jahr</span><span class="num">21 von 30</span></div><div class="track"><i style="width:70%"></i></div><div class="ticks"><span>0</span><span>Gelb ab 18</span><span>30</span></div></div>
+        <div class="measure"><div class="row"><span>Umsatz in diesem Jahr</span><span class="num">1.280 €</span></div><div class="track"><i style="width:64%"></i></div><div class="ticks"><span>0 €</span><span>Gelb ab 1.200 €</span><span>2.000 €</span></div></div>
+        <div class="verdict" role="status"><svg viewBox="0 0 24 24"><path d="M12 8v5M12 16.5v.5"/><circle cx="12" cy="12" r="9"/></svg><div><strong>Gelb: Du näherst dich der Grenze</strong><p>Es fehlen noch 9 Verkäufe oder 720,00 €. Danach meldet die Plattform.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="preis">
+    <div class="wrap split">
+      <div>
+        <h2>Für alle, die regelmäßig verkaufen.</h2>
+        <p class="intro">Die Gratis-Tools genügen für gelegentliche Verkäufe. Die iPhone-App mit Essential und Premium ist in Vorbereitung.</p>
+      </div>
+      <article class="plan">
+        <h3>Essential</h3>
+        <p class="state">Geplant, noch nicht erhältlich</p>
+        <div class="price"><span class="num">4,99 €</span><small>im Monat</small></div>
+        <p class="year">oder 39 € im Jahr (3,25 € im Monat)</p>
+        <ul>
+          <li><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Alles aus Basic</b>, dazu:</span></li>
+          <li><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>150 statt 50 Artikel</b> pro Jahr</span></li>
+          <li><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Sicherung</b> im Konto, freiwillig</span></li>
+          <li><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>PDF</b> für die Steuer</span></li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section class="block" id="form">
+    <div class="wrap split">
+      <div><h2>Ergebnis freischalten.</h2><p class="intro">Ergebnis, Report und Downloads schaltest du mit deiner E-Mail-Adresse frei. Deine Eingaben bleiben auf deinem Gerät.</p></div>
+      <form class="form" onsubmit="return false">
+        <div class="field"><label for="a-mail">E-Mail-Adresse</label><input id="a-mail" type="email" value="lisa@beispiel" aria-invalid="true" aria-describedby="a-err"><p class="err" id="a-err"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.5"/></svg>Das ist keine gültige E-Mail-Adresse. Beispiel: du@beispiel.de</p></div>
+        <label class="opt"><input type="checkbox"><span>Tipps und Tricks per E-Mail erhalten (optional)<small>Hinweise zu Meldegrenzen, Fristen und neuen Funktionen. Jederzeit abbestellbar.</small></span></label>
+        <button class="btn" type="submit">Ergebnis freischalten</button>
+      </form>
+    </div>
+  </section>
+</main>
+<footer><div class="wrap"><span>SellCheck. Keine Steuer- oder Rechtsberatung.</span><nav aria-label="Rechtliches"><a href="#">Impressum</a><a href="#">Datenschutz</a><a href="#">Nutzungsbedingungen</a></nav></div></footer>
+</body>
+</html>
