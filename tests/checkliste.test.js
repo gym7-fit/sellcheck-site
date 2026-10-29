@@ -92,9 +92,10 @@ test("Scannbar: keine Textwände auf Startseite und Tools (Absätze kurz, lange 
   }
 });
 
-test("Datenschutz: Konto für die App ist erst ab Essential nötig, Basic läuft ohne Konto (wie in FREE-VS-PRO.md)", () => {
+test("Datenschutz: Konto für die App ist in allen Stufen freiwillig (Entscheidung Louis 29.10.2026, wie in FREE-VS-PRO.md der App)", () => {
   const s = fs.readFileSync(path.join(SITE, "datenschutz.html"), "utf8");
   assert.ok(!/legst du ein Konto an/.test(s), "Satz „legst du ein Konto an“ unterstellt Kontopflicht");
-  assert.match(s, /Basic[^<]*ohne Konto/);
-  assert.match(s, /erst für Essential und Premium/);
+  assert.ok(!/erst für Essential und Premium/.test(s), "alte Kontopflicht ab Essential steht noch drin");
+  assert.match(s, /ohne Konto, in der kostenlosen Stufe Basic und auch mit Essential oder Premium/);
+  assert.match(s, /Ein Konto ist freiwillig/);
 });
