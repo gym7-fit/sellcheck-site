@@ -37,7 +37,7 @@ Stand der Zählung 23.10.2026: Impressum 9, Datenschutz 14, AGB 11 Platzhalter (
 
 ## 3. Faktenblatt für die rechtliche Prüfung (technischer Stand)
 
-- Webseite: statische Seite, kein Server von uns, keine Datenbank, keine Konten auf der Seite (geparkt in `parked/accounts/`).
+- Webseite: statische Seite, kein Server von uns, keine Datenbank, keine Konten auf der Seite (Stand 30.10.2026 überholt: Mein SellCheck legt Konten im Browser an, die Datenschutzerklärung muss in Auftrag 07 angepasst werden).
 - iPhone-App (in Entwicklung): Basic ohne Konto; Konto ab Essential bei Supabase (Frankfurt) mit Vorname, Nachname, Verkaufsart, Umsatzsteuer-Art; freiwillige Datensicherung von Artikeln, Fotos und Belegen mit Einwilligung; Kontolöschung in der App. `bestaetigt.html` ist die Zielseite des Bestätigungs-Buttons in der Konto-Mail.
 - **Keine** Cookies, kein Tracking, keine Analyse, keine Werbung, keine Einbettung von Dritten; Schriften, Skripte, Bilder und Video liegen auf der eigenen Origin (strenge CSP: `default-src 'none'`).
 - Browser-Speicher (localStorage): `sellcheck.sales.v1` (Verkäufe), `sellcheck.wizard.v1` (Ablauf), `sellcheck.settings.v1` (Einstellungen), `sellcheck.lead.v1` (Freischaltung mit E-Mail-Adresse). Nichts davon wird gesendet, solange keine Endpunkte eingetragen sind.

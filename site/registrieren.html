@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://xjogkqttzfsgjeqhkndf.supabase.co; form-action 'none'; base-uri 'none'; object-src 'none'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Konto erstellen | SellCheck</title>
+  <meta name="description" content="Erstelle dein SellCheck-Konto, dasselbe wie in der App.">
+  <link rel="canonical" href="https://gym7-fit.github.io/sellcheck-site/registrieren.html">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta property="og:site_name" content="SellCheck">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="de_DE">
+  <meta property="og:title" content="Konto erstellen | SellCheck">
+  <meta property="og:description" content="Erstelle dein SellCheck-Konto, dasselbe wie in der App.">
+  <meta property="og:url" content="https://gym7-fit.github.io/sellcheck-site/registrieren.html">
+  <meta property="og:image" content="https://gym7-fit.github.io/sellcheck-site/social/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0e1116" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="auth.css">
+</head>
+<body data-page="registrieren">
+<a class="skip" href="#main">Zum Inhalt springen</a>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="SellCheck Startseite">
+      <svg viewBox="12.8 4.8 38.4 54.4" aria-hidden="true"><path class="tag" d="M14 6H50V58L45 52.5 40 58 35 52.5 30 58 25 52.5 20 58 14 52.5Z"/><path class="tick" d="M22 30l7.5 7.5L43 22" fill="none" stroke-width="6.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Sell<b>Check</b></span>
+    </a>
+    <nav class="nav" aria-label="Hauptnavigation"><a class="hide-sm" href="index.html">Startseite</a><a href="tools.html">Tools</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="wrap auth-page">
+  <div class="auth-card">
+    <h1>Konto erstellen</h1>
+    <p class="auth-msg" id="msg" role="alert" hidden></p>
+    <section id="step-form" aria-label="Konto erstellen">
+      <form id="reg-form" novalidate>
+        <div><label for="first">Vorname</label><input id="first" name="first" type="text" autocomplete="given-name" maxlength="60" placeholder="Louis"></div>
+        <div><label for="last">Nachname</label><input id="last" name="last" type="text" autocomplete="family-name" maxlength="60" placeholder="Meier"></div>
+        <div><label for="email">E-Mail-Adresse</label><input id="email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="Deine E-Mail-Adresse" required></div>
+        <div><label for="password">Passwort</label>
+        <div class="pw-wrap">
+          <input id="password" name="password" type="password" autocomplete="new-password" required>
+          <button class="pw-toggle" type="button" data-toggle-pw="password" aria-pressed="false">Anzeigen</button>
+        </div>
+        <ul class="pw-rules" id="pw-rules"></ul></div>
+        <div><label for="password2">Passwort wiederholen</label>
+        <div class="pw-wrap">
+          <input id="password2" name="password2" type="password" autocomplete="new-password" required>
+          <button class="pw-toggle" type="button" data-toggle-pw="password2" aria-pressed="false">Anzeigen</button>
+        </div></div>
+        <fieldset><legend>Ich verkaufe</legend>
+          <div class="choice">
+            <label><input type="radio" name="seller" value="private" checked> Privat</label>
+            <label><input type="radio" name="seller" value="business"> Gewerblich</label>
+          </div>
+          <p class="muted fine">Das bestimmt die Berechnung. Bist du unsicher, wähle „Privat“ und frag im Zweifel das Finanzamt. Du kannst alles später ändern.</p>
+        </fieldset>
+        <div><label class="consent"><input id="privacy" type="checkbox"> <span>Ich habe die <a href="datenschutz.html">Datenschutzerklärung</a> gelesen.</span></label></div>
+        <div><label class="consent"><input id="marketing" type="checkbox"> <span>Ich möchte Tipps und Neuigkeiten zu SellCheck per E-Mail erhalten (freiwillig, jederzeit abbestellbar).</span></label></div>
+        <button class="btn auth-submit" type="submit">Konto erstellen</button>
+      </form>
+      <p class="auth-alt muted">Wir schicken dir eine E-Mail, in der du die Adresse bestätigst. Mehr als Name, E-Mail und Verkaufsart brauchen wir nicht.</p>
+      <p class="auth-alt">Schon ein Konto? <a href="anmelden.html">Anmelden</a></p>
+    </section>
+
+    <section id="step-sent" aria-labelledby="sent-title" hidden>
+      <h2 id="sent-title">Fast geschafft</h2>
+      <p class="auth-msg" id="msg-sent" role="status" hidden></p>
+      <p id="sent-text">Wir haben dir eine E-Mail geschickt. Tippe darin auf „E-Mail-Adresse bestätigen“. Danach meldest du dich an. Schau auch im Spam-Ordner nach.</p>
+      <p class="auth-alt"><a class="btn" href="anmelden.html">Zur Anmeldung</a></p>
+      <p class="auth-alt"><button class="linklike" type="button" id="resend">Mail erneut senden</button></p>
+    </section>
+    <noscript><p>Für die Registrierung braucht diese Seite JavaScript.</p></noscript>
+  </div>
+</main>
+
+<script src="fielderr.js"></script>
+<script src="auth-config.js"></script>
+<script src="auth-lib.js"></script>
+<script src="auth-ui.js"></script>
+
+<footer class="on-dark">
+  <div class="wrap">
+    <div class="cols">
+      <div>
+        <a class="brand" href="index.html" aria-label="SellCheck Startseite">
+          <svg viewBox="12.8 4.8 38.4 54.4" aria-hidden="true"><path class="tag" d="M14 6H50V58L45 52.5 40 58 35 52.5 30 58 25 52.5 20 58 14 52.5Z"/><path class="tick" d="M22 30l7.5 7.5L43 22" fill="none" stroke-width="6.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Sell<b>Check</b></span>
+        </a>
+        <p class="tagline">Check, was wirklich bleibt.</p>
+      </div>
+      <div>
+        <p class="foot-h">Seiten</p>
+        <ul>
+          <li><a href="index.html">Startseite</a></li>
+          <li><a href="tools.html">Gratis-Tools</a></li>
+          <li><a href="anmelden.html">Mein SellCheck</a></li>
+          <li><a href="hilfe/index.html">Hilfe zu Exportdateien</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot-h">Rechtliches</p>
+        <ul>
+          <li><a href="impressum.html">Impressum</a></li>
+          <li><a href="impressum.html#kontakt">Kontakt</a></li>
+          <li><a href="datenschutz.html">Datenschutz</a></li>
+          <li><a href="agb.html">Nutzungsbedingungen</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="legal">
+      <p>SellCheck ist ein unabhängiges Projekt und mit keiner der genannten Plattformen verbunden. Plattformnamen sind Marken ihrer jeweiligen Inhaber.</p>
+      <p>Keine Steuer- oder Rechtsberatung. Alle Angaben ohne Gewähr, Stand Oktober 2026.</p>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

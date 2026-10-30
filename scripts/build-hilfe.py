@@ -396,6 +396,7 @@ def page_shell(title, desc, body, slug="", depth_home="../"):
         <ul>
           <li><a href="../index.html">Startseite</a></li>
           <li><a href="../tools.html">Gratis-Tools</a></li>
+          <li><a href="../anmelden.html">Mein SellCheck</a></li>
           <li><a href="../hilfe/index.html">Hilfe zu Exportdateien</a></li>
         </ul>
       </div>

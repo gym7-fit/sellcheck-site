@@ -26,7 +26,7 @@ jobs:
       - name: Tests (Import, Steuerlogik, Konten (geparkt), Ablauf, Hilfeseiten, Freischaltung, Film, Link-Vorschau, Startseite)
         run: node --test tests/parse.test.js tests/tax.test.js tests/auth.test.js tests/wizard.test.js tests/help.test.js tests/gate.test.js tests/media.test.js tests/seo.test.js tests/landing.test.js tests/a11y.test.js tests/checkliste.test.js tests/seo-checkliste.test.js
       - name: Syntaxprüfung der Skripte
-        run: for f in site/*.js parked/accounts/*.js; do node --check "$f"; done
+        run: for f in site/*.js; do node --check "$f"; done
 
   deploy:
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'

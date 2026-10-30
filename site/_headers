@@ -1,8 +1,8 @@
 # Security-Header für statisches Hosting (Netlify und Cloudflare Pages lesen diese Datei automatisch).
 # Bei Vercel: dieselben Werte in vercel.json unter "headers" eintragen. Bei anderem Hosting im Server einstellen.
 #
-# Konten sind geparkt (parked/accounts/). Beim Wiedereinschalten den Host des eigenen Supabase-Projekts
-# in connect-src ergänzen, siehe parked/accounts/README.md.
+# Konten: Nur anmelden.html, registrieren.html und mein.html dürfen den Anmeldedienst (Supabase) erreichen. Ihre Sicherheitsrichtlinie steht
+# im Meta-Tag der Seiten (so wirkt sie auch auf GitHub Pages). Bei Netlify oder Cloudflare Pages unten die drei Regeln einkommentiert nutzen.
 #
 # Wenn das Wartelisten-Formular angeschlossen wird (waitlist.js, FORM_ENDPOINT):
 # in connect-src den Host des Dienstes ergänzen, z. B.  connect-src 'self' https://api.dein-dienst.eu
@@ -19,3 +19,11 @@
   Cross-Origin-Opener-Policy: same-origin
   Cross-Origin-Resource-Policy: same-origin
   Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+# Ausnahmen nur für die Konto-Seiten (bei Netlify/Cloudflare: Header der allgemeinen Regel für diese Pfade ersetzen, nicht nur ergänzen)
+/anmelden.html
+  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self'; font-src 'self'; connect-src 'self' https://xjogkqttzfsgjeqhkndf.supabase.co; form-action 'none'; base-uri 'none'; frame-ancestors 'none'; object-src 'none'
+/registrieren.html
+  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self'; font-src 'self'; connect-src 'self' https://xjogkqttzfsgjeqhkndf.supabase.co; form-action 'none'; base-uri 'none'; frame-ancestors 'none'; object-src 'none'
+/mein.html
+  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self'; font-src 'self'; connect-src 'self' https://xjogkqttzfsgjeqhkndf.supabase.co; form-action 'none'; base-uri 'none'; frame-ancestors 'none'; object-src 'none'
