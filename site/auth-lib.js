@@ -285,10 +285,10 @@
       },
 
       /** Gültige Sitzung oder null. Erneuert 60 Sekunden vor Ablauf. Ist die Erneuerung abgelaufen: Sitzung löschen und { expired: true }. */
-      async getSession() {
+      async getSession(o) {   // { force: true } erneuert auch dann, wenn die Sitzung lokal noch gültig aussieht (nach einem 401 des Servers)
         const s = readSession(storage);
         if (!s) return { session: null };
-        if (s.expiresAt - now() > REFRESH_SKEW_MS) return { session: s };
+        if (!(o && o.force) && s.expiresAt - now() > REFRESH_SKEW_MS) return { session: s };
         const r = await request("/auth/v1/token", { query: { grant_type: "refresh_token" }, body: { refresh_token: s.refreshToken } });
         if (r.status === 0) return s.expiresAt > now() ? { session: s, offline: true } : { session: null, offline: true };
         const n = r.ok ? sessionFromResponse(r.data, now()) : null;
@@ -306,5 +306,5 @@
     };
   }
 
-  return { SESSION_KEY, MIN_LENGTH, MAX_LENGTH, validateEmail, evaluatePassword, passwordError, errorMessage, normalizeCode, validCode, vatExplainer, signupMetadata, readSession, clearSession, createClient };
+  return { SESSION_KEY, MIN_LENGTH, MAX_LENGTH, validateEmail, evaluatePassword, passwordError, errorMessage, NETWORK, normalizeCode, validCode, vatExplainer, signupMetadata, readSession, clearSession, createClient };
 });

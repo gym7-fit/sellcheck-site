@@ -28,6 +28,18 @@ Stand 30.10.2026. Dasselbe Konto wie in der iPhone-App (Supabase, Frankfurt, Pro
 
 Ist erledigt: Redirect-URL `https://gym7-fit.github.io/sellcheck-site/bestaetigt.html`, Mail-Vorlagen, Mindestlänge 10. Weitere Schritte stehen in `sellcheck-app/docs/SUPABASE-EINRICHTEN.md`. Beim Wechsel auf eine eigene Domain: `scripts/set-site-url.py`, in Supabase die neue Redirect-URL eintragen, in `auth-config.js` bleibt die Projekt-Adresse.
 
+## Netzschicht (`site/konto-net.js`)
+
+Lädt Artikel, Profil und Fotos aus dem Konto und schreibt Änderungen zurück, ohne Oberfläche (die kommt in Auftrag 03). `SCKontoNet.createStore({ url, anonKey, client, fetch })` mit dem Client aus `auth-lib.js`. Browser: `window.SCKontoNet`, noch auf keiner Seite eingebunden.
+
+- **Laden:** `loadAll()` seitenweise (1000 je Anfrage, `pageSize` einstellbar), ohne gelöschte, mit Merker. `loadChanges(merker)` holt alles seit dem Merker mit 120 s Überlappung, auch Löschungen; zusammenführen mit `SCKonto.mergeChanges`.
+- **Schreiben:** `save(zeilen)` als Upsert (`on_conflict=user_id,id`, `resolution=merge-duplicates`), höchstens 500 je Anfrage, jede Zeile mit `user_id` aus der Sitzung. Die ältere Änderung verliert gegen die neuere, das entscheidet der Trigger `articles_sync_guard` im Konto. `remove(id, now)` setzt nur `deleted_at` und `changed_at`.
+- **Profil:** `loadProfile()` mit `first_name,last_name,seller_mode,vat_mode,vat_rate`.
+- **Fotos:** `uploadPhoto` (nur JPEG bis 5 MB, sonst Meldung ohne Anfrage), `photoBlob`, `deletePhotos`. Pfade wie in der App (`SCKonto.storagePath`). Pfade, die nicht mit der eigenen Nutzerkennung beginnen oder Umwege enthalten, werden weder geladen noch gelöscht.
+- **Sitzung:** Bei 401 wird genau einmal erneuert (`getSession({ force: true })`) und die Anfrage wiederholt. Klappt das nicht, kommt `{ ok: false, expired: true }`, die Seite geht dann auf `anmelden.html#abgelaufen`.
+- **Meldungen:** „Keine Verbindung“ aus `auth-lib.js`, sonst allgemeine Texte ohne Einzelheiten aus dem Konto.
+- **Tests:** `tests/konto-net.test.js` gegen `tests/support/fake-supabase.js`. Der Nachbau kennt jetzt Artikel (mit Trigger-Regel), Profile, Foto-Ablage, `/mock/remote` und `/mock/state` wie `sellcheck-app/Tests/mock_supabase.py`. Ändert sich der Python-Nachbau, den JS-Nachbau mitziehen.
+
 ## Bekannt und offen
 
 - Echte Registrierung und Mails: macht Louis selbst, die Tests laufen nur gegen den Nachbau.
