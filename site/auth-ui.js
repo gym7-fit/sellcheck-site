@@ -127,6 +127,16 @@
     refresh();
     let sentTo = "";
 
+    const checked = (name) => document.querySelector('input[name="' + name + '"]:checked').value;
+    const syncVat = () => {
+      const business = checked("seller") === "business", vat = checked("vat");
+      $("vat-box").hidden = !business;
+      $("rate-box").hidden = vat !== "regular";
+      $("vat-text").textContent = vatText(vat, checked("rate"));
+    };
+    const vatText = (vat, rate) => A.vatExplainer(vat, Number(rate));
+    document.querySelectorAll('input[name="seller"], input[name="vat"], input[name="rate"]').forEach((r) => r.addEventListener("change", syncVat));
+    syncVat();
     $("reg-form").addEventListener("submit", async (e) => {
       e.preventDefault(); msg(m, "");
       const first = $("first").value.trim(), last = $("last").value.trim();
@@ -142,7 +152,8 @@
       if (!$("privacy").checked) return fail("Bitte bestätige, dass du die Datenschutzerklärung gelesen hast.", "privacy");
       const f = e.target; busy(f, true);
       const r = await client.signUp(em.value, $("password").value, {
-        firstName: first, lastName: last, sellerMode: document.querySelector('input[name="seller"]:checked').value,
+        firstName: first, lastName: last, sellerMode: checked("seller"),
+        vatMode: checked("vat"), vatRate: Number(checked("rate")),
         privacyAccepted: true, marketingOptIn: $("marketing").checked,
       });
       busy(f, false);

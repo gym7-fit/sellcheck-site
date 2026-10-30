@@ -62,6 +62,22 @@
             <label><input type="radio" name="seller" value="private" checked> Privat</label>
             <label><input type="radio" name="seller" value="business"> Gewerblich</label>
           </div>
+          <div id="vat-box" hidden>
+            <fieldset><legend>Umsatzsteuer</legend>
+              <div class="choice">
+                <label><input type="radio" name="vat" value="small" checked> Kleinunternehmer</label>
+                <label><input type="radio" name="vat" value="regular"> Regelbesteuert</label>
+                <label><input type="radio" name="vat" value="margin"> Differenzbesteuert</label>
+              </div>
+            </fieldset>
+            <fieldset id="rate-box" hidden><legend>Steuersatz</legend>
+              <div class="choice">
+                <label><input type="radio" name="rate" value="19" checked> 19 %</label>
+                <label><input type="radio" name="rate" value="7"> 7 %</label>
+              </div>
+            </fieldset>
+            <p id="vat-text" class="muted fine"></p>
+          </div>
           <p class="muted fine">Das bestimmt die Berechnung. Bist du unsicher, wähle „Privat“ und frag im Zweifel das Finanzamt. Du kannst alles später ändern.</p>
         </fieldset>
         <div><label class="consent"><input id="privacy" type="checkbox"> <span>Ich habe die <a href="datenschutz.html">Datenschutzerklärung</a> gelesen.</span></label></div>

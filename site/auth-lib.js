@@ -150,6 +150,13 @@
   const validCode = (s) => { const n = normalizeCode(s).length; return n >= 6 && n <= 10; };
 
   /** Angaben bei der Registrierung, die ins Konto gehen (wie SignupProfile.metadata() der App). */
+  /** Erklärtexte zur Umsatzsteuer, wörtlich wie VATExplainer.text(mode:rate:) der App. */
+  function vatExplainer(mode, rate) {
+    if (mode === "regular") return "Deine Verkaufspreise gelten als Bruttopreise. Die Umsatzsteuer (" + (Number(rate) === 7 ? 7 : 19) + " %) wird aus dem ganzen Preis herausgerechnet, bevor der Gewinn berechnet wird. Das gilt rückwirkend für alle Artikel.";
+    if (mode === "margin") return "Differenzbesteuerung nach § 25a UStG für gebraucht eingekaufte Ware: 19 % Umsatzsteuer nur auf die Differenz zwischen Verkaufs- und Einkaufspreis, je Artikel. Verkäufe mit Verlust werden nicht gegengerechnet. Es gibt keinen Vorsteuerabzug auf den Einkauf. Die App rechnet die Einzeldifferenz je Artikel; ob du sie nutzen darfst, klärt die Steuerberatung.";
+    return "Kleinunternehmer weisen keine Umsatzsteuer aus (§ 19 UStG). Der Gewinn wird aus den vollen Verkaufspreisen berechnet.";
+  }
+
   function signupMetadata(p, now) {
     const iso = new Date(now == null ? Date.now() : now).toISOString().replace(/\.\d{3}Z$/, "Z");
     const clip = (s) => String(s == null ? "" : s).trim().slice(0, 60);
@@ -158,7 +165,10 @@
     if (clip(p.lastName)) m.last_name = clip(p.lastName);
     const business = p.sellerMode === "business";
     m.seller_mode = business ? "business" : "private";
-    if (business) { m.vat_mode = "small"; m.vat_rate = 19; }
+    if (business) {   // wie SignupProfile.metadata() der App: Umsatzsteuer nur bei gewerblich
+      m.vat_mode = p.vatMode === "regular" || p.vatMode === "margin" ? p.vatMode : "small";
+      m.vat_rate = p.vatMode === "regular" && Number(p.vatRate) === 7 ? 7 : 19;
+    }
     if (p.privacyAccepted) m.privacy_accepted_at = iso;
     m.marketing_opt_in = !!p.marketingOptIn;
     if (p.marketingOptIn) m.marketing_opt_in_at = iso;
@@ -296,5 +306,5 @@
     };
   }
 
-  return { SESSION_KEY, MIN_LENGTH, MAX_LENGTH, validateEmail, evaluatePassword, passwordError, errorMessage, normalizeCode, validCode, signupMetadata, readSession, clearSession, createClient };
+  return { SESSION_KEY, MIN_LENGTH, MAX_LENGTH, validateEmail, evaluatePassword, passwordError, errorMessage, normalizeCode, validCode, vatExplainer, signupMetadata, readSession, clearSession, createClient };
 });

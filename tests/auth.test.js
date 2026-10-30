@@ -69,6 +69,18 @@ test("Registrierung: Angaben im Konto wie SignupProfile.metadata() der App", () 
   assert.equal(p.seller_mode, "private"); assert.equal(p.vat_mode, undefined); assert.equal(p.marketing_opt_in, false); assert.equal(p.marketing_opt_in_at, undefined); assert.equal(p.last_name, undefined);
 });
 
+test("Registrierung: Differenzbesteuerung wird gespeichert, Satz bleibt 19", () => {
+  const margin = A.signupMetadata({ firstName: "A", sellerMode: "business", vatMode: "margin", vatRate: 7 }, 0);
+  assert.equal(margin.vat_mode, "margin"); assert.equal(margin.vat_rate, 19);   // Satz 7 gilt nur bei regular
+});
+test("Registrierung: Regelbesteuerung mit 7 %, unbekannter Wert wird Kleinunternehmer, privat ohne Steuerfelder", () => {
+  const reg7 = A.signupMetadata({ firstName: "A", sellerMode: "business", vatMode: "regular", vatRate: 7 }, 0);
+  assert.equal(reg7.vat_mode, "regular"); assert.equal(reg7.vat_rate, 7);
+  assert.equal(A.signupMetadata({ firstName: "A", sellerMode: "business", vatMode: "quatsch" }, 0).vat_mode, "small");
+  assert.equal(A.signupMetadata({ firstName: "A", sellerMode: "private", vatMode: "regular", vatRate: 7 }, 0).vat_mode, undefined);
+  assert.match(A.vatExplainer("regular", 7), /\(7 %\)/);
+});
+
 /* ---------- Ablauf gegen den Nachbau der Schnittstelle ---------- */
 const servers = [];
 after(() => Promise.all(servers.map((x) => x.close())));   // auch bei einem Fehler im Test: Server schließen, sonst hängt der Lauf
