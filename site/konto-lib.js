@@ -142,5 +142,104 @@
   }
   const storagePath = (userId, articleId, kind, sum) => `${String(userId).toLowerCase()}/${String(articleId).toLowerCase()}-${kind}-${sum}.jpg`;
 
-  return { rowToEntry, entryToRow, planTakeover, mergeChanges, nextCursor, since, vatCents, vatSettings, yearStats, checksum, storagePath, dupKey, UUID };
+  /* ---------- Anzeige und Formular der Seite „Mein SellCheck“ (ohne DOM, Texte wie in der App) ---------- */
+  const TABS = ["uebersicht", "artikel", "meldegrenze", "konto"];
+  const tabFromHash = (h) => { const t = String(h == null ? "" : h).replace(/^#/, ""); return TABS.includes(t) ? t : "uebersicht"; };
+  const PLATFORMS = [...T.REPORTED_PLATFORMS, "Sonstige"];
+  const STALE_DAYS = 60;
+  const euroFmt = new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" });
+  const euro = (c) => euroFmt.format((Number(c) || 0) / 100);
+  const sales = (n) => (n === 1 ? "1 Verkauf" : n + " Verkäufe");
+
+  /** Kalendertag als Zahl (lokal), aus „2026-05-01“ oder einem Zeitstempel. */
+  function dayNum(x) {
+    const m = typeof x === "string" && x.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    const d = m ? null : new Date(x);
+    const y = m ? +m[1] : d.getFullYear(), mo = m ? +m[2] - 1 : d.getMonth(), da = m ? +m[3] : d.getDate();
+    return Math.round(Date.UTC(y, mo, da) / 86400000);
+  }
+  /** Tage im Lager: ab Einkaufsdatum, sonst ab dem Anlegen (wie Article.stockDays). */
+  const stockDays = (r, now) => Math.max(0, dayNum(now == null ? Date.now() : now) - dayNum(r.buy_date || r.created_at || now || Date.now()));
+  function ageText(days) {
+    if (days === 0) return "heute gekauft";
+    if (days === 1) return "seit 1 Tag";
+    if (days < STALE_DAYS) return "seit " + days + " Tagen";
+    const mo = Math.floor(days / 30);
+    return mo === 1 ? "seit 1 Monat" : "seit " + mo + " Monaten";
+  }
+  function stockStats(rows, now) {
+    const s = { count: 0, valueCents: 0, stale: 0 };
+    for (const r of rows) {
+      if (r.deleted_at || r.is_sold !== false) continue;
+      s.count++; s.valueCents += r.buy_cents || 0;
+      if (stockDays(r, now) >= STALE_DAYS) s.stale++;
+    }
+    return s;
+  }
+  /** Gewinn eines verkauften Artikels in Cent, mit der Umsatzsteuer aus dem Profil (wie Article.profit). */
+  function rowProfit(r, profile) {
+    const v = vatSettings(profile);
+    return (r.sell_cents || 0) - vatCents(r.sell_cents || 0, r.buy_cents || 0, v.rate, v.margin) - (r.buy_cents || 0) - (r.cost_cents || 0);
+  }
+  const sortKey = (r) => String(r.sale_date || r.buy_date || r.created_at || "").slice(0, 10);
+  /** Neueste zuerst. */
+  const sortRows = (rows) => rows.slice().sort((a, b) => (sortKey(a) < sortKey(b) ? 1 : sortKey(a) > sortKey(b) ? -1 : String(b.created_at || "") < String(a.created_at || "") ? -1 : String(b.created_at || "") > String(a.created_at || "") ? 1 : a.id < b.id ? -1 : 1));
+  /** Suche nach Name und Plattform, Filter alle / Bestand / Verkauft. Im Bestand steht der Älteste oben. */
+  function filterRows(rows, o, now) {
+    const q = String((o && o.query) || "").trim().toLowerCase(), f = (o && o.filter) || "all";
+    let list = sortRows(rows.filter((r) => !r.deleted_at));
+    list = list.filter((r) => (f === "stock" ? r.is_sold === false : f === "sold" ? r.is_sold !== false : true));
+    if (q) list = list.filter((r) => String(r.name || "").toLowerCase().includes(q) || String(r.platform || "").toLowerCase().includes(q));
+    return f === "stock" ? list.sort((a, b) => stockDays(b, now) - stockDays(a, now)) : list;
+  }
+  /** Jahre zur Auswahl: alle mit Verkäufen plus das laufende, neuestes zuerst. */
+  function yearsOf(rows, currentYear) {
+    const set = new Set([currentYear]);
+    for (const r of rows) if (!r.deleted_at && r.is_sold !== false && /^\d{4}/.test(r.sale_date || "")) set.add(+r.sale_date.slice(0, 4));
+    return [...set].sort((a, b) => b - a);
+  }
+  const LEVEL_LABEL = { none: "Keine Meldung", green: "Weit entfernt", yellow: "Nähert sich", red: "Grenze erreicht" };
+  const LEVEL_HINT = {
+    red: "Eine der beiden Grenzen ist erreicht. Die Plattform meldet deine Verkäufe dieses Jahres voraussichtlich an das Bundeszentralamt für Steuern. Das ist noch keine Steuerforderung.",
+    yellow: "Du näherst dich der Grenze. Plane Belege und Aufzeichnungen jetzt.",
+    green: "Weit unter der Grenze.",
+  };
+  const unreportedText = (p) => sales(p.count) + ", " + euro(p.revenue) + ". Diese Plattform meldet nicht automatisch; Einnahmen gehören trotzdem in deine Unterlagen.";
+  /** Verhältnis für die Balken, höchstens 100 %. */
+  const ratioPct = (value, limit) => Math.max(0, Math.min(100, Math.floor((value * 100) / limit)));
+
+  /** Bildgröße mit längster Kante höchstens max (Fotos werden vor dem Hochladen verkleinert). */
+  function fitSize(w, h, max) {
+    const m = max || 1400, k = Math.min(1, m / Math.max(w, h));
+    return { width: Math.max(1, Math.round(w * k)), height: Math.max(1, Math.round(h * k)) };
+  }
+
+  const NUM_ERROR = "Das ist keine gültige Zahl. Beispiel: 12,50";
+  /**
+   * Formular zu Konto-Zeile (wie ArticleFormView.save). f: { sold, name, platform, buy, sell, cost, saleDate, hasBuyDate, buyDate, notes } mit Texten wie getippt.
+   * existing: bisherige Zeile beim Ändern. Gibt { ok, errors } oder { ok, row } zurück. Fotos (photo_path, receipt_path) setzt die Seite danach.
+   */
+  function formToRow(f, existing, o, parseNum) {
+    const money = (t) => { const s = String(t == null ? "" : t).trim(); if (!s) return { v: 0 }; const n = parseNum(s); return Number.isFinite(n) && n >= 0 ? { v: n } : { err: NUM_ERROR }; };
+    const buy = money(f.buy), sell = money(f.sell), cost = money(f.cost), errors = {};
+    const name = String(f.name == null ? "" : f.name).trim();
+    if (!name) errors.name = "Gib dem Artikel einen Namen.";
+    if (buy.err) errors.buy = buy.err;
+    if (cost.err) errors.cost = cost.err;
+    if (f.sold) { if (sell.err) errors.sell = sell.err; else if (!(sell.v > 0)) errors.sell = "Wie viel hast du für den Verkauf bekommen?"; }
+    if (Object.keys(errors).length) return { ok: false, errors };
+    const today = new Date((o.now || new Date()).getTime() - (o.now || new Date()).getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+    const e = {
+      id: existing ? existing.id : null, name, platform: f.platform, buy: buy.v, sell: f.sold ? sell.v : 0, cost: cost.v,
+      status: f.sold ? "sold" : "stock", date: f.sold ? (day(f.saleDate) || today) : f.hasBuyDate ? day(f.buyDate) || "" : "",
+      buyDate: f.hasBuyDate ? day(f.buyDate) || "" : "", notes: f.notes,
+      receipt: existing && existing.receipt_no, ref: existing && existing.ref, kind: existing && existing.kind,
+    };
+    const row = entryToRow(e, o);
+    row.photo_path = existing ? existing.photo_path || null : null;
+    row.receipt_path = existing ? existing.receipt_path || null : null;
+    return { ok: true, row };
+  }
+
+  return { TABS, tabFromHash, PLATFORMS, STALE_DAYS, euro, sales, stockDays, ageText, stockStats, rowProfit, sortRows, filterRows, yearsOf, LEVEL_LABEL, LEVEL_HINT, unreportedText, ratioPct, fitSize, formToRow, NUM_ERROR, rowToEntry, entryToRow, planTakeover, mergeChanges, nextCursor, since, vatCents, vatSettings, yearStats, checksum, storagePath, dupKey, UUID };
 });

@@ -210,7 +210,7 @@ test("Seiten: Konto-Seiten sind nicht indexiert, ohne Inline-Skript, mit Archivo
     assert.match(h, /<meta name="robots" content="noindex">/, f);
     assert.ok(!/<script>[\s\S]*?<\/script>/.test(h), f + ": Inline-Skript");
     assert.match(h, /<header class="site-header">/, f); assert.match(h, /<footer/, f);
-    assert.match(h, /<script src="auth-ui\.js"><\/script>/, f);
+    assert.match(h, f === "mein.html" ? /<script src="mein\.js"><\/script>/ : /<script src="auth-ui\.js"><\/script>/, f);   // mein.html hat eine eigene Datei (Auftrag 03)
     assert.ok(!/<h[1-6][^>]*>[^<]*\.<\/h[1-6]>/.test(h), f + ": Überschrift mit Schlusspunkt");
   }
 });

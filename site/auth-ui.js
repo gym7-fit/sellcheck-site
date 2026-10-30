@@ -1,4 +1,4 @@
-// Bedienung der Seiten anmelden.html, registrieren.html und mein.html. Verhalten und Texte wie in der App.
+// Bedienung der Seiten anmelden.html und registrieren.html (mein.html steht in mein.js). Verhalten und Texte wie in der App.
 // Keine Inline-Skripte, Nutzerdaten nur über textContent. Ziele nach der Anmeldung sind fest (mein.html, anmelden.html), nie aus der Adresszeile.
 (function () {
   "use strict";
@@ -174,18 +174,7 @@
     });
   }
 
-  /* ---------- mein.html ---------- */
-  async function initMine() {
-    const r = await client.getSession();
-    if (!r.session) return go(r.expired ? "anmelden.html#abgelaufen" : "anmelden.html");
-    $("who").textContent = r.session.email;
-    show("mine", true);
-    if (r.offline) msg($("msg"), "Keine Verbindung zum Server. Prüfe dein Internet und versuche es noch einmal.", "error");
-    $("logout").addEventListener("click", async () => { await client.signOut(); go("anmelden.html"); });
-  }
-
   wirePasswordToggles();
   if (page === "anmelden") initLogin();
   else if (page === "registrieren") initRegister();
-  else if (page === "mein") initMine();
 })();

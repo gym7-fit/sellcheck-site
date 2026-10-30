@@ -8,9 +8,9 @@ Stand 30.10.2026. Dasselbe Konto wie in der iPhone-App (Supabase, Frankfurt, Pro
 | --- | --- |
 | `site/anmelden.html` | Anmelden, „Passwort vergessen“ in drei Schritten (Code anfordern, Code prüfen, neues Passwort) |
 | `site/registrieren.html` | Konto erstellen (Vorname, Nachname, E-Mail, Passwort zweimal, Verkaufsart, Datenschutz-Häkchen, freiwillig Tipps) |
-| `site/mein.html` | Platzhalter: „Angemeldet als …“ und Abmelden. Ohne Sitzung geht es zu `anmelden.html`. Inhalt kommt in Auftrag 03 |
+| `site/mein.html`, `site/mein.js`, `site/mein.css` | „Mein SellCheck“: Reiter Übersicht, Artikel, Meldegrenze, Konto. Ohne Sitzung geht es zu `anmelden.html`. Artikel anlegen, ändern, löschen, Fotos und Belege (Auftrag 03). Import, Export und Übernahme aus den Gratis-Tools folgen in Auftrag 04 |
 | `site/auth-lib.js` | Passwort-Regeln und Fehlertexte wie die App, Zugang zum Dienst, Sitzung (`localStorage`, Schlüssel `sellcheck.session.v1`) |
-| `site/auth-ui.js` | Bedienung der drei Seiten (nur feste Weiterleitungsziele, nur `textContent`) |
+| `site/auth-ui.js` | Bedienung von Anmelden und Registrieren (nur feste Weiterleitungsziele, nur `textContent`) |
 | `site/auth-config.js` | Adresse des Projekts und öffentlicher „anon“-Schlüssel (kein Geheimnis) |
 | `site/auth.css` | Aussehen der Seiten |
 | `tests/auth.test.js`, `tests/support/fake-supabase.js` | Tests: Regeln mit denselben Beispielen wie die App, Ablauf gegen einen Nachbau der Schnittstelle, Seiten, Sicherheitsrichtlinie |
@@ -47,3 +47,13 @@ Lädt Artikel, Profil und Fotos aus dem Konto und schreibt Änderungen zurück, 
 - Kauf im Browser und Freischaltung nach Stufe: Phase 3.
 - Datenschutzerklärung für das Konto im Browser: Auftrag 07 (Rechtstext).
 - Auf einer statischen Seite schützt die Anmeldung nur die Oberfläche. Echter Schutz der Daten kommt aus den Zugriffsregeln der Datenbank (Zeilensicherheit je Nutzer).
+
+## Seite „Mein SellCheck“ (`site/mein.js`)
+
+- **Laden:** `loadProfile` und `loadAll` beim Öffnen. Bei Rückkehr in den Tab (`visibilitychange`), höchstens alle 60 Sekunden, `loadChanges` und `SCKonto.mergeChanges`. Bei einem Fehler steht die Meldung oben, die zuletzt geladenen Daten bleiben sichtbar. Abgelaufene Sitzung: `anmelden.html#abgelaufen`.
+- **Reiter:** `role="tablist"`, Pfeiltasten, Anker `#uebersicht`, `#artikel`, `#meldegrenze`, `#konto`. Jeder andere Anker öffnet die Übersicht (`SCKonto.tabFromHash`).
+- **Zahlen:** `SCKonto.yearStats` und `rowProfit` (wie die App), Ampel aus `SCTax.meldeStatus`. Texte wie `OverviewView`, `InventoryView`, `LimitView` und `ArticleFormView` der App.
+- **Formular:** `SCKonto.formToRow` (Beträge über `parseNum`, „1.500“ ist 1500), Speichern über `store.save`, Löschen über `store.remove` mit Rückfrage.
+- **Fotos:** im Browser über Canvas auf höchstens 1400 px und JPEG mit Qualität 0,75. Neue Fotos werden vor der Zeile hochgeladen, alte erst nach dem Speichern gelöscht. Vorschaubilder laden per `IntersectionObserver` erst, wenn sie sichtbar werden. Blob-Adressen werden beim Schließen freigegeben.
+- **Sicherheit:** Nutzerdaten nur über `textContent`, kein `innerHTML`, kein Inline-Skript, kein Inline-Stil (Balken sind `<progress>`). Tests: `tests/mein.test.js`.
+- **Im Browser geprüft (320 px):** 50 Artikel, ein Name mit 120 Zeichen ohne Leerzeichen, alle vier Reiter und das Formular ohne waagerechtes Scrollen. Ablauf gegen den Nachbau: Anlegen, Ändern, Löschen, Foto, Änderung vom zweiten Gerät nach Rückkehr in den Tab, Abmelden.

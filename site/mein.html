@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://xjogkqttzfsgjeqhkndf.supabase.co; form-action 'none'; base-uri 'none'; object-src 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Mein SellCheck | SellCheck</title>
-  <meta name="description" content="Dein SellCheck-Konto im Browser.">
+  <meta name="description" content="Deine Artikel, deine Übersicht und die Meldegrenze im Browser.">
   <link rel="canonical" href="https://gym7-fit.github.io/sellcheck-site/mein.html">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <meta property="og:site_name" content="SellCheck">
@@ -23,6 +23,7 @@
   <link rel="preload" href="fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="auth.css">
+  <link rel="stylesheet" href="mein.css">
 </head>
 <body data-page="mein">
 <a class="skip" href="#main">Zum Inhalt springen</a>
@@ -37,23 +38,143 @@
   </div>
 </header>
 
-<main id="main" class="wrap auth-page">
-  <div class="auth-card">
-    <h1>Mein SellCheck</h1>
-    <p class="auth-msg" id="msg" role="alert" hidden></p>
-    <div id="mine" hidden>
-      <p>Angemeldet als <b id="who"></b></p>
-      <p class="muted">Hier erscheinen bald deine Artikel und deine Übersicht.</p>
-      <p class="auth-alt"><button class="btn secondary" type="button" id="logout">Abmelden</button></p>
+<main id="main" class="wrap mein-page">
+  <h1>Mein SellCheck</h1>
+  <p class="auth-msg" id="msg" role="alert" hidden></p>
+  <noscript><p>Diese Seite braucht JavaScript.</p></noscript>
+  <p id="loading" class="muted">Lade deine Artikel …</p>
+
+  <div id="mine" hidden>
+    <div class="tabs" role="tablist" aria-label="Bereiche von Mein SellCheck">
+      <button class="tab" role="tab" type="button" id="tab-uebersicht" data-tab="uebersicht" aria-controls="panel-uebersicht" aria-selected="true">Übersicht</button>
+      <button class="tab" role="tab" type="button" id="tab-artikel" data-tab="artikel" aria-controls="panel-artikel" aria-selected="false" tabindex="-1">Artikel</button>
+      <button class="tab" role="tab" type="button" id="tab-meldegrenze" data-tab="meldegrenze" aria-controls="panel-meldegrenze" aria-selected="false" tabindex="-1">Meldegrenze</button>
+      <button class="tab" role="tab" type="button" id="tab-konto" data-tab="konto" aria-controls="panel-konto" aria-selected="false" tabindex="-1">Konto</button>
     </div>
-    <noscript><p>Diese Seite braucht JavaScript.</p></noscript>
+
+    <section class="panel" role="tabpanel" id="panel-uebersicht" aria-labelledby="tab-uebersicht" tabindex="0">
+      <div class="panel-head">
+        <h2>Übersicht</h2>
+        <div class="year-pick"><label for="year-ov">Jahr</label><select id="year-ov" data-year></select></div>
+      </div>
+      <div id="ov-empty" hidden>
+        <p class="ov-lead">Check, was wirklich bleibt.</p>
+        <p class="muted">Erfasse Einkauf und Verkauf, sieh Gewinn pro Artikel und behalte die Meldegrenze jeder Plattform im Blick.</p>
+        <button class="btn" type="button" data-add>Ersten Artikel erfassen</button>
+      </div>
+      <div id="ov-content">
+        <dl class="kpis" id="kpis"></dl>
+        <div id="ov-limit" class="plat-card"></div>
+        <p><button class="linklike" type="button" data-goto="meldegrenze" id="ov-limit-link">Alle Plattformen ansehen</button></p>
+      </div>
+      <p class="muted fine disclaimer">Orientierungshilfe, keine Steuer- oder Rechtsberatung. Keine Meldung heißt nicht steuerfrei. Im Zweifel: Finanzamt oder Steuerberatung.</p>
+    </section>
+
+    <section class="panel" role="tabpanel" id="panel-artikel" aria-labelledby="tab-artikel" tabindex="0" hidden>
+      <div class="panel-head">
+        <h2>Artikel</h2>
+        <button class="btn small" type="button" data-add>Artikel hinzufügen</button>
+      </div>
+      <div class="list-tools">
+        <div class="search"><label for="search">Artikel oder Plattform suchen</label><input id="search" type="search" autocomplete="off" maxlength="120"></div>
+        <fieldset class="seg"><legend>Filter</legend>
+          <label><input type="radio" name="filter" value="all" checked><span>Alle</span></label>
+          <label><input type="radio" name="filter" value="stock"><span>Bestand</span></label>
+          <label><input type="radio" name="filter" value="sold"><span>Verkauft</span></label>
+        </fieldset>
+      </div>
+      <div id="stock-head" class="stock-head" hidden>
+        <p class="stock-line"></p>
+        <p class="stock-stale"></p>
+        <p class="muted fine">Der Älteste steht oben.</p>
+      </div>
+      <ul id="list" class="art-list"></ul>
+      <div id="list-empty" class="empty" hidden><h3 id="empty-title"></h3><p class="muted" id="empty-text"></p></div>
+    </section>
+
+    <section class="panel" role="tabpanel" id="panel-meldegrenze" aria-labelledby="tab-meldegrenze" tabindex="0" hidden>
+      <div class="panel-head">
+        <h2>Meldegrenze</h2>
+        <div class="year-pick"><label for="year-lim">Jahr</label><select id="year-lim" data-year></select></div>
+      </div>
+      <p class="muted">Ab 30 Verkäufen oder 2.000 € Einnahmen im Jahr meldet eine Plattform deine Verkäufe an das Bundeszentralamt für Steuern. Jede Plattform zählt für sich. Die Plattform zählt deine Einnahmen nach Abzug ihrer Gebühren, SellCheck nimmt den Verkaufspreis und warnt deshalb eher früher.</p>
+      <div id="lim-list" class="plat-list"></div>
+      <p id="lim-idle" class="muted fine" hidden></p>
+      <p class="muted fine disclaimer">Orientierungshilfe, keine Steuer- oder Rechtsberatung. Keine Meldung heißt nicht steuerfrei. Im Zweifel: Finanzamt oder Steuerberatung.</p>
+    </section>
+
+    <section class="panel" role="tabpanel" id="panel-konto" aria-labelledby="tab-konto" tabindex="0" hidden>
+      <h2>Konto</h2>
+      <p>Angemeldet als <b id="who"></b></p>
+      <p class="auth-alt"><button class="btn secondary" type="button" id="logout">Abmelden</button></p>
+    </section>
   </div>
+
+  <dialog id="form-dialog" aria-labelledby="form-title">
+    <form id="art-form" novalidate>
+      <h2 id="form-title">Erfassen</h2>
+      <p id="form-saved" class="auth-msg ok" role="status" hidden></p>
+      <fieldset><legend>Status</legend>
+        <div class="choice">
+          <label><input type="radio" name="status" value="sold" checked> Verkauft</label>
+          <label><input type="radio" name="status" value="stock"> Im Bestand</label>
+        </div>
+      </fieldset>
+      <div><label for="f-name">Artikelname</label><input id="f-name" name="name" type="text" maxlength="120" autocomplete="off" autocapitalize="sentences"></div>
+      <div><label for="f-platform">Plattform</label><select id="f-platform" name="platform"></select></div>
+      <h3>Beträge</h3>
+      <div><label for="f-buy">Einkaufspreis</label><input id="f-buy" name="buy" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00"></div>
+      <div id="row-sell"><label for="f-sell">Verkaufspreis</label><input id="f-sell" name="sell" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00"></div>
+      <div><label for="f-cost">Versand und Gebühren</label><input id="f-cost" name="cost" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00"></div>
+      <div id="row-sale-date"><label for="f-sale-date">Verkauft am</label><input id="f-sale-date" name="saleDate" type="date"></div>
+      <p id="row-profit" class="profit-line">Gewinn <output id="f-profit" class="num" for="f-buy f-sell f-cost"></output></p>
+      <h3>Fotos</h3>
+      <div class="photo-field" id="pf-photo">
+        <div class="thumb" aria-hidden="true"><img alt="" hidden></div>
+        <div class="photo-body">
+          <label for="f-photo">Artikelfoto</label>
+          <p class="muted fine">Optional, hilft beim Wiederfinden.</p>
+          <input id="f-photo" type="file" accept="image/*">
+          <button class="linklike" type="button" data-remove-photo="photo" hidden>Entfernen</button>
+        </div>
+      </div>
+      <div class="photo-field" id="pf-receipt">
+        <div class="thumb" aria-hidden="true"><img alt="" hidden></div>
+        <div class="photo-body">
+          <label for="f-receipt">Beleg</label>
+          <p class="muted fine">Kaufbeleg oder Quittung für den Nachweis.</p>
+          <input id="f-receipt" type="file" accept="image/*">
+          <button class="linklike" type="button" data-remove-photo="receipt" hidden>Entfernen</button>
+        </div>
+      </div>
+      <h3>Mehr</h3>
+      <div><label class="consent"><input id="f-has-buy-date" type="checkbox"> <span>Einkaufsdatum angeben</span></label></div>
+      <div id="row-buy-date" hidden><label for="f-buy-date">Gekauft am</label><input id="f-buy-date" name="buyDate" type="date"></div>
+      <div><label for="f-notes">Notiz</label><textarea id="f-notes" name="notes" rows="3" maxlength="1000"></textarea></div>
+      <p id="form-error" class="auth-msg error" role="alert" hidden></p>
+      <div class="form-actions">
+        <button class="btn" type="submit" id="f-save">Artikel sichern</button>
+        <button class="btn secondary" type="button" id="f-save-next">Sichern und nächsten erfassen</button>
+        <button class="btn secondary" type="button" id="f-cancel">Abbrechen</button>
+        <button class="btn danger" type="button" id="f-delete" hidden>Artikel löschen</button>
+      </div>
+      <div id="confirm-delete" class="confirm" hidden>
+        <p><b>Diesen Artikel löschen?</b></p>
+        <button class="btn danger" type="button" id="f-delete-yes">Löschen</button>
+        <button class="btn secondary" type="button" id="f-delete-no">Abbrechen</button>
+      </div>
+    </form>
+  </dialog>
 </main>
 
 <script src="fielderr.js"></script>
 <script src="auth-config.js"></script>
 <script src="auth-lib.js"></script>
-<script src="auth-ui.js"></script>
+<script src="parse-lib.js"></script>
+<script src="tax-lib.js"></script>
+<script src="konto-lib.js"></script>
+<script src="konto-net.js"></script>
+<script src="mein.js"></script>
 
 <footer class="on-dark">
   <div class="wrap">
