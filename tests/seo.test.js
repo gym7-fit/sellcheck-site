@@ -47,3 +47,19 @@ test("Touch-Icon ist 180 x 180 und Titel sind eindeutig", () => {
   const titles = PAGES.map((p) => fs.readFileSync(path.join(SITE, p), "utf8").match(/<title>([^<]+)<\/title>/)[1]);
   assert.equal(new Set(titles).size, titles.length, "doppelte Seitentitel");
 });
+
+test("Mein SellCheck: in keiner Kopfzeile, nur im Fuß; Konto-Seiten mit noindex und nicht in der Sitemap", () => {
+  const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]));
+  const ACCOUNT = ["anmelden.html", "registrieren.html", "mein.html"];
+  for (const f of walk(SITE).filter((x) => x.endsWith(".html"))) {
+    const rel = path.relative(SITE, f), h = fs.readFileSync(f, "utf8");
+    for (const head of h.match(/<header[\s\S]*?<\/header>/g) || []) {
+      assert.ok(!/anmelden\.html|mein\.html|registrieren\.html|Mein SellCheck/.test(head), rel + ": Konto-Link in der Kopfzeile");
+    }
+    if (/<footer/.test(h) && h.includes("Gratis-Tools")) assert.match(h, /<footer[\s\S]*href="(\.\.\/)?anmelden\.html">Mein SellCheck</, rel + ": Link im Fuß");
+  }
+  for (const f of ACCOUNT) assert.match(fs.readFileSync(path.join(SITE, f), "utf8"), /<meta name="robots" content="noindex">/, f);
+  const sm = path.join(SITE, "sitemap.xml");
+  const sitemap = (fs.existsSync(sm) ? fs.readFileSync(sm, "utf8") : "") + fs.readFileSync(path.join(ROOT, "scripts/set-site-url.py"), "utf8").match(/urls = \[[^\n]*\n/)[0];
+  for (const f of ACCOUNT) assert.ok(!sitemap.includes(f), f + " steht in der Sitemap");
+});

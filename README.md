@@ -27,7 +27,7 @@ Online: nach dem ersten Push über GitHub Pages (siehe unten).
 | `docs/STEUER-EXPORT.md` | Recherche und Entscheidungen zum Steuer-Export |
 | `docs/LIVEGANG.md` | Checkliste vor dem Livegang |
 | `docs/EMAIL-ZUGANG.md` | Freischaltung per E-Mail-Adresse, Endpunkte, Livegang-Punkte |
-| `parked/accounts/` | Konten (Anmeldung, Registrierung) vorerst stillgelegt, kommen mit Pro zurück |
+| `docs/ACCOUNTS.md` | Konto im Browser (Anmelden, Registrieren, Mein SellCheck): Dateien, Verhalten, Einrichtung |
 | `.github/workflows/pages.yml` | Tests und Veröffentlichung über GitHub Pages |
 
 ## Tests

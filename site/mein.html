@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://xjogkqttzfsgjeqhkndf.supabase.co; form-action 'none'; base-uri 'none'; object-src 'none'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mein SellCheck | SellCheck</title>
+  <meta name="description" content="Deine Artikel, deine Übersicht und die Meldegrenze im Browser.">
+  <link rel="canonical" href="https://gym7-fit.github.io/sellcheck-site/mein.html">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta property="og:site_name" content="SellCheck">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="de_DE">
+  <meta property="og:title" content="Mein SellCheck | SellCheck">
+  <meta property="og:description" content="Dein SellCheck-Konto im Browser.">
+  <meta property="og:url" content="https://gym7-fit.github.io/sellcheck-site/mein.html">
+  <meta property="og:image" content="https://gym7-fit.github.io/sellcheck-site/social/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0e1116" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="auth.css">
+  <link rel="stylesheet" href="mein.css">
+</head>
+<body data-page="mein">
+<a class="skip" href="#main">Zum Inhalt springen</a>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="SellCheck Startseite">
+      <svg viewBox="12.8 4.8 38.4 54.4" aria-hidden="true"><path class="tag" d="M14 6H50V58L45 52.5 40 58 35 52.5 30 58 25 52.5 20 58 14 52.5Z"/><path class="tick" d="M22 30l7.5 7.5L43 22" fill="none" stroke-width="6.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Sell<b>Check</b></span>
+    </a>
+    <nav class="nav" aria-label="Hauptnavigation"><a class="hide-sm" href="index.html">Startseite</a><a href="tools.html">Tools</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="wrap mein-page">
+  <h1>Mein SellCheck</h1>
+  <p class="preview-note"><b>Vorschau.</b> Umfang und Zugang können sich noch ändern.</p>
+  <p class="auth-msg" id="msg" role="alert" hidden></p>
+  <noscript><p>Diese Seite braucht JavaScript.</p></noscript>
+  <p id="loading" class="muted">Lade deine Artikel …</p>
+
+  <section id="locked" class="locked" aria-labelledby="locked-title" hidden>
+    <h2 id="locked-title">Nicht freigeschaltet</h2>
+    <p id="locked-reason" class="muted"></p>
+    <p><button class="btn secondary small" type="button" id="locked-logout">Abmelden</button></p>
+  </section>
+
+  <div id="mine" hidden>
+    <div class="tabs" role="tablist" aria-label="Bereiche von Mein SellCheck">
+      <button class="tab" role="tab" type="button" id="tab-uebersicht" data-tab="uebersicht" aria-controls="panel-uebersicht" aria-selected="true">Übersicht</button>
+      <button class="tab" role="tab" type="button" id="tab-artikel" data-tab="artikel" aria-controls="panel-artikel" aria-selected="false" tabindex="-1">Artikel</button>
+      <button class="tab" role="tab" type="button" id="tab-meldegrenze" data-tab="meldegrenze" aria-controls="panel-meldegrenze" aria-selected="false" tabindex="-1">Meldegrenze</button>
+      <button class="tab" role="tab" type="button" id="tab-konto" data-tab="konto" aria-controls="panel-konto" aria-selected="false" tabindex="-1">Konto</button>
+    </div>
+
+    <section class="panel" role="tabpanel" id="panel-uebersicht" aria-labelledby="tab-uebersicht" tabindex="0">
+      <div class="panel-head">
+        <h2>Übersicht</h2>
+        <div class="year-pick"><label for="year-ov">Jahr</label><select id="year-ov" data-year></select></div>
+      </div>
+      <div id="ov-empty" hidden>
+        <p class="ov-lead">Check, was wirklich bleibt.</p>
+        <p class="muted">Erfasse Einkauf und Verkauf, sieh Gewinn pro Artikel und behalte die Meldegrenze jeder Plattform im Blick.</p>
+        <button class="btn" type="button" data-add>Ersten Artikel erfassen</button>
+      </div>
+      <div id="ov-content">
+        <dl class="kpis" id="kpis"></dl>
+        <div id="ov-limit" class="plat-card"></div>
+        <p><button class="linklike" type="button" data-goto="meldegrenze" id="ov-limit-link">Alle Plattformen ansehen</button></p>
+      </div>
+      <p class="muted fine disclaimer">Orientierungshilfe, keine Steuer- oder Rechtsberatung. Keine Meldung heißt nicht steuerfrei. Im Zweifel: Finanzamt oder Steuerberatung.</p>
+    </section>
+
+    <section class="panel" role="tabpanel" id="panel-artikel" aria-labelledby="tab-artikel" tabindex="0" hidden>
+      <div class="panel-head">
+        <h2>Artikel</h2>
+        <button class="btn small" type="button" data-add>Artikel hinzufügen</button>
+      </div>
+      <div class="list-tools">
+        <div class="search"><label for="search">Artikel oder Plattform suchen</label><input id="search" type="search" autocomplete="off" maxlength="120"></div>
+        <fieldset class="seg"><legend>Filter</legend>
+          <label><input type="radio" name="filter" value="all" checked><span>Alle</span></label>
+          <label><input type="radio" name="filter" value="stock"><span>Bestand</span></label>
+          <label><input type="radio" name="filter" value="sold"><span>Verkauft</span></label>
+        </fieldset>
+      </div>
+      <div id="stock-head" class="stock-head" hidden>
+        <p class="stock-line"></p>
+        <p class="stock-stale"></p>
+        <p class="muted fine">Der Älteste steht oben.</p>
+      </div>
+      <ul id="list" class="art-list"></ul>
+      <div id="list-empty" class="empty" hidden><h3 id="empty-title"></h3><p class="muted" id="empty-text"></p></div>
+
+      <details id="io" class="io">
+        <summary>Importieren und exportieren</summary>
+        <div id="io-takeover" hidden>
+          <h3>Aus den Gratis-Tools übernehmen</h3>
+          <p class="muted">In diesem Browser liegen Einträge aus den Gratis-Tools. Sie werden ins Konto kopiert, die Tools behalten ihre Daten.</p>
+          <button class="btn secondary small" type="button" id="io-take">Aus den Gratis-Tools übernehmen</button>
+        </div>
+        <h3>Aus Datei importieren</h3>
+        <p class="muted">Wähle eine CSV aus SellCheck (App-Sicherung oder Web-Tools) oder einen Export von eBay, Etsy, Amazon, PayPal oder deiner Bank. Vorhandene Einträge werden erkannt und nicht doppelt angelegt.</p>
+        <div><label for="io-file">CSV-Dateien wählen</label><input id="io-file" type="file" accept=".csv,.txt,.tsv,text/csv,text/plain" multiple></div>
+        <p class="muted fine">Die Datei wird nur in deinem Browser gelesen. Sie wird nicht hochgeladen, nur die Einträge, die du übernimmst.</p>
+        <div id="io-ask" hidden>
+          <p id="io-file-name" class="io-file"></p>
+          <p id="io-warn" class="auth-msg" role="status" hidden></p>
+          <div id="io-ask-date"><label for="io-dateorder">Datumsformat</label>
+            <select id="io-dateorder"><option value="dmy">Tag.Monat.Jahr</option><option value="mdy">Monat/Tag/Jahr</option></select></div>
+          <div id="io-ask-platform"><label for="io-platform">Plattform</label><select id="io-platform"></select></div>
+          <div id="io-ask-keyword"><label for="io-keyword">Nur Zeilen mit diesem Stichwort (getrennt durch |)</label><input id="io-keyword" type="text" autocomplete="off" maxlength="120"></div>
+          <div><label class="consent"><input id="io-positive" type="checkbox"> <span>Nur positive Beträge importieren (Erstattungen auslassen)</span></label></div>
+        </div>
+        <p id="io-preview" class="io-preview" role="status" hidden></p>
+        <p id="io-msg" class="auth-msg" role="alert" hidden></p>
+        <div class="io-actions" id="io-actions" hidden>
+          <button class="btn small" type="button" id="io-go">Artikel ins Konto übernehmen</button>
+          <button class="btn secondary small" type="button" id="io-cancel">Abbrechen</button>
+        </div>
+        <h3>Exportieren</h3>
+        <p class="muted">Alle Artikel deines Kontos, verkaufte und im Bestand, als Tabelle für Excel oder Numbers.</p>
+        <button class="btn secondary small" type="button" id="io-export">Als CSV herunterladen</button>
+      </details>
+    </section>
+
+    <section class="panel" role="tabpanel" id="panel-meldegrenze" aria-labelledby="tab-meldegrenze" tabindex="0" hidden>
+      <div class="panel-head">
+        <h2>Meldegrenze</h2>
+        <div class="year-pick"><label for="year-lim">Jahr</label><select id="year-lim" data-year></select></div>
+      </div>
+      <p class="muted">Ab 30 Verkäufen oder 2.000 € Einnahmen im Jahr meldet eine Plattform deine Verkäufe an das Bundeszentralamt für Steuern. Jede Plattform zählt für sich. Die Plattform zählt deine Einnahmen nach Abzug ihrer Gebühren, SellCheck nimmt den Verkaufspreis und warnt deshalb eher früher.</p>
+      <div id="lim-list" class="plat-list"></div>
+      <p id="lim-idle" class="muted fine" hidden></p>
+      <p class="muted fine disclaimer">Orientierungshilfe, keine Steuer- oder Rechtsberatung. Keine Meldung heißt nicht steuerfrei. Im Zweifel: Finanzamt oder Steuerberatung.</p>
+    </section>
+
+    <section class="panel" role="tabpanel" id="panel-konto" aria-labelledby="tab-konto" tabindex="0" hidden>
+      <h2>Konto</h2>
+      <p>Angemeldet als <b id="who"></b></p>
+      <p id="konto-msg" class="auth-msg" role="status" hidden></p>
+
+      <form id="profile-form" class="konto-block" novalidate>
+        <h3>Persönliche Daten</h3>
+        <div><label for="p-first">Vorname</label><input id="p-first" type="text" maxlength="60" autocomplete="given-name"></div>
+        <div><label for="p-last">Nachname</label><input id="p-last" type="text" maxlength="60" autocomplete="family-name"></div>
+        <h3>Steuerliche Angaben</h3>
+        <fieldset><legend>Ich verkaufe</legend>
+          <div class="choice">
+            <label><input type="radio" name="p-seller" value="private"> Privat</label>
+            <label><input type="radio" name="p-seller" value="business"> Gewerblich</label>
+          </div>
+        </fieldset>
+        <div id="p-vat-box" hidden>
+          <fieldset><legend>Umsatzsteuer</legend>
+            <div class="choice">
+              <label><input type="radio" name="p-vat" value="small"> Kleinunternehmer</label>
+              <label><input type="radio" name="p-vat" value="regular"> Regelbesteuert</label>
+              <label><input type="radio" name="p-vat" value="margin"> Differenzbesteuert</label>
+            </div>
+          </fieldset>
+          <fieldset id="p-rate-box" hidden><legend>Steuersatz</legend>
+            <div class="choice">
+              <label><input type="radio" name="p-rate" value="19"> 19 %</label>
+              <label><input type="radio" name="p-rate" value="7"> 7 %</label>
+            </div>
+          </fieldset>
+          <p id="p-vat-text" class="muted fine"></p>
+        </div>
+        <p class="muted fine">Verkaufsart und Umsatzsteuer bestimmen die Gewinnberechnung. Keine Steuerberatung, im Zweifel klärt das Finanzamt.</p>
+        <button class="btn small" type="submit" id="p-save">Angaben sichern</button>
+      </form>
+
+      <form id="pw-form" class="konto-block" novalidate>
+        <h3>Passwort ändern</h3>
+        <div><label for="pw-new">Neues Passwort</label>
+          <div class="pw-wrap"><input id="pw-new" type="password" autocomplete="new-password"><button class="pw-toggle" type="button" data-toggle-pw="pw-new" aria-pressed="false">Anzeigen</button></div>
+          <ul class="pw-rules" id="pw-rules"></ul></div>
+        <div><label for="pw-new2">Neues Passwort wiederholen</label>
+          <div class="pw-wrap"><input id="pw-new2" type="password" autocomplete="new-password"><button class="pw-toggle" type="button" data-toggle-pw="pw-new2" aria-pressed="false">Anzeigen</button></div></div>
+        <button class="btn small" type="submit" id="pw-save">Passwort ändern</button>
+      </form>
+
+      <div class="konto-block">
+        <h3>Abmelden</h3>
+        <button class="btn secondary small" type="button" id="logout">Abmelden</button>
+        <div id="confirm-logout" class="confirm" hidden>
+          <p><b>Abmelden?</b></p>
+          <p class="muted">Deine Daten bleiben in deinem Konto. Zum Weiterarbeiten meldest du dich wieder an.</p>
+          <button class="btn" type="button" id="logout-yes">Abmelden</button>
+          <button class="btn secondary" type="button" id="logout-no">Abbrechen</button>
+        </div>
+      </div>
+
+      <div class="konto-block">
+        <h3>Konto und alle Daten löschen</h3>
+        <p class="muted">Löscht dein Konto mit allen Angaben, Artikeln, Fotos und Belegen online. Das lässt sich nicht rückgängig machen.</p>
+        <button class="btn danger small" type="button" id="del-open">Konto und alle Daten löschen</button>
+        <div id="confirm-del" class="confirm" hidden>
+          <p><b>Konto und alle Daten löschen?</b></p>
+          <p class="muted">Dein Konto, Profil, deine Sicherung sowie Artikel und Fotos werden entfernt.</p>
+          <div><label for="del-word">Tippe „löschen“, um zu bestätigen</label><input id="del-word" type="text" autocomplete="off" autocapitalize="none" spellcheck="false"></div>
+          <button class="btn danger" type="button" id="del-yes" disabled>Alles unwiderruflich löschen</button>
+          <button class="btn secondary" type="button" id="del-no">Abbrechen</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <dialog id="form-dialog" aria-labelledby="form-title">
+    <form id="art-form" novalidate>
+      <h2 id="form-title">Erfassen</h2>
+      <p id="form-saved" class="auth-msg ok" role="status" hidden></p>
+      <fieldset><legend>Status</legend>
+        <div class="choice">
+          <label><input type="radio" name="status" value="sold" checked> Verkauft</label>
+          <label><input type="radio" name="status" value="stock"> Im Bestand</label>
+        </div>
+      </fieldset>
+      <div><label for="f-name">Artikelname</label><input id="f-name" name="name" type="text" maxlength="120" autocomplete="off" autocapitalize="sentences"></div>
+      <div><label for="f-platform">Plattform</label><select id="f-platform" name="platform"></select></div>
+      <h3>Beträge</h3>
+      <div><label for="f-buy">Einkaufspreis</label><input id="f-buy" name="buy" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00"></div>
+      <div id="row-sell"><label for="f-sell">Verkaufspreis</label><input id="f-sell" name="sell" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00"></div>
+      <div><label for="f-cost">Versand und Gebühren</label><input id="f-cost" name="cost" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00"></div>
+      <div id="row-sale-date"><label for="f-sale-date">Verkauft am</label><input id="f-sale-date" name="saleDate" type="date"></div>
+      <p id="row-profit" class="profit-line">Gewinn <output id="f-profit" class="num" for="f-buy f-sell f-cost"></output></p>
+      <h3>Fotos</h3>
+      <div class="photo-field" id="pf-photo">
+        <div class="thumb" aria-hidden="true"><img alt="" hidden></div>
+        <div class="photo-body">
+          <label for="f-photo">Artikelfoto</label>
+          <p class="muted fine">Optional, hilft beim Wiederfinden.</p>
+          <input id="f-photo" type="file" accept="image/*">
+          <button class="linklike" type="button" data-remove-photo="photo" hidden>Entfernen</button>
+        </div>
+      </div>
+      <div class="photo-field" id="pf-receipt">
+        <div class="thumb" aria-hidden="true"><img alt="" hidden></div>
+        <div class="photo-body">
+          <label for="f-receipt">Beleg</label>
+          <p class="muted fine">Kaufbeleg oder Quittung für den Nachweis.</p>
+          <input id="f-receipt" type="file" accept="image/*">
+          <button class="linklike" type="button" data-remove-photo="receipt" hidden>Entfernen</button>
+        </div>
+      </div>
+      <h3>Mehr</h3>
+      <div><label class="consent"><input id="f-has-buy-date" type="checkbox"> <span>Einkaufsdatum angeben</span></label></div>
+      <div id="row-buy-date" hidden><label for="f-buy-date">Gekauft am</label><input id="f-buy-date" name="buyDate" type="date"></div>
+      <div><label for="f-notes">Notiz</label><textarea id="f-notes" name="notes" rows="3" maxlength="1000"></textarea></div>
+      <p id="form-error" class="auth-msg error" role="alert" hidden></p>
+      <div class="form-actions">
+        <button class="btn" type="submit" id="f-save">Artikel sichern</button>
+        <button class="btn secondary" type="button" id="f-save-next">Sichern und nächsten erfassen</button>
+        <button class="btn secondary" type="button" id="f-cancel">Abbrechen</button>
+        <button class="btn danger" type="button" id="f-delete" hidden>Artikel löschen</button>
+      </div>
+      <div id="confirm-delete" class="confirm" hidden>
+        <p><b>Diesen Artikel löschen?</b></p>
+        <button class="btn danger" type="button" id="f-delete-yes">Löschen</button>
+        <button class="btn secondary" type="button" id="f-delete-no">Abbrechen</button>
+      </div>
+    </form>
+  </dialog>
+</main>
+
+<script src="fielderr.js"></script>
+<script src="auth-config.js"></script>
+<script src="auth-lib.js"></script>
+<script src="parse-lib.js"></script>
+<script src="tax-lib.js"></script>
+<script src="konto-lib.js"></script>
+<script src="konto-net.js"></script>
+<script src="mein.js"></script>
+
+<footer class="on-dark">
+  <div class="wrap">
+    <div class="cols">
+      <div>
+        <a class="brand" href="index.html" aria-label="SellCheck Startseite">
+          <svg viewBox="12.8 4.8 38.4 54.4" aria-hidden="true"><path class="tag" d="M14 6H50V58L45 52.5 40 58 35 52.5 30 58 25 52.5 20 58 14 52.5Z"/><path class="tick" d="M22 30l7.5 7.5L43 22" fill="none" stroke-width="6.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Sell<b>Check</b></span>
+        </a>
+        <p class="tagline">Check, was wirklich bleibt.</p>
+      </div>
+      <div>
+        <p class="foot-h">Seiten</p>
+        <ul>
+          <li><a href="index.html">Startseite</a></li>
+          <li><a href="tools.html">Gratis-Tools</a></li>
+          <li><a href="anmelden.html">Mein SellCheck</a></li>
+          <li><a href="hilfe/index.html">Hilfe zu Exportdateien</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot-h">Rechtliches</p>
+        <ul>
+          <li><a href="impressum.html">Impressum</a></li>
+          <li><a href="impressum.html#kontakt">Kontakt</a></li>
+          <li><a href="datenschutz.html">Datenschutz</a></li>
+          <li><a href="agb.html">Nutzungsbedingungen</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="legal">
+      <p>SellCheck ist ein unabhängiges Projekt und mit keiner der genannten Plattformen verbunden. Plattformnamen sind Marken ihrer jeweiligen Inhaber.</p>
+      <p>Keine Steuer- oder Rechtsberatung. Alle Angaben ohne Gewähr, Stand Oktober 2026.</p>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

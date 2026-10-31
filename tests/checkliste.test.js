@@ -99,3 +99,17 @@ test("Datenschutz: Konto für die App ist in allen Stufen freiwillig (Entscheidu
   assert.match(s, /ohne Konto, in der kostenlosen Stufe Basic und auch mit Essential oder Premium/);
   assert.match(s, /Ein Konto ist freiwillig/);
 });
+
+test("Datenschutz: beschreibt Mein SellCheck im Browser, verneint keine Konten mehr, bleibt Entwurf mit Platzhaltern", () => {
+  const s = fs.readFileSync(path.join(SITE, "datenschutz.html"), "utf8");
+  const t = text(path.join(SITE, "datenschutz.html"));
+  assert.match(t, /Mein SellCheck/);
+  assert.ok(s.includes("sellcheck.session.v1"), "Sitzung im Browser genannt");
+  assert.ok(!/keine Konten|ohne Konten|gibt es keine Konten/i.test(t), "Satz, der Konten verneint");
+  assert.match(s, /<strong>Entwurf, nicht veröffentlichen\.<\/strong>/);
+  assert.ok((s.match(/class="ph"/g) || []).length >= 10, "Platzhalter wurden nicht ausgefüllt");
+  assert.match(t, /Sicherung und Abgleich/, "Abschnitt 10 nennt den Abgleich");
+  assert.ok(!/Datensicherung \(freiwillig\)/.test(t), "alte Beschreibung der Sicherung");
+  for (const w of ["Anmelden und Registrieren", "Laden und Speichern", "verkleinert", "Übernahme und Datei-Import", "Export", "Konto löschen", "Gelöschte Artikel", "90 Tage"]) assert.ok(t.includes(w), w + " fehlt");
+  assert.ok(!/[—–]/.test(t), "Gedankenstrich");
+});
