@@ -18,7 +18,7 @@
 .auth-alt .btn, .auth-alt button { margin-right: 8px; }
 .pw-wrap { position: relative; }
 .pw-wrap input { padding-right: 104px; }
-.pw-toggle { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); min-height: 40px; padding: 0 10px; border: 0; background: transparent; color: var(--link); font: inherit; font-weight: 600; cursor: pointer; }
+.pw-toggle { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); min-height: 44px; padding: 0 10px; border: 0; background: transparent; color: var(--link); font: inherit; font-weight: 600; cursor: pointer; }
 .linklike { background: none; border: 0; padding: 0; min-height: 44px; font: inherit; font-weight: 600; color: var(--link); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 .auth-msg { border-radius: var(--radius-sm); padding: 12px 16px; margin: 0 0 18px; font-size: .95rem; border: 1px solid var(--line); }
 .auth-msg.error { border-color: var(--red); }
