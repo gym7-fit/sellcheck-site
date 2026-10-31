@@ -494,6 +494,7 @@
   const IO_PLATFORMS = [...T.REPORTED_PLATFORMS, "Flohmarkt / bar", "Sonstige"];
   const TOOLS_KEYS = ["sellcheck.sales.v1", "vintcheck.sales.v1"];
   const MAX_FILE_BYTES = 5 * 1024 * 1024;
+  const TOOLS_HINT = " Lade die Datei in den Gratis-Tools, dort kannst du die Spalten selbst zuordnen, und übernimm sie danach hier über „Aus den Gratis-Tools übernehmen“.";
   const io = { queue: [], file: null, a: null, plan: null, tools: null, busy: false };
 
   /** Einträge der Gratis-Tools aus diesem Browser (nur lesen, nie ändern). */
@@ -534,6 +535,7 @@
     if (a.currencies.length) warn.push("Die Datei enthält andere Währungen (" + a.currencies.join(", ") + "). SellCheck rechnet nicht um, alle Beträge würden als Euro gezählt. Importiere nur die Euro-Zeilen oder rechne vorher um.");
     const missing = e.entries.filter((x) => x.needsBuy).length;
     if (missing) warn.push("Hinweis: Die Datei enthält keine Einkaufspreise. Dein Gewinn wirkt zu hoch, bis du sie nachträgst (" + missing + " Einträge).");
+    if (s.ok === 0) warn.push("Aus dieser Datei lässt sich nichts übernehmen." + TOOLS_HINT);
     msg($("io-warn"), warn.join(" "), warn.length ? "error" : "");
     ioShowPlan(null, K.planTakeover(e.entries, liveRows(), ioOpt()), parts.join(", ") + ".");
   }
@@ -547,7 +549,7 @@
       let text;
       try { text = P.decode(await file.arrayBuffer()); } catch { ioMsg(file.name + ": Die Datei konnte nicht gelesen werden.", "error"); continue; }
       const a = P.analyze(text, { maxRows: K.MAX_IMPORT_ROWS });
-      if (!a.ok) { ioMsg(file.name + ": " + a.message, "error"); continue; }
+      if (!a.ok) { ioMsg(file.name + ": " + a.message + (a.tooMany ? "" : TOOLS_HINT), "error"); continue; }
       io.a = a;
       ioMsg("");
       $("io-dateorder").value = a.dateOrder;

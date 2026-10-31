@@ -255,6 +255,21 @@
     };
   }
 
+  // Eigene Datei aus Mein SellCheck und der App (CSVExport.journal): andere Spaltennamen als der Export der Tools, nur für analyze()
+  const JOURNAL_HEADERS = ["datum", "plattform", "artikel", "status", "einkaufsdatum", "einkaufspreis", "verkaufspreis", "nebenkosten"];
+  function isJournalFormat(headers) {
+    const n = headers.map(norm);
+    return JOURNAL_HEADERS.every((k) => n.includes(k));
+  }
+  function journalMapping(headers) {
+    const n = headers.map(norm);
+    return {
+      date: n.indexOf("datum"), name: n.indexOf("artikel"), plat: n.indexOf("plattform"), state: n.indexOf("status"),
+      buy: n.indexOf("einkaufspreis"), amount: n.indexOf("verkaufspreis"), fees: [n.indexOf("nebenkosten")], ship: -1, orderId: -1, type: -1,
+      buyDate: n.indexOf("einkaufsdatum"), receipt: -1, kind: -1,
+    };
+  }
+
   // Andere Währungen als EUR erkennen (werden nicht umgerechnet).
   function detectCurrencies(headers, rows) {
     const col = headers.findIndex((h) => /^(currency|currencycode|wahrung|waehrung|wahrungscode|waehrungscode)$/.test(norm(h)));
@@ -392,8 +407,9 @@
     const rows = all.slice(h + 1).filter((r) => r.length >= 2);
     if (!rows.length) return { ok: false, message: "Keine Datenzeilen unter der Kopfzeile gefunden. Die Datei braucht eine Kopfzeile mit Spaltennamen." };
     if (rows.length > limit) return { ok: false, tooMany: true, count: rows.length, message: `Die Datei hat ${rows.length} Zeilen, erlaubt sind ${limit} je Durchgang. Es wurde nichts gespeichert. Teile die Datei nach Jahren auf.` };
-    const own = isOwnFormat(headers);
-    const map = own ? ownMapping(headers) : guessColumns(headers);
+    const journal = isJournalFormat(headers);
+    const own = journal || isOwnFormat(headers);
+    const map = journal ? journalMapping(headers) : own ? ownMapping(headers) : guessColumns(headers);
     const g = guessDateOrder(map.date >= 0 ? rows.map((r) => r[map.date]) : []);
     const bankLike = !own && headers.some((x) => BANKISH.test(x));
     const typeChecked = new Map();

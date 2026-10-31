@@ -360,3 +360,36 @@ test("mein.html und mein.js: Bereich zum Importieren und Exportieren, nur im Bro
   assert.ok(!/innerHTML|outerHTML|insertAdjacentHTML|document\.write|eval\(/.test(js.split("\n").filter((l) => !l.trim().startsWith("//")).join("\n")));
   assert.match(h, /<meta http-equiv="Content-Security-Policy" content="[^"]*connect-src 'self' https:\/\/xjogkqttzfsgjeqhkndf\.supabase\.co;/);
 });
+
+test("Eigene CSV aus Mein SellCheck: Export und erneuter Import ergeben 0 neue, Bestand bleibt Bestand", () => {
+  const rows = [
+    row(1, { name: "=SUMME(1)", sell_cents: 150000, buy_cents: 12345, cost_cents: 5, sale_date: "2026-05-01" }),
+    row(2, { name: "Lampe", platform: "eBay", is_sold: false, sell_cents: 0, buy_cents: 700, sale_date: null, buy_date: "2026-04-02" }),
+    row(3, { name: "Mit Einkaufsdatum", platform: "Etsy", sell_cents: 2500, buy_cents: 1000, buy_date: "2026-03-01", sale_date: "2026-04-15" }),
+    row(4, { name: "Flohmarkt Stück", platform: "Flohmarkt / bar", sell_cents: 800, sale_date: "2026-02-03" }),
+  ];
+  const csv = K.exportCsv(rows, { seller_mode: "business", vat_mode: "regular", vat_rate: 19 });
+  const a = P.analyze(csv, { maxRows: K.MAX_IMPORT_ROWS });
+  assert.equal(a.ok, true);
+  assert.equal(a.own, true, "als eigenes Format erkannt");
+  assert.equal(a.ambiguous, false, "Datumsformat bekannt, keine Rückfrage nötig");
+  const e = P.entriesFrom(a, { platforms: [...T.REPORTED_PLATFORMS, "Flohmarkt / bar", "Sonstige"] });
+  assert.equal(e.entries.length, 4);
+  assert.equal(e.entries.filter((x) => x.status === "stock").length, 1, "Bestand bleibt Bestand");
+  const plan = K.planTakeover(e.entries, rows, opt);
+  assert.deepEqual([plan.rows.length, plan.present], [0, 4], "gleiche Artikel im Konto: 0 neue");
+  const fresh = K.planTakeover(e.entries, [], opt).rows;
+  const lamp = fresh.find((r) => r.name === "Lampe");
+  assert.deepEqual([lamp.is_sold, lamp.buy_cents, lamp.buy_date, lamp.sale_date], [false, 700, "2026-04-02", null]);
+  assert.equal(fresh.find((r) => r.name === "=SUMME(1)").sell_cents, 150000, "Formel-Schutz wird beim Lesen wieder entfernt");
+  assert.equal(fresh.find((r) => r.name === "Mit Einkaufsdatum").buy_date, "2026-03-01");
+  // tools.html behält sein Verhalten: der Export der Tools wird weiter als eigenes Format erkannt, der Journal-Kopf nur in analyze()
+  assert.equal(P.isOwnFormat(a.headers), false);
+});
+
+test("Nicht erkannte Datei: Meldung verweist auf die Gratis-Tools und „Aus den Gratis-Tools übernehmen“", () => {
+  const js = read("mein.js");
+  assert.match(js, /TOOLS_HINT = "[^"]*Gratis-Tools[^"]*Aus den Gratis-Tools übernehmen/);
+  assert.ok(js.includes('a.message + (a.tooMany ? "" : TOOLS_HINT)'), "bei nicht erkannter Datei");
+  assert.ok(js.includes('if (s.ok === 0) warn.push("Aus dieser Datei lässt sich nichts übernehmen." + TOOLS_HINT)'), "bei Datei ohne übernehmbare Zeilen");
+});
