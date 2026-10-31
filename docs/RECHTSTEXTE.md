@@ -37,7 +37,7 @@ Stand der Zählung 23.10.2026: Impressum 9, Datenschutz 14, AGB 11 Platzhalter (
 
 ## 3. Faktenblatt für die rechtliche Prüfung (technischer Stand)
 
-- Webseite: statische Seite, kein Server von uns, keine Datenbank, keine Konten auf der Seite (Stand 30.10.2026 überholt: Mein SellCheck legt Konten im Browser an, die Datenschutzerklärung muss in Auftrag 07 angepasst werden).
+- Webseite: statische Seite, kein Server von uns, keine Datenbank, Konten im Browser (Mein SellCheck, Vorschau). Die Datenschutzerklärung wurde dafür in Auftrag 07 angepasst (31.10.2026), bleibt aber Entwurf.
 - iPhone-App (in Entwicklung): Basic ohne Konto; Konto ab Essential bei Supabase (Frankfurt) mit Vorname, Nachname, Verkaufsart, Umsatzsteuer-Art; freiwillige Datensicherung von Artikeln, Fotos und Belegen mit Einwilligung; Kontolöschung in der App. `bestaetigt.html` ist die Zielseite des Bestätigungs-Buttons in der Konto-Mail.
 - **Keine** Cookies, kein Tracking, keine Analyse, keine Werbung, keine Einbettung von Dritten; Schriften, Skripte, Bilder und Video liegen auf der eigenen Origin (strenge CSP: `default-src 'none'`).
 - Browser-Speicher (localStorage): `sellcheck.sales.v1` (Verkäufe), `sellcheck.wizard.v1` (Ablauf), `sellcheck.settings.v1` (Einstellungen), `sellcheck.lead.v1` (Freischaltung mit E-Mail-Adresse). Nichts davon wird gesendet, solange keine Endpunkte eingetragen sind.
@@ -75,3 +75,14 @@ Umgesetzt am 23.10.2026 nach Entscheidung von Louis: Punkt 1 (Wortlaut Datenschu
 3. Rechtstexte und Freischaltungs-Texte durch Rechtstexte-Dienst oder Kanzlei prüfen lassen.
 4. Steuer-Aussagen und Report durch Steuerberater prüfen lassen (`LIVEGANG.md`, Abschnitt 6).
 5. Entwurfshinweise und `noindex` entfernen, `robots.txt` öffnen, Adresse setzen (`scripts/set-site-url.py`).
+
+## 6. Änderung für Mein SellCheck im Browser (Auftrag 07, 31.10.2026)
+
+`datenschutz.html` beschreibt jetzt, was die Seite mit Konto und „Mein SellCheck“ tut (Abschnitte 2, 4, 6 und 10). Es wurden **keine Platzhalter ausgefüllt und keine Rechtsgrundlagen festgelegt**. Neu für den Anwalt zu prüfen:
+
+1. **Sitzung im Browser** (localStorage, `sellcheck.session.v1`): Rechtsgrundlage und Einordnung nach § 25 TDDDG (Abschnitt 4, neuer Platzhalter).
+2. **Rechtsgrundlage für Mein SellCheck im Browser** (Abschnitt 10, neuer Platzhalter): Die Seite schreibt Artikel direkt ins Konto, ohne den Schalter „Sicherung und Abgleich“ der App.
+3. **Gelöschte Artikel:** Löschen markiert nur, die Zeile mit Name, Beträgen und Notizen bleibt im Konto. Die Funktion `purge_deleted_articles()` entfernt Zeilen mit einer Markierung über 90 Tage, ihr automatischer Aufruf ist nicht eingerichtet (Platzhalter in Abschnitt 10). Fristen und Aufbewahrung festlegen und den Aufruf einrichten oder die Beschreibung ändern.
+4. **Abgleich statt Sicherung:** Abschnitt 10 spricht jetzt von „Sicherung und Abgleich“ (in beide Richtungen, auch Löschungen) wie in der App.
+5. **Konto löschen im Browser** (Eingabe „löschen“): entfernt Konto, Profil, Artikel, Fotos und Belege über die Funktion `delete-account` (Version 2). Aufbewahrungspflichten weiterhin offen (siehe Punkt 3 oben).
+6. **Dienstleister:** Es kommt kein neuer Dienst dazu. Der vorhandene Platzhalter zu Supabase gilt auch für den Browser.
