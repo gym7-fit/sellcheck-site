@@ -429,3 +429,20 @@ test("Konto-Reiter: Löschen nur mit „löschen“, Rückfrage beim Abmelden, P
   assert.ok(!/(localStorage|sessionStorage)[^;\n]*pw-new/.test(code) && !/console\./.test(code), "kein Passwort in Speicher oder Log");
   assert.ok(!/<form[^>]*\saction=/.test(h));
 });
+
+/* ---------- Auftrag 06: Freischaltung ---------- */
+test("mein.js: Der Zugang wird nur über K.access entschieden, bei Sperre wird nichts geladen", () => {
+  const js = read("mein.js"), h = read("mein.html");
+  const init = js.slice(js.indexOf("async function init"));
+  const iAccess = init.indexOf("K.access(g.session"), iLocked = init.indexOf('$("locked").hidden = false'), iReturn = init.indexOf("return;", iLocked), iLoad = init.indexOf("await load()");
+  assert.ok(iAccess > 0 && iAccess < iLocked && iLocked < iReturn && iReturn < iLoad, "erst fragen, bei Sperre zurück, dann erst laden");
+  const blocked = init.slice(iAccess, iReturn);
+  assert.ok(!/store\.|load\(\)|renderAll|wireKonto|wireIo/.test(blocked), "in der Sperre keine Anfrage");
+  assert.equal((js.match(/K\.access\(/g) || []).length, 1, "nur eine Stelle");
+  assert.ok(!/localStorage[^;\n]*(access|zugang|plan|allowed)/i.test(js), "kein Zugang über den Speicher");
+  assert.match(h, /<section id="locked"[^>]*hidden/);
+  assert.match(h, /id="mine" hidden/);
+  assert.match(h, /<p class="preview-note"><b>Vorschau\.<\/b> Umfang und Zugang können sich noch ändern\.<\/p>/);
+  const note = h.match(/class="preview-note">([^<]*<b>[^<]*<\/b>[^<]*)</)[1];
+  assert.ok(!/€|Euro|Preis|Essential|Premium|Basic|kostenlos|gratis|bleibt|2026|2027/i.test(note), "keine Preise, Stufen, Daten oder Zusagen im Hinweis");
+});

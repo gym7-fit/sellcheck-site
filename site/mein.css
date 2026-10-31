@@ -7,6 +7,9 @@
 .mein-page .fine { font-size: .9rem; margin: 4px 0 0; }
 .linklike { background: none; border: 0; padding: 0 2px; min-height: 44px; font: inherit; font-weight: 600; color: var(--link); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 
+.preview-note { margin: 0 0 var(--s4); padding: var(--s2) var(--s3); border: 1px solid var(--line); border-radius: var(--radius-sm); font-size: .92rem; color: var(--muted); }
+.locked { padding: var(--s6) 0; max-width: 520px; }
+
 /* Reiter */
 .tabs { display: flex; gap: var(--s1); border-bottom: 2px solid var(--line); margin-bottom: var(--s5); overflow-x: auto; }
 .tab { flex: 0 0 auto; min-height: 48px; padding: 0 var(--s4); background: none; border: 0; border-bottom: 3px solid transparent; margin-bottom: -2px; font: inherit; font-weight: 650; color: var(--muted); cursor: pointer; }
@@ -103,7 +106,10 @@
 .confirm { padding: var(--s4); border: 2px solid var(--red); border-radius: var(--radius-sm); display: grid; gap: var(--s2); }
 .confirm p { margin: 0; }
 .confirm[hidden], #row-profit[hidden], #row-buy-date[hidden], #row-sell[hidden], #row-sale-date[hidden] { display: none; }
+.mein-page .pw-toggle { min-height: 44px; }
 @media (max-width: 520px) {
+  .tabs { flex-wrap: wrap; overflow-x: visible; }
+  .tab { flex: 1 1 auto; }
   .mein-page { padding-top: var(--s5); }
   .art-side { max-width: 45%; }
   #form-dialog { padding: var(--s4); }

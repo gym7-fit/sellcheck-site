@@ -57,6 +57,12 @@ Im Reiter Artikel, Bereich „Importieren und exportieren“ (`mein.js`, Logik i
 - **Konto löschen:** Rückfrage und Eingabe von „löschen“, dann `POST functions/v1/delete-account` über `store.deleteAccount`. Erst nach Erfolg wird die Sitzung geleert und `anmelden.html#geloescht` zeigt „Dein Konto und alle Daten sind gelöscht.“ Scheitert die Funktion, bleibt alles wie es war, mit Meldung.
 - **Duplikate beim Import:** `dupKey` vergleicht Namen nur bis 80 Zeichen, damit der Re-Import des eigenen Exports bei langen Namen nichts doppelt anlegt.
 
+## Zugang und Vorschau (Auftrag 06)
+
+- **Eine Stelle:** `SCKonto.access(session, plan)` in `konto-lib.js` entscheidet, wer „Mein SellCheck“ nutzen darf. Heute `allowed: true` für jede gültige Sitzung. Mit dem Kauf im Browser (Phase 3) kommt die Stufe aus `current_plan()` als `plan` dazu; ein Plan `{ locked: true, reason }` zeigt in `mein.js` eine ruhige Sperrseite („Nicht freigeschaltet“) statt der Reiter, es wird nichts geladen. Kein zweiter Weg, nichts in `localStorage`.
+- **Vorschau:** Unter der Überschrift steht „Vorschau. Umfang und Zugang können sich noch ändern.“ (ohne Preise, Stufen, Daten oder Zusagen).
+- **Auffindbarkeit:** Kein Link in einer Kopfzeile, nur im Fuß („Mein SellCheck“ führt zu `anmelden.html`). `anmelden.html`, `registrieren.html` und `mein.html` haben `noindex` und stehen nicht in `sitemap.xml` (Test in `tests/seo.test.js`).
+
 ## Bekannt und offen
 
 - Echte Registrierung und Mails: macht Louis selbst, die Tests laufen nur gegen den Nachbau.

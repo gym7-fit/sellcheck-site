@@ -40,9 +40,16 @@
 
 <main id="main" class="wrap mein-page">
   <h1>Mein SellCheck</h1>
+  <p class="preview-note"><b>Vorschau.</b> Umfang und Zugang können sich noch ändern.</p>
   <p class="auth-msg" id="msg" role="alert" hidden></p>
   <noscript><p>Diese Seite braucht JavaScript.</p></noscript>
   <p id="loading" class="muted">Lade deine Artikel …</p>
+
+  <section id="locked" class="locked" aria-labelledby="locked-title" hidden>
+    <h2 id="locked-title">Nicht freigeschaltet</h2>
+    <p id="locked-reason" class="muted"></p>
+    <p><button class="btn secondary small" type="button" id="locked-logout">Abmelden</button></p>
+  </section>
 
   <div id="mine" hidden>
     <div class="tabs" role="tablist" aria-label="Bereiche von Mein SellCheck">

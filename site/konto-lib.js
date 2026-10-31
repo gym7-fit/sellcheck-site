@@ -143,6 +143,17 @@
   }
   const storagePath = (userId, articleId, kind, sum) => `${String(userId).toLowerCase()}/${String(articleId).toLowerCase()}-${kind}-${sum}.jpg`;
 
+  /**
+   * Die eine Stelle, die über den Zugang zu „Mein SellCheck“ entscheidet. Heute darf jedes angemeldete Konto hinein.
+   * Mit dem Kauf im Browser (Phase 3) kommt hier die Stufe aus current_plan() dazu; ein Plan { locked: true, reason } sperrt.
+   * Nichts anderes (weder localStorage noch die Adresszeile) öffnet oder schließt den Zugang.
+   */
+  function access(session, plan) {
+    if (!session || !session.userId) return { allowed: false, reason: "Bitte melde dich an." };
+    if (plan && plan.locked) return { allowed: false, reason: String(plan.reason || "Mein SellCheck ist für dein Konto im Moment nicht freigeschaltet.") };
+    return { allowed: true, reason: "" };
+  }
+
   /* ---------- Anzeige und Formular der Seite „Mein SellCheck“ (ohne DOM, Texte wie in der App) ---------- */
   const TABS = ["uebersicht", "artikel", "meldegrenze", "konto"];
   const tabFromHash = (h) => { const t = String(h == null ? "" : h).replace(/^#/, ""); return TABS.includes(t) ? t : "uebersicht"; };
@@ -264,5 +275,5 @@
     return { ok: true, row };
   }
 
-  return { TABS, tabFromHash, PLATFORMS, STALE_DAYS, euro, sales, stockDays, ageText, stockStats, rowProfit, sortRows, filterRows, yearsOf, LEVEL_LABEL, LEVEL_HINT, unreportedText, ratioPct, fitSize, formToRow, photoCleanup, exportCsv, exportName, MAX_IMPORT_ROWS, NUM_ERROR, rowToEntry, entryToRow, planTakeover, mergeChanges, nextCursor, since, vatCents, vatSettings, yearStats, checksum, storagePath, dupKey, UUID };
+  return { access, TABS, tabFromHash, PLATFORMS, STALE_DAYS, euro, sales, stockDays, ageText, stockStats, rowProfit, sortRows, filterRows, yearsOf, LEVEL_LABEL, LEVEL_HINT, unreportedText, ratioPct, fitSize, formToRow, photoCleanup, exportCsv, exportName, MAX_IMPORT_ROWS, NUM_ERROR, rowToEntry, entryToRow, planTakeover, mergeChanges, nextCursor, since, vatCents, vatSettings, yearStats, checksum, storagePath, dupKey, UUID };
 });

@@ -760,6 +760,14 @@
   async function init() {
     const g = await client.getSession();
     if (!g.session) return go(g.expired ? "anmelden.html#abgelaufen" : "anmelden.html");
+    const acc = K.access(g.session, null);   // heute: jedes angemeldete Konto; die Stufe kommt mit dem Kauf im Browser (Phase 3)
+    if (!acc.allowed) {   // ruhige Seite statt Reiter, es wird nichts geladen
+      $("loading").hidden = true;
+      $("locked-reason").textContent = acc.reason;
+      $("locked").hidden = false;
+      $("locked-logout").addEventListener("click", async () => { await client.signOut(); go("anmelden.html"); });
+      return;
+    }
     $("who").textContent = g.session.email; state.email = g.session.email;
     wireTabs(); wireControls(); wireForm(); wireIo(); showTakeover();
     if (g.offline) msg($("msg"), "Keine Verbindung zum Server. Prüfe dein Internet und versuche es noch einmal.", "error");

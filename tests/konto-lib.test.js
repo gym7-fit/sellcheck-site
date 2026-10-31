@@ -84,3 +84,13 @@ test("Foto-Pfade und Prüfsumme wie in der App (FNV-1a, 8 Hexstellen, kleingesch
   assert.equal(K.checksum(new TextEncoder().encode("a")), "e40c292c");
   assert.equal(K.storagePath("ABC", "DEF", "foto", "00ff00ff"), "abc/def-foto-00ff00ff.jpg");
 });
+
+test("Zugang: eine Stelle, heute jede gültige Sitzung, ein sperrender Plan schließt aus", () => {
+  assert.deepEqual(K.access({ userId: "u1", email: "a@b.de" }, null), { allowed: true, reason: "" });
+  assert.deepEqual(K.access({ userId: "u1" }, undefined), { allowed: true, reason: "" });
+  assert.deepEqual(K.access({ userId: "u1" }, { locked: false }), { allowed: true, reason: "" });
+  for (const s of [null, undefined, {}, { email: "a@b.de" }]) assert.equal(K.access(s, null).allowed, false, JSON.stringify(s));
+  const locked = K.access({ userId: "u1" }, { locked: true, reason: "Nur für Essential." });
+  assert.deepEqual(locked, { allowed: false, reason: "Nur für Essential." });
+  assert.match(K.access({ userId: "u1" }, { locked: true }).reason, /nicht freigeschaltet/);
+});
