@@ -140,6 +140,26 @@ test("Löschen ist nur eine Markierung", async () => {
   assert.equal((await store.remove("kein-uuid", now)).ok, false);
 });
 
+test("Löschen prüfen: loadByIds zeigt deleted_at, ein neuerer Stand vom zweiten Gerät verwirft die Löschung", async () => {
+  const { srv, store, clock, remote } = await setup();
+  await store.save([row(1, { photo_path: "p/1.jpg" }), row(2), row(3)]);
+  clock.advance(1000);
+  await store.remove(id(1), new Date(clock.now()));
+  const ok = await store.loadByIds([id(1), id(2)]);
+  assert.equal(ok.ok, true);
+  assert.deepEqual(ok.rows.map((x) => [x.id, !!x.deleted_at]).sort(), [[id(1), true], [id(2), false]], "nur die gefragten Zeilen, auch gelöschte");
+  const q = calls(srv, "GET", "/rest/v1/articles").pop().query;
+  assert.equal(q.id, "in.(" + id(1) + "," + id(2) + ")");
+  assert.equal(q.select, "id,deleted_at,photo_path,receipt_path");
+  // Das zweite Gerät hat Artikel 3 später geändert: Die Löschung von hier trägt einen älteren Zeitstempel und wird vom Trigger verworfen.
+  await remote("upsert", row(3, { name: "Neuer Name" }), 60);
+  assert.equal((await store.remove(id(3), new Date(clock.now()))).ok, true, "der Server antwortet trotzdem mit Erfolg");
+  const lost = await store.loadByIds([id(3)]);
+  assert.equal(lost.rows[0].deleted_at, null, "deleted_at fehlt: Fotos dürfen nicht gelöscht werden");
+  assert.equal((await store.loadByIds(["kein-uuid"])).ok, false);
+  assert.equal((await store.loadByIds([])).ok, false);
+});
+
 test("Profil lesen wie in der App", async () => {
   const { srv, store } = await setup();
   const r = await store.loadProfile();

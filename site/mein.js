@@ -426,19 +426,33 @@
     } finally { setBusy(false); }
   }
 
+  /**
+   * Löschen: Zeile markieren, dann im Konto nachlesen. Die Fotos werden erst gelöscht, wenn die Zeile dort wirklich deleted_at hat (wie BackupService.swift):
+   * Hat ein anderes Gerät den Artikel inzwischen neuer geändert, verwirft der Server die Löschung und die Fotos müssen bleiben.
+   */
   async function removeArticle() {
     const row = state.editing;
     if (!row || state.saving) return;
+    let resync = false;
     setBusy(true);
     try {
       const r = await store.remove(row.id, new Date());
       if (failed(r, $("form-error"))) return;
       state.rows.delete(row.id);
       const paths = [row.photo_path, row.receipt_path].filter(Boolean);
-      if (paths.length) store.deletePhotos(paths).then((d) => { if (d && d.expired) go("anmelden.html#abgelaufen"); });
+      const v = await store.loadByIds([row.id]);
+      if (v.expired) { go("anmelden.html#abgelaufen"); return; }
+      const server = v.ok ? v.rows.find((x) => x.id === row.id) : null;
+      if (server && !server.deleted_at) resync = true;
+      else if (server && paths.length) store.deletePhotos(paths).then((d) => { if (d && d.expired) go("anmelden.html#abgelaufen"); });   // ohne Bestätigung bleiben die Fotos liegen
       renderAll();
       closeForm();
     } finally { setBusy(false); }
+    if (resync) {   // aktuellen Stand holen, die Meldung erst danach (der Abgleich leert die Meldungszeile)
+      state.lastSync = 0;
+      await sync();
+      if (state.lastSync) msg($("msg"), "Dieser Artikel wurde inzwischen auf einem anderen Gerät geändert und bleibt erhalten.");
+    }
   }
 
   function wireForm() {

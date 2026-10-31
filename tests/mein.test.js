@@ -181,6 +181,14 @@ test("mein.js: Abgleich beim Zurückkehren in den Tab höchstens alle 60 Sekunde
   assert.match(js, /revokeObjectURL/);
 });
 
+test("mein.js: Fotos eines gelöschten Artikels erst löschen, wenn die Zeile im Konto deleted_at hat", () => {
+  const js = read("mein.js"), body = js.slice(js.indexOf("async function removeArticle()"), js.indexOf("function wireForm()"));
+  assert.ok(body.indexOf("store.remove(") < body.indexOf("store.loadByIds(") && body.indexOf("store.loadByIds(") < body.indexOf("store.deletePhotos("), "erst löschen, dann nachlesen, dann Fotos");
+  assert.match(body, /server && !server\.deleted_at/, "verworfene Löschung erkennen");
+  assert.match(body, /else if \(server && paths\.length\) store\.deletePhotos/, "ohne Bestätigung (kein Ergebnis, Netzfehler) bleiben die Fotos liegen");
+  assert.equal((body.match(/deletePhotos/g) || []).length, 1, "nur an dieser einen Stelle");
+});
+
 test("mein.html: kein Inline-Skript, kein Inline-Stil, genau ein h1, jedes Feld mit Beschriftung, Reiter mit Rollen", () => {
   const h = read("mein.html"), body = h.replace(/<head>[\s\S]*?<\/head>/, "");
   assert.ok(!/<script>[\s\S]*?<\/script>/.test(h), "Inline-Skript");

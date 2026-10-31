@@ -119,6 +119,8 @@ function start(clock) {
         const uid = uidOf(me), mine = mineOf(uid);
         if (req.method === "GET") {
           let rows = [...mine.values()].sort((a, c) => tsOf(a.updated_at) - tsOf(c.updated_at) || (a.id < c.id ? -1 : 1));
+          const idf = q.get("id");
+          if (idf) { const ids = idf.startsWith("in.(") ? idf.slice(4, -1).split(",") : [idf.replace("eq.", "")]; rows = rows.filter((r) => ids.includes(r.id)); }
           if (q.get("updated_at")) rows = rows.filter((r) => tsOf(r.updated_at) >= tsOf(q.get("updated_at").replace("gte.", "")));
           const off = Number(q.get("offset") || 0), lim = Number(q.get("limit") || 100000);
           return send(200, rows.slice(off, off + lim));

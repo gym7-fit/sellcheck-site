@@ -111,6 +111,17 @@
         return wrap(r, () => ({ ok: true }));
       },
 
+      /** Zeilen zu Kennungen lesen, auch gelöschte (nur Kennung, deleted_at und Foto-Pfade). Prüft, ob eine Löschung im Konto wirklich angekommen ist. */
+      async loadByIds(ids) {
+        const list = [...new Set((ids || []).map((x) => String(x).toLowerCase()))];
+        if (!list.length || list.length > 100 || !list.every((x) => K.UUID.test(x))) return { ok: false, message: "Dieser Artikel ist ungültig." };
+        const r = await call("/rest/v1/articles?select=id,deleted_at,photo_path,receipt_path&id=in.(" + list.join(",") + ")");
+        if (r.expired) return EXPIRED;
+        if (!r.ok) return failure(r.status);
+        const rows = await readJson(r);
+        return Array.isArray(rows) ? { ok: true, rows: rows.map((x) => ({ ...x, id: String(x.id).toLowerCase() })) } : failure(500);
+      },
+
       async loadProfile() {
         const uid = await userIdOf();
         if (!uid) return EXPIRED;
