@@ -167,7 +167,7 @@ test("mein.js: kein innerHTML, keine unsichere Ausgabe, keine Stile per Skript, 
   const js = read("mein.js"), code = js.replace(/^\s*\/\/.*$/gm, "");
   assert.ok(!/innerHTML|outerHTML|insertAdjacentHTML|document\.write|eval\(|new Function|setAttribute\(\s*["']on|\.style\b|cssText/.test(code), "unsichere Ausgabe oder Stil per Skript");
   assert.ok(!/location\.(search|href\s*=\s*[^"]|assign|replace)/.test(js.replace(/window\.location\.href = target/, "").replace(/^\s*\/\/.*$/gm, "")), "keine Ziele aus der Adresszeile");
-  for (const m of js.matchAll(/\bgo\(([^)]*)\)/g)) assert.match(m[1], /^"anmelden\.html(#abgelaufen)?"$|^g\.expired \? "anmelden\.html#abgelaufen" : "anmelden\.html"$|^target$/, "go(" + m[1] + ")");
+  for (const m of js.matchAll(/\bgo\(([^)]*)\)/g)) assert.match(m[1], /^"anmelden\.html(#abgelaufen|#geloescht)?"$|^g\.expired \? "anmelden\.html#abgelaufen" : "anmelden\.html"$|^target$/, "go(" + m[1] + ")");
   assert.match(js, /K\.tabFromHash\(window\.location\.hash\)/, "der Anker geht nur durch die Liste der vier Werte");
 });
 
@@ -392,4 +392,40 @@ test("Nicht erkannte Datei: Meldung verweist auf die Gratis-Tools und „Aus den
   assert.match(js, /TOOLS_HINT = "[^"]*Gratis-Tools[^"]*Aus den Gratis-Tools übernehmen/);
   assert.ok(js.includes('a.message + (a.tooMany ? "" : TOOLS_HINT)'), "bei nicht erkannter Datei");
   assert.ok(js.includes('if (s.ok === 0) warn.push("Aus dieser Datei lässt sich nichts übernehmen." + TOOLS_HINT)'), "bei Datei ohne übernehmbare Zeilen");
+});
+
+/* ---------- Auftrag 05: Nachtrag lange Namen, Profil rechnet neu, Löschen nur mit Eingabe ---------- */
+test("Langer Name (120 Zeichen): Export und erneuter Import ergeben 0 neue, die Tools kürzen weiter auf 80", () => {
+  const long = "Sehr langer Artikelname ".repeat(6).trim().slice(0, 120);
+  assert.equal(long.length, 120);
+  const rows = [row(1, { name: long, sell_cents: 2500, buy_cents: 500, sale_date: "2026-05-01" })];
+  const a = P.analyze(K.exportCsv(rows, {}), { maxRows: K.MAX_IMPORT_ROWS });
+  const e = P.entriesFrom(a, { platforms: ["Vinted"] });
+  assert.equal(e.entries[0].name.length, 80, "die Erkennung der Tools kürzt unverändert");
+  const plan = K.planTakeover(e.entries, rows, opt);
+  assert.deepEqual([plan.rows.length, plan.present], [0, 1]);
+  assert.equal(K.planTakeover(e.entries, [row(2, { name: "Anderer " + long })], opt).rows.length, 1, "ein anderer Name bleibt neu");
+});
+
+test("Profiländerung rechnet sofort neu: Kleinunternehmer wird Regelbesteuerung 7 %", () => {
+  const r = row(1, { sell_cents: 10700, buy_cents: 2000, cost_cents: 0 });
+  const before = K.yearStats([r], 2026, { seller_mode: "business", vat_mode: "small" });
+  const after = K.yearStats([r], 2026, { seller_mode: "business", vat_mode: "regular", vat_rate: 7 });
+  assert.deepEqual([before.vat, before.profit], [0, 8700]);
+  assert.deepEqual([after.vat, after.profit], [700, 8000]);
+  assert.equal(K.rowProfit(r, { seller_mode: "business", vat_mode: "regular", vat_rate: 7 }), 8000);
+});
+
+test("Konto-Reiter: Löschen nur mit „löschen“, Rückfrage beim Abmelden, Passwort wird nicht gespeichert", () => {
+  const js = read("mein.js"), h = read("mein.html");
+  assert.match(js, /delWordOk = \(\) => \$\("del-word"\)\.value\.trim\(\)\.toLowerCase\(\) === "löschen"/);
+  const f = js.slice(js.indexOf("async function deleteAccount"));
+  assert.ok(f.indexOf("if (!delWordOk()) return") < f.indexOf("store.deleteAccount()"), "erst prüfen, dann löschen");
+  assert.ok(f.indexOf("store.deleteAccount()") < f.indexOf("client.signOut()"), "Sitzung erst nach erfolgreichem Löschen leeren");
+  assert.match(h, /id="del-yes" disabled/);
+  assert.match(h, /Konto und alle Daten löschen\?/); assert.match(h, /Alles unwiderruflich löschen/);
+  assert.match(h, /id="confirm-logout"[^>]*hidden/);
+  const code = js.split("\n").filter((l) => !l.trim().startsWith("//")).join("\n");
+  assert.ok(!/(localStorage|sessionStorage)[^;\n]*pw-new/.test(code) && !/console\./.test(code), "kein Passwort in Speicher oder Log");
+  assert.ok(!/<form[^>]*\saction=/.test(h));
 });

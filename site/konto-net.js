@@ -122,6 +122,34 @@
         return Array.isArray(rows) ? { ok: true, rows: rows.map((x) => ({ ...x, id: String(x.id).toLowerCase() })) } : failure(500);
       },
 
+      /** Profil ändern (Name, Verkaufsart, Umsatzsteuer) wie ProfileSync.sanitized und pushProfile der App. */
+      async saveProfile(f) {
+        const uid = await userIdOf();
+        if (!uid) return EXPIRED;
+        const business = f && f.seller_mode === "business";
+        const vat = business && (f.vat_mode === "regular" || f.vat_mode === "margin") ? f.vat_mode : "small";
+        const body = {
+          first_name: String((f && f.first_name) || "").trim().slice(0, 60), last_name: String((f && f.last_name) || "").trim().slice(0, 60),
+          seller_mode: business ? "business" : "private", vat_mode: vat, vat_rate: vat === "regular" && Number(f.vat_rate) === 7 ? 7 : 19,
+        };
+        const r = await call("/rest/v1/profiles?id=eq." + encodeURIComponent(uid), { method: "PATCH", headers: { Prefer: "return=minimal" }, json: body });
+        return wrap(r, () => ({ ok: true, profile: body }));
+      },
+
+      /** Neues Passwort setzen (PUT auth/v1/user). Die Regeln prüft die Seite vorher, hier nur die Antwort des Dienstes in verständlichem Deutsch. */
+      async changePassword(pw) {
+        const r = await call("/auth/v1/user", { method: "PUT", json: { password: String(pw || "") } });
+        if (r.expired) return EXPIRED;
+        if (r.ok) return { ok: true };
+        return { ok: false, message: r.status === 0 ? A.NETWORK : A.errorMessage(r.status, await readJson(r), "reset") };
+      },
+
+      /** Konto samt Daten und Fotos löschen (Funktion delete-account). Die Sitzung räumt danach die Seite auf. */
+      async deleteAccount() {
+        const r = await call("/functions/v1/delete-account", { method: "POST", json: {} });
+        return wrap(r, () => ({ ok: true }));
+      },
+
       async loadProfile() {
         const uid = await userIdOf();
         if (!uid) return EXPIRED;

@@ -59,7 +59,8 @@
   }
 
   /** Inhalt ohne Kennung und Zeitstempel, zum Erkennen doppelter Einträge beim Übernehmen. */
-  const dupKey = (r) => [String(r.name || "").trim().toLowerCase(), String(r.platform || "").toLowerCase(), r.sell_cents || 0, r.buy_cents || 0, r.cost_cents || 0, r.is_sold !== false ? 1 : 0, r.sale_date || "", r.buy_date || ""].join("|");
+  // Name nur bis 80 Zeichen vergleichen: Die Erkennung von Dateien und der Tools kürzt dort, ein langer Name soll beim Re-Import nicht doppelt werden.
+  const dupKey = (r) => [String(r.name || "").replace(/\s+/g, " ").trim().toLowerCase().slice(0, 80), String(r.platform || "").toLowerCase(), r.sell_cents || 0, r.buy_cents || 0, r.cost_cents || 0, r.is_sold !== false ? 1 : 0, r.sale_date || "", r.buy_date || ""].join("|");
 
   /**
    * Einträge der Gratis-Tools ins Konto übernehmen. Was es dort schon gibt (gleicher Inhalt), wird nicht doppelt angelegt.

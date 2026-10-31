@@ -227,7 +227,7 @@ test("Sicherheitsrichtlinie: Der Anmeldedienst steht nur in den drei Konto-Seite
 });
 test("Weiterleitung: nur feste Ziele, nichts aus der Adresszeile", () => {
   const ui = read("auth-ui.js");
-  assert.ok(!/location\.(search|hash)\s*(?!===)/.test(ui.replace('window.location.hash === "#abgelaufen"', "")), "keine Ziele aus der Adresszeile");
+  assert.ok(!/location\.(search|hash)\s*(?!===)/.test(ui.replace('window.location.hash === "#abgelaufen"', "").replace('window.location.hash === "#geloescht"', "")), "keine Ziele aus der Adresszeile");
   for (const m of ui.matchAll(/\bgo\(([^)]*)\)/g)) assert.match(m[1], /^"(mein|anmelden)\.html(#abgelaufen)?"$|^r\.expired \? "anmelden\.html#abgelaufen" : "anmelden\.html"$|^target$/, "go(" + m[1] + ")");
   assert.ok(!/innerHTML|outerHTML|document\.write|eval\(/.test(ui + read("auth-lib.js")), "keine unsichere Ausgabe");
 });

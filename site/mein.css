@@ -118,3 +118,12 @@
 .io-preview { font-weight: 650; margin: 0; }
 .io-actions { display: flex; gap: var(--s2); flex-wrap: wrap; }
 .io input[type="file"] { min-height: 44px; padding: 8px 0; border: 0; font-size: 1rem; }
+
+/* Konto */
+.konto-block { margin-top: var(--s6); max-width: 520px; }
+.konto-block > * + * { margin-top: var(--s3); }
+.konto-block h3 { margin-top: 0; }
+.konto-block fieldset { border: 0; padding: 0; margin: 0; }
+.konto-block legend { font-weight: 650; font-size: .92rem; margin-bottom: 6px; padding: 0; }
+.konto-block .choice { display: flex; gap: 20px; flex-wrap: wrap; }
+.konto-block .choice label { display: inline-flex; align-items: center; gap: 8px; font-weight: 500; margin: 0; min-height: 44px; }

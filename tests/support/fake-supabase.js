@@ -13,6 +13,7 @@ function start(clock) {
   const files = new Map();          // Pfad -> Buffer (Foto-Ordner, erster Teil = Nutzerkennung)
   const profiles = new Map();       // Nutzerkennung -> Profil
   const writes = { n: 0 };
+  const fail = {};                  // z. B. fail.deleteAccount = 500: die Funktion scheitert
   let n = 0;
   const stamp = (later = 0) => new Date(clock.now() + later * 1000).toISOString();
   const tsOf = (v) => (v ? Date.parse(v) : -Infinity);
@@ -108,10 +109,22 @@ function start(clock) {
         }
         return send(404, { message: "nicht gefunden" });
       }
+      if (p === "/functions/v1/delete-account" && req.method === "POST") {   // wie die Funktion: Konto, Profil, Artikel und alle Fotos weg
+        if (!me) return send(401, { message: "JWT expired" });
+        if (fail.deleteAccount) return send(fail.deleteAccount, { message: "boom" });
+        const uid = uidOf(me);
+        articles.delete(uid); profiles.delete(uid);
+        for (const k of [...files.keys()]) if (k.startsWith(uid + "/")) files.delete(k);
+        for (const [t, e] of [...tokens]) if (e === me) tokens.delete(t);
+        for (const [t, e] of [...refresh]) if (e === me) refresh.delete(t);
+        users.delete(me);
+        return send(200, { deleted: true });
+      }
       if (p === "/rest/v1/profiles") {
         if (!me) return send(401, { message: "JWT expired" });
         const uid = uidOf(me);
         if ((q.get("id") || "").replace("eq.", "") !== uid) return send(200, []);
+        if (req.method === "PATCH") { Object.assign(profiles.get(uid), b); return send(204); }
         return req.method === "GET" ? send(200, [profiles.get(uid)]) : send(404, { message: "nicht gefunden" });
       }
       if (p === "/rest/v1/articles") {
@@ -144,7 +157,7 @@ function start(clock) {
     });
   });
   return new Promise((resolve) => server.listen(0, "127.0.0.1", () => resolve({
-    url: "http://127.0.0.1:" + server.address().port, key: KEY, log, users, tokens, refresh, articles, files, profiles, writes, close: () => new Promise((r) => { server.close(r); if (server.closeAllConnections) server.closeAllConnections(); }),
+    url: "http://127.0.0.1:" + server.address().port, key: KEY, log, users, tokens, refresh, articles, files, profiles, writes, fail, close: () => new Promise((r) => { server.close(r); if (server.closeAllConnections) server.closeAllConnections(); }),
   })));
 }
 module.exports = { start, KEY };

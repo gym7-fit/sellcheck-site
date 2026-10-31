@@ -137,7 +137,72 @@
     <section class="panel" role="tabpanel" id="panel-konto" aria-labelledby="tab-konto" tabindex="0" hidden>
       <h2>Konto</h2>
       <p>Angemeldet als <b id="who"></b></p>
-      <p class="auth-alt"><button class="btn secondary" type="button" id="logout">Abmelden</button></p>
+      <p id="konto-msg" class="auth-msg" role="status" hidden></p>
+
+      <form id="profile-form" class="konto-block" novalidate>
+        <h3>Persönliche Daten</h3>
+        <div><label for="p-first">Vorname</label><input id="p-first" type="text" maxlength="60" autocomplete="given-name"></div>
+        <div><label for="p-last">Nachname</label><input id="p-last" type="text" maxlength="60" autocomplete="family-name"></div>
+        <h3>Steuerliche Angaben</h3>
+        <fieldset><legend>Ich verkaufe</legend>
+          <div class="choice">
+            <label><input type="radio" name="p-seller" value="private"> Privat</label>
+            <label><input type="radio" name="p-seller" value="business"> Gewerblich</label>
+          </div>
+        </fieldset>
+        <div id="p-vat-box" hidden>
+          <fieldset><legend>Umsatzsteuer</legend>
+            <div class="choice">
+              <label><input type="radio" name="p-vat" value="small"> Kleinunternehmer</label>
+              <label><input type="radio" name="p-vat" value="regular"> Regelbesteuert</label>
+              <label><input type="radio" name="p-vat" value="margin"> Differenzbesteuert</label>
+            </div>
+          </fieldset>
+          <fieldset id="p-rate-box" hidden><legend>Steuersatz</legend>
+            <div class="choice">
+              <label><input type="radio" name="p-rate" value="19"> 19 %</label>
+              <label><input type="radio" name="p-rate" value="7"> 7 %</label>
+            </div>
+          </fieldset>
+          <p id="p-vat-text" class="muted fine"></p>
+        </div>
+        <p class="muted fine">Verkaufsart und Umsatzsteuer bestimmen die Gewinnberechnung. Keine Steuerberatung, im Zweifel klärt das Finanzamt.</p>
+        <button class="btn small" type="submit" id="p-save">Angaben sichern</button>
+      </form>
+
+      <form id="pw-form" class="konto-block" novalidate>
+        <h3>Passwort ändern</h3>
+        <div><label for="pw-new">Neues Passwort</label>
+          <div class="pw-wrap"><input id="pw-new" type="password" autocomplete="new-password"><button class="pw-toggle" type="button" data-toggle-pw="pw-new" aria-pressed="false">Anzeigen</button></div>
+          <ul class="pw-rules" id="pw-rules"></ul></div>
+        <div><label for="pw-new2">Neues Passwort wiederholen</label>
+          <div class="pw-wrap"><input id="pw-new2" type="password" autocomplete="new-password"><button class="pw-toggle" type="button" data-toggle-pw="pw-new2" aria-pressed="false">Anzeigen</button></div></div>
+        <button class="btn small" type="submit" id="pw-save">Passwort ändern</button>
+      </form>
+
+      <div class="konto-block">
+        <h3>Abmelden</h3>
+        <button class="btn secondary small" type="button" id="logout">Abmelden</button>
+        <div id="confirm-logout" class="confirm" hidden>
+          <p><b>Abmelden?</b></p>
+          <p class="muted">Deine Daten bleiben in deinem Konto. Zum Weiterarbeiten meldest du dich wieder an.</p>
+          <button class="btn" type="button" id="logout-yes">Abmelden</button>
+          <button class="btn secondary" type="button" id="logout-no">Abbrechen</button>
+        </div>
+      </div>
+
+      <div class="konto-block">
+        <h3>Konto und alle Daten löschen</h3>
+        <p class="muted">Löscht dein Konto mit allen Angaben, Artikeln, Fotos und Belegen online. Das lässt sich nicht rückgängig machen.</p>
+        <button class="btn danger small" type="button" id="del-open">Konto und alle Daten löschen</button>
+        <div id="confirm-del" class="confirm" hidden>
+          <p><b>Konto und alle Daten löschen?</b></p>
+          <p class="muted">Dein Konto, Profil, deine Sicherung sowie Artikel und Fotos werden entfernt.</p>
+          <div><label for="del-word">Tippe „löschen“, um zu bestätigen</label><input id="del-word" type="text" autocomplete="off" autocapitalize="none" spellcheck="false"></div>
+          <button class="btn danger" type="button" id="del-yes" disabled>Alles unwiderruflich löschen</button>
+          <button class="btn secondary" type="button" id="del-no">Abbrechen</button>
+        </div>
+      </div>
     </section>
   </div>
 

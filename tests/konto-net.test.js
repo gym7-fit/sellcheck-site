@@ -266,3 +266,61 @@ test("Aufbau: Adresse und Schlüssel sind Pflicht, konto-net.js hat kein DOM und
   const code = src.split("\n").filter((l) => !l.trim().startsWith("//") && !l.trim().startsWith("/**")).join("\n");
   assert.doesNotMatch(code, /\b(document|window|localStorage|sessionStorage|innerHTML|console)\b/);
 });
+
+/* ---------- Auftrag 05: Profil, Passwort, Konto löschen ---------- */
+test("Profil ändern: PATCH mit bereinigten Feldern, Kleinunternehmer wird Regelbesteuerung 7 %", async () => {
+  const { srv, store } = await setup();
+  srv.log.length = 0;
+  const r = await store.saveProfile({ first_name: "  Max ", last_name: "Meier", seller_mode: "business", vat_mode: "regular", vat_rate: 7 });
+  assert.deepEqual(r, { ok: true, profile: { first_name: "Max", last_name: "Meier", seller_mode: "business", vat_mode: "regular", vat_rate: 7 } });
+  const p = calls(srv, "PATCH", "/rest/v1/profiles")[0];
+  assert.equal(p.query.id, "eq." + srv.users.get(MAIL).id);
+  assert.equal(p.headers.prefer, "return=minimal");
+  assert.deepEqual((await store.loadProfile()).profile, r.profile, "im Konto angekommen");
+  // Privat: keine Umsatzsteuer, Satz 7 gilt nur bei Regelbesteuerung
+  assert.deepEqual((await store.saveProfile({ first_name: "A", seller_mode: "private", vat_mode: "regular", vat_rate: 7 })).profile, { first_name: "A", last_name: "", seller_mode: "private", vat_mode: "small", vat_rate: 19 });
+  assert.equal((await store.saveProfile({ seller_mode: "business", vat_mode: "margin", vat_rate: 7 })).profile.vat_rate, 19);
+});
+
+test("Passwort ändern: gültiges Passwort geht als PUT, Antwort „gleiches Passwort“ wird erklärt, Sitzung bleibt", async () => {
+  const { srv, store, client } = await setup();
+  srv.log.length = 0;
+  assert.deepEqual(await store.changePassword("Neuer-Hase-Kaffee#42"), { ok: true });
+  const put = calls(srv, "PUT", "/auth/v1/user")[0];
+  assert.deepEqual(put.body, { password: "Neuer-Hase-Kaffee#42" });
+  assert.equal(srv.users.get(MAIL).password, "Neuer-Hase-Kaffee#42");
+  assert.ok((await client.getSession()).session, "weiter angemeldet");
+  const same = await store.changePassword("Neuer-Hase-Kaffee#42");
+  assert.deepEqual([same.ok, same.message], [false, A.errorMessage(422, { error_code: "same_password" }, "reset")]);
+  const weak = await store.changePassword("kurz");
+  assert.equal(weak.ok, false);
+});
+
+test("Konto löschen: Funktion wird aufgerufen, Nachbau löscht Nutzer, Zeilen und Fotos", async () => {
+  const { srv, store, client, uid, state } = await setup();
+  await store.save([row(1), row(2)]);
+  await store.uploadPhoto(id(1), "foto", jpeg(300, 5));
+  assert.equal((await state()).files.length, 1);
+  srv.log.length = 0;
+  assert.deepEqual(await store.deleteAccount(), { ok: true });
+  assert.equal(calls(srv, "POST", "/functions/v1/delete-account").length, 1);
+  assert.equal(srv.users.has(MAIL), false);
+  assert.equal(srv.articles.has(uid), false);
+  assert.deepEqual([...srv.files.keys()].filter((k) => k.startsWith(uid + "/")), []);
+  await client.signOut();
+  assert.equal((await client.getSession()).session, null, "Sitzung ist leer");
+});
+
+test("Konto löschen scheitert (500, keine Verbindung): nichts gelöscht, Sitzung bleibt, Meldung", async () => {
+  const { srv, store, client, uid } = await setup();
+  await store.save([row(1)]);
+  srv.fail.deleteAccount = 500;
+  const r = await store.deleteAccount();
+  assert.deepEqual([r.ok, r.message], [false, A.errorMessage(500, null, "other")]);
+  assert.equal(srv.users.has(MAIL), true);
+  assert.equal(srv.articles.get(uid).size, 1);
+  assert.ok((await client.getSession()).session, "Sitzung bleibt");
+  await srv.close();
+  assert.deepEqual(await store.deleteAccount(), { ok: false, message: A.NETWORK });
+  assert.ok((await client.getSession()).session, "Sitzung bleibt auch ohne Verbindung");
+});

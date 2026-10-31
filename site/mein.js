@@ -627,6 +627,96 @@
   }
   const showTakeover = () => { $("io-takeover").hidden = toolsEntries().length === 0; };
 
+  /* ---------- Konto: Profil, Passwort, Abmelden, Konto löschen ---------- */
+  const checkedVal = (name) => { const r = document.querySelector('input[name="' + name + '"]:checked'); return r ? r.value : ""; };
+  const setRadio = (name, value) => { const r = document.querySelector('input[name="' + name + '"][value="' + value + '"]'); if (r) r.checked = true; };
+  const kontoMsg = (t, kind) => msg($("konto-msg"), t, kind);
+  function syncProfileVat() {
+    const business = checkedVal("p-seller") === "business", vat = checkedVal("p-vat") || "small";
+    $("p-vat-box").hidden = !business;
+    $("p-rate-box").hidden = vat !== "regular";
+    $("p-vat-text").textContent = A.vatExplainer(vat, Number(checkedVal("p-rate") || 19));
+  }
+  function fillProfile() {
+    const p = state.profile || {};
+    $("p-first").value = p.first_name || ""; $("p-last").value = p.last_name || "";
+    setRadio("p-seller", p.seller_mode === "private" ? "private" : "business");
+    setRadio("p-vat", p.vat_mode === "regular" || p.vat_mode === "margin" ? p.vat_mode : "small");
+    setRadio("p-rate", Number(p.vat_rate) === 7 ? "7" : "19");
+    syncProfileVat();
+  }
+  async function saveProfile(e) {
+    e.preventDefault();
+    kontoMsg("");
+    const first = $("p-first").value, last = $("p-last").value;
+    $("p-save").disabled = true;
+    try {
+      const r = await store.saveProfile({ first_name: first, last_name: last, seller_mode: checkedVal("p-seller"), vat_mode: checkedVal("p-vat"), vat_rate: Number(checkedVal("p-rate")) });
+      if (failed(r, $("konto-msg"))) return;
+      state.profile = { ...(state.profile || {}), ...r.profile };
+      fillProfile();
+      renderAll();   // Übersicht, Artikel und Meldegrenze rechnen sofort mit den neuen Angaben
+      kontoMsg("Angaben gesichert.", "ok");
+    } finally { $("p-save").disabled = false; }
+  }
+  function renderPwRules() {
+    const ul = $("pw-rules"), r = A.evaluatePassword($("pw-new").value, state.email || "", [$("p-first").value, $("p-last").value]);
+    clear(ul);
+    for (const x of r.rules) ul.appendChild(el("li", x.ok ? "ok" : "", x.text));
+    for (const t of r.problems) ul.appendChild(el("li", "bad", t));
+    return r;
+  }
+  async function changePassword(e) {
+    e.preventDefault();
+    kontoMsg("");
+    const pw = $("pw-new").value, names = [$("p-first").value, $("p-last").value];
+    const err = A.passwordError(pw, state.email || "", names);
+    if (err) return kontoMsg(err, "error");   // Regelverstoß: keine Anfrage
+    if (pw !== $("pw-new2").value) return kontoMsg("Die Passwörter stimmen nicht überein.", "error");
+    $("pw-save").disabled = true;
+    try {
+      const r = await store.changePassword(pw);
+      if (failed(r, $("konto-msg"))) return;
+      $("pw-new").value = ""; $("pw-new2").value = "";
+      renderPwRules();
+      kontoMsg("Passwort geändert", "ok");
+    } finally { $("pw-save").disabled = false; }
+  }
+  const delWordOk = () => $("del-word").value.trim().toLowerCase() === "löschen";
+  async function deleteAccount() {
+    if (!delWordOk()) return;   // ohne die Eingabe passiert nichts
+    kontoMsg("");
+    $("del-yes").disabled = true; $("del-no").disabled = true;
+    try {
+      const r = await store.deleteAccount();
+      if (r && r.expired) { go("anmelden.html#abgelaufen"); return; }
+      if (!r || !r.ok) { kontoMsg(((r && r.message) || "Das hat nicht geklappt. Versuche es später noch einmal.") + " Dein Konto wurde nicht gelöscht, alles ist noch da.", "error"); return; }
+      await client.signOut();
+      go("anmelden.html#geloescht");
+    } finally { $("del-no").disabled = false; $("del-yes").disabled = !delWordOk(); }
+  }
+  function wireKonto() {
+    fillProfile();
+    document.querySelectorAll('input[name^="p-"]').forEach((r) => r.addEventListener("change", syncProfileVat));
+    $("profile-form").addEventListener("submit", saveProfile);
+    $("pw-form").addEventListener("submit", changePassword);
+    for (const id of ["pw-new", "p-first", "p-last"]) $(id).addEventListener("input", renderPwRules);
+    document.querySelectorAll("[data-toggle-pw]").forEach((b) => b.addEventListener("click", () => {
+      const input = $(b.getAttribute("data-toggle-pw")), on = input.type === "password";
+      input.type = on ? "text" : "password";
+      b.textContent = on ? "Verbergen" : "Anzeigen";
+      b.setAttribute("aria-pressed", String(on));
+    }));
+    renderPwRules();
+    $("logout").addEventListener("click", () => { $("confirm-logout").hidden = false; $("logout-no").focus(); });
+    $("logout-no").addEventListener("click", () => { $("confirm-logout").hidden = true; $("logout").focus(); });
+    $("logout-yes").addEventListener("click", async () => { await client.signOut(); go("anmelden.html"); });
+    $("del-open").addEventListener("click", () => { $("confirm-del").hidden = false; $("del-word").value = ""; $("del-yes").disabled = true; $("del-word").focus(); });
+    $("del-no").addEventListener("click", () => { $("confirm-del").hidden = true; $("del-open").focus(); });
+    $("del-word").addEventListener("input", () => { $("del-yes").disabled = !delWordOk(); });
+    $("del-yes").addEventListener("click", deleteAccount);
+  }
+
   /* ---------- Laden und Abgleich ---------- */
   async function load() {
     const p = await store.loadProfile();
@@ -663,7 +753,6 @@
       const row = b && state.rows.get(b.getAttribute("data-id"));
       if (row) openForm(row);
     });
-    $("logout").addEventListener("click", async () => { await client.signOut(); go("anmelden.html"); });
     document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") sync(); });
     window.addEventListener("pagehide", () => { for (const u of thumbs.values()) URL.revokeObjectURL(u); thumbs.clear(); });
   }
@@ -671,7 +760,7 @@
   async function init() {
     const g = await client.getSession();
     if (!g.session) return go(g.expired ? "anmelden.html#abgelaufen" : "anmelden.html");
-    $("who").textContent = g.session.email;
+    $("who").textContent = g.session.email; state.email = g.session.email;
     wireTabs(); wireControls(); wireForm(); wireIo(); showTakeover();
     if (g.offline) msg($("msg"), "Keine Verbindung zum Server. Prüfe dein Internet und versuche es noch einmal.", "error");
     if (!(await load())) {
@@ -684,6 +773,7 @@
       return;
     }
     msg($("msg"), "");
+    wireKonto();
     $("loading").hidden = true;
     $("mine").hidden = false;
     renderAll();

@@ -52,6 +52,7 @@
   function initLogin() {
     const m = $("msg");
     if (window.location.hash === "#abgelaufen") msg(m, "Deine Anmeldung ist abgelaufen. Melde dich noch einmal an.", "error");
+    else if (window.location.hash === "#geloescht") msg(m, "Dein Konto und alle Daten sind gelöscht.", "ok");
     let resetEmail = "", resetSession = null;
     const steps = ["step-login", "step-code", "step-new"];
     const only = (id) => steps.forEach((s) => show(s, s === id));

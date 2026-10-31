@@ -49,6 +49,14 @@ Im Reiter Artikel, Bereich „Importieren und exportieren“ (`mein.js`, Logik i
 - **Export:** `SCKonto.exportCsv`, Spalten wie `CSVExport.journal` der App, Dateiname `sellcheck-artikel-JJJJ-MM-TT.csv`.
 - **Fotos ersetzen:** Das alte Foto wird erst gelöscht, wenn `loadByIds` zeigt, dass die Zeile im Konto den neuen Pfad trägt.
 
+## Konto-Reiter (Auftrag 05)
+
+- **Profil:** Vorname, Nachname, Verkaufsart, Umsatzsteuer und Satz wie bei der Registrierung, `PATCH rest/v1/profiles` über `store.saveProfile`. Übersicht, Artikel und Meldegrenze rechnen danach sofort mit den neuen Werten.
+- **Passwort:** Regeln live und vor dem Senden (`passwordError` mit Name und E-Mail), danach `PUT auth/v1/user` über `store.changePassword`. Man bleibt angemeldet, das Passwort wird nirgends gespeichert.
+- **Abmelden:** mit Rückfrage, dann `anmelden.html`.
+- **Konto löschen:** Rückfrage und Eingabe von „löschen“, dann `POST functions/v1/delete-account` über `store.deleteAccount`. Erst nach Erfolg wird die Sitzung geleert und `anmelden.html#geloescht` zeigt „Dein Konto und alle Daten sind gelöscht.“ Scheitert die Funktion, bleibt alles wie es war, mit Meldung.
+- **Duplikate beim Import:** `dupKey` vergleicht Namen nur bis 80 Zeichen, damit der Re-Import des eigenen Exports bei langen Namen nichts doppelt anlegt.
+
 ## Bekannt und offen
 
 - Echte Registrierung und Mails: macht Louis selbst, die Tests laufen nur gegen den Nachbau.
