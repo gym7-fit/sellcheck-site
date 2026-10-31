@@ -378,6 +378,37 @@
     return { entries, stats };
   }
 
+  /* ---------- Datei -> Einträge ohne Oberfläche (für „Mein SellCheck“, gleiche Erkennung wie die Tools in import.js) ---------- */
+  const BANKISH = /verwendungszweck|buchungstext|wertstellung|valuta|\biban\b|auftraggeber|beguenstigter|begünstigter|zahlungspflichtiger|zahlungsempfänger/i;
+  /** Text einer CSV erkennen. o.maxRows: mehr Datenzeilen werden abgelehnt (nichts wird gelesen). */
+  function analyze(text, o) {
+    const limit = (o && o.maxRows) || MAX_ROWS;
+    if (!text || !text.trim()) return { ok: false, message: "Die Datei ist leer." };
+    const d = detectDelimiter(text);
+    const all = parseCSV(text, d);
+    if (all.length < 2) return { ok: false, message: "Ich konnte keine Tabelle erkennen. Ist das eine CSV- oder Textdatei (kein Excel .xlsx)?" };
+    const h = findHeader(all);
+    const headers = all[h].map((x, i) => x.trim() || `Spalte ${i + 1}`);
+    const rows = all.slice(h + 1).filter((r) => r.length >= 2);
+    if (!rows.length) return { ok: false, message: "Keine Datenzeilen unter der Kopfzeile gefunden. Die Datei braucht eine Kopfzeile mit Spaltennamen." };
+    if (rows.length > limit) return { ok: false, tooMany: true, count: rows.length, message: `Die Datei hat ${rows.length} Zeilen, erlaubt sind ${limit} je Durchgang. Es wurde nichts gespeichert. Teile die Datei nach Jahren auf.` };
+    const own = isOwnFormat(headers);
+    const map = own ? ownMapping(headers) : guessColumns(headers);
+    const g = guessDateOrder(map.date >= 0 ? rows.map((r) => r[map.date]) : []);
+    const bankLike = !own && headers.some((x) => BANKISH.test(x));
+    const typeChecked = new Map();
+    if (map.type >= 0) for (const r of rows) { const v = (r[map.type] || "").trim(); if (!typeChecked.has(v)) typeChecked.set(v, defaultTypeChecked(v)); }
+    return { ok: true, delimiter: d, headers, rows, own, map, dateOrder: g.order, ambiguous: g.ambiguous, currencies: detectCurrencies(headers, rows), bankLike, keyword: bankLike ? "Vinted|Kleinanzeigen" : "", typeChecked };
+  }
+  /** Einträge zur erkannten Datei. Doppelte gegen das Konto prüft SCKonto.planTakeover, deshalb ohne Vergleich mit vorhandenen Einträgen. */
+  function entriesFrom(a, o) {
+    const x = o || {};
+    return buildEntries(a.rows, a.map, {
+      dateOrder: x.dateOrder || a.dateOrder, platform: x.platform || "", positiveOnly: x.positiveOnly == null ? !a.own : !!x.positiveOnly,
+      keywords: String(x.keyword == null ? a.keyword : x.keyword).split(/[|,]/), own: a.own, typeChecked: a.typeChecked, platforms: x.platforms || [],
+    });
+  }
+
   /* ---------- Beispieldateien (frei erfunden, KEINE Originalexporte) ---------- */
   const SAMPLES = {
     ebay: { platform: "eBay", keyword: "", text:
@@ -419,6 +450,6 @@
   return {
     MAX_ROWS, MAX_NAME, norm, decode, detectDelimiter, parseCSV, findHeader, parseNum, parseDate,
     guessDateOrder, guessColumns, isOwnFormat, ownMapping, detectCurrencies, indexExisting,
-    defaultTypeChecked, buildEntries, SAMPLES,
+    defaultTypeChecked, buildEntries, analyze, entriesFrom, SAMPLES,
   };
 });

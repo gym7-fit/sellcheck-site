@@ -90,6 +90,37 @@
       </div>
       <ul id="list" class="art-list"></ul>
       <div id="list-empty" class="empty" hidden><h3 id="empty-title"></h3><p class="muted" id="empty-text"></p></div>
+
+      <details id="io" class="io">
+        <summary>Importieren und exportieren</summary>
+        <div id="io-takeover" hidden>
+          <h3>Aus den Gratis-Tools übernehmen</h3>
+          <p class="muted">In diesem Browser liegen Einträge aus den Gratis-Tools. Sie werden ins Konto kopiert, die Tools behalten ihre Daten.</p>
+          <button class="btn secondary small" type="button" id="io-take">Aus den Gratis-Tools übernehmen</button>
+        </div>
+        <h3>Aus Datei importieren</h3>
+        <p class="muted">Wähle eine CSV aus SellCheck (App-Sicherung oder Web-Tools) oder einen Export von eBay, Etsy, Amazon, PayPal oder deiner Bank. Vorhandene Einträge werden erkannt und nicht doppelt angelegt.</p>
+        <div><label for="io-file">CSV-Dateien wählen</label><input id="io-file" type="file" accept=".csv,.txt,.tsv,text/csv,text/plain" multiple></div>
+        <p class="muted fine">Die Datei wird nur in deinem Browser gelesen. Sie wird nicht hochgeladen, nur die Einträge, die du übernimmst.</p>
+        <div id="io-ask" hidden>
+          <p id="io-file-name" class="io-file"></p>
+          <p id="io-warn" class="auth-msg" role="status" hidden></p>
+          <div id="io-ask-date"><label for="io-dateorder">Datumsformat</label>
+            <select id="io-dateorder"><option value="dmy">Tag.Monat.Jahr</option><option value="mdy">Monat/Tag/Jahr</option></select></div>
+          <div id="io-ask-platform"><label for="io-platform">Plattform</label><select id="io-platform"></select></div>
+          <div id="io-ask-keyword"><label for="io-keyword">Nur Zeilen mit diesem Stichwort (getrennt durch |)</label><input id="io-keyword" type="text" autocomplete="off" maxlength="120"></div>
+          <div><label class="consent"><input id="io-positive" type="checkbox"> <span>Nur positive Beträge importieren (Erstattungen auslassen)</span></label></div>
+        </div>
+        <p id="io-preview" class="io-preview" role="status" hidden></p>
+        <p id="io-msg" class="auth-msg" role="alert" hidden></p>
+        <div class="io-actions" id="io-actions" hidden>
+          <button class="btn small" type="button" id="io-go">Artikel ins Konto übernehmen</button>
+          <button class="btn secondary small" type="button" id="io-cancel">Abbrechen</button>
+        </div>
+        <h3>Exportieren</h3>
+        <p class="muted">Alle Artikel deines Kontos, verkaufte und im Bestand, als Tabelle für Excel oder Numbers.</p>
+        <button class="btn secondary small" type="button" id="io-export">Als CSV herunterladen</button>
+      </details>
     </section>
 
     <section class="panel" role="tabpanel" id="panel-meldegrenze" aria-labelledby="tab-meldegrenze" tabindex="0" hidden>

@@ -40,6 +40,15 @@ Lädt Artikel, Profil und Fotos aus dem Konto und schreibt Änderungen zurück, 
 - **Meldungen:** „Keine Verbindung“ aus `auth-lib.js`, sonst allgemeine Texte ohne Einzelheiten aus dem Konto.
 - **Tests:** `tests/konto-net.test.js` gegen `tests/support/fake-supabase.js`. Der Nachbau kennt jetzt Artikel (mit Trigger-Regel), Profile, Foto-Ablage, `/mock/remote` und `/mock/state` wie `sellcheck-app/Tests/mock_supabase.py`. Ändert sich der Python-Nachbau, den JS-Nachbau mitziehen.
 
+## Import, Übernahme und Export (Auftrag 04)
+
+Im Reiter Artikel, Bereich „Importieren und exportieren“ (`mein.js`, Logik in `konto-lib.js` und `parse-lib.js`).
+
+- **Übernahme aus den Gratis-Tools:** liest `sellcheck.sales.v1` (oder `vintcheck.sales.v1`) nur, schreibt nie dorthin. Doppelte erkennt `planTakeover` gegen die Artikel im Konto.
+- **Datei-Import:** `SCParse.analyze` und `entriesFrom` (gleiche Erkennung und `buildEntries` wie `import.js`), höchstens 5000 Zeilen und 5 MB je Datei. Die Datei wird nur im Browser gelesen, ins Konto gehen nur die übernommenen Artikel. Spalten lassen sich nicht von Hand zuordnen (nur Datumsformat, Plattform, Stichwort, „nur positive Beträge“).
+- **Export:** `SCKonto.exportCsv`, Spalten wie `CSVExport.journal` der App, Dateiname `sellcheck-artikel-JJJJ-MM-TT.csv`.
+- **Fotos ersetzen:** Das alte Foto wird erst gelöscht, wenn `loadByIds` zeigt, dass die Zeile im Konto den neuen Pfad trägt.
+
 ## Bekannt und offen
 
 - Echte Registrierung und Mails: macht Louis selbst, die Tests laufen nur gegen den Nachbau.

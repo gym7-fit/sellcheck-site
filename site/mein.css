@@ -108,3 +108,13 @@
   .art-side { max-width: 45%; }
   #form-dialog { padding: var(--s4); }
 }
+
+/* Importieren und exportieren */
+.io { margin-top: var(--s6); border-top: 1px solid var(--line); padding-top: var(--s4); }
+.io summary { min-height: 44px; display: flex; align-items: center; font-weight: 650; cursor: pointer; }
+.io > * + * { margin-top: var(--s3); }
+.io h3 { margin-top: var(--s5); }
+.io-file { font-weight: 650; overflow-wrap: anywhere; margin: 0; }
+.io-preview { font-weight: 650; margin: 0; }
+.io-actions { display: flex; gap: var(--s2); flex-wrap: wrap; }
+.io input[type="file"] { min-height: 44px; padding: 8px 0; border: 0; font-size: 1rem; }

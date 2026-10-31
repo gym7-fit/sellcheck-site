@@ -188,7 +188,7 @@
 
   /* ---------- Artikelliste ---------- */
   function emptyTexts(total) {
-    if (total === 0) return ["Noch keine Artikel", "Klicke auf „Artikel hinzufügen“ und erfasse deinen ersten Artikel."];
+    if (total === 0) return ["Noch keine Artikel", "Klicke auf „Artikel hinzufügen“ und erfasse deinen ersten Artikel, oder öffne „Importieren und exportieren“."];
     if (state.query) return ["Nichts gefunden", "Ändere die Suche."];
     return state.filter === "stock" ? ["Kein Artikel im Lager", "Alles verkauft. Neue Einkäufe erfasst du über „Artikel hinzufügen“."] : ["Nichts gefunden", "Ändere Filter oder Suche."];
   }
@@ -388,6 +388,24 @@
     for (const id of ["f-save", "f-save-next", "f-cancel", "f-delete"]) $(id).disabled = on;
   }
 
+  /**
+   * Alte Fotos erst löschen, wenn die Zeile im Konto nachgelesen den neuen Pfad trägt. Hat ein anderes Gerät inzwischen später geändert,
+   * verwirft der Server unsere Änderung, und das alte Foto wird dort noch gebraucht. Gibt true zurück, wenn der Stand neu geholt werden muss.
+   */
+  async function cleanupPhotos(row, old) {
+    const v = await store.loadByIds([row.id]);
+    if (v.expired) { go("anmelden.html#abgelaufen"); return false; }
+    const server = v.ok ? v.rows.find((x) => x.id === row.id) : null;
+    const c = K.photoCleanup(old, server, row);
+    if (c.remove.length) store.deletePhotos(c.remove).then((d) => { if (d && d.expired) go("anmelden.html#abgelaufen"); });
+    return server != null && c.keep.length > 0;
+  }
+  async function resyncNotice() {   // aktuellen Stand holen, die Meldung erst danach (der Abgleich leert die Meldungszeile)
+    state.lastSync = 0;
+    await sync();
+    if (state.lastSync) msg($("msg"), "Dieser Artikel wurde inzwischen auf einem anderen Gerät geändert und bleibt erhalten.");
+  }
+
   /** Speichern: neue Fotos zuerst hochladen, dann die Zeile, danach erst die alten Fotos löschen. Gibt true zurück, wenn alles im Konto ist. */
   async function save(andContinue) {
     if (state.saving) return;
@@ -399,6 +417,7 @@
       return;
     }
     const row = res.row, old = [];
+    let resync = false;
     setBusy(true);
     try {
       for (const kind of Object.keys(KIND)) {
@@ -406,14 +425,14 @@
         if (s.bytes) {
           const up = await store.uploadPhoto(row.id, c.api, s.bytes);
           if (failed(up, $("form-error"))) return;
-          if (before && before !== up.path) old.push(before);
+          if (before && before !== up.path) old.push({ col: c.col, path: before });
           row[c.col] = up.path;
-        } else if (s.removed && before) { old.push(before); row[c.col] = null; }
+        } else if (s.removed && before) { old.push({ col: c.col, path: before }); row[c.col] = null; }
       }
       const r = await store.save([row]);
       if (failed(r, $("form-error"))) return;
       state.rows.set(row.id, { ...(state.editing || {}), ...row });
-      if (old.length) store.deletePhotos(old).then((d) => { if (d && d.expired) go("anmelden.html#abgelaufen"); });
+      if (old.length) resync = await cleanupPhotos(row, old);
       renderAll();
       if (andContinue) {
         const keepSold = status(), keepPlatform = row.platform;
@@ -424,6 +443,7 @@
         msg($("form-saved"), "„" + row.name + "“ gesichert", "ok");
       } else closeForm();
     } finally { setBusy(false); }
+    if (resync) await resyncNotice();
   }
 
   /**
@@ -470,6 +490,141 @@
     wirePhotoField("photo"); wirePhotoField("receipt");
   }
 
+  /* ---------- Importieren, Übernehmen, Exportieren ---------- */
+  const IO_PLATFORMS = [...T.REPORTED_PLATFORMS, "Flohmarkt / bar", "Sonstige"];
+  const TOOLS_KEYS = ["sellcheck.sales.v1", "vintcheck.sales.v1"];
+  const MAX_FILE_BYTES = 5 * 1024 * 1024;
+  const io = { queue: [], file: null, a: null, plan: null, tools: null, busy: false };
+
+  /** Einträge der Gratis-Tools aus diesem Browser (nur lesen, nie ändern). */
+  function toolsEntries() {
+    try {
+      const raw = TOOLS_KEYS.map((k) => window.localStorage.getItem(k)).find(Boolean);
+      const list = raw ? JSON.parse(raw) : [];
+      return Array.isArray(list) ? list.map(T.sanitizeEntry).filter(Boolean) : [];
+    } catch { return []; }
+  }
+  const ioOpt = () => ({ now: new Date(), newId: uuid });
+  const ioMsg = (t, kind) => msg($("io-msg"), t, kind);
+  function ioShowPlan(label, plan, extra) {
+    io.plan = plan;
+    const p = $("io-preview");
+    p.textContent = (extra ? extra + " " : "") + plan.rows.length + (plan.rows.length === 1 ? " neuer Artikel" : " neue Artikel") + ", " + plan.present + " " + (plan.present === 1 ? "ist" : "sind") + " schon im Konto.";
+    p.hidden = false;
+    $("io-go").disabled = plan.rows.length === 0;
+    $("io-actions").hidden = false;
+    $("io-go").textContent = "Artikel ins Konto übernehmen";
+    if (label) $("io-file-name").textContent = label;
+  }
+  function ioReset() {
+    io.queue = []; io.file = null; io.a = null; io.plan = null; io.tools = null;
+    for (const id of ["io-ask", "io-preview", "io-actions"]) $(id).hidden = true;
+    ioMsg("");
+  }
+  function ioPreview() {
+    const a = io.a;
+    if (!a) return;
+    const e = P.entriesFrom(a, { dateOrder: $("io-dateorder").value, platform: $("io-platform").value, positiveOnly: $("io-positive").checked, keyword: $("io-keyword").value, platforms: IO_PLATFORMS });
+    const s = e.stats, parts = [s.ok + " von " + s.total + " Zeilen importierbar"];
+    if (s.filtered) parts.push(s.filtered + " per Typ-Filter übersprungen");
+    if (s.keyword) parts.push(s.keyword + " ohne Stichwort");
+    if (s.noAmount) parts.push(s.noAmount + " ohne gültigen Betrag (z. B. Erstattungen)");
+    if (s.noDate) parts.push(s.noDate + " ohne lesbares Datum");
+    const warn = [];
+    if (a.currencies.length) warn.push("Die Datei enthält andere Währungen (" + a.currencies.join(", ") + "). SellCheck rechnet nicht um, alle Beträge würden als Euro gezählt. Importiere nur die Euro-Zeilen oder rechne vorher um.");
+    const missing = e.entries.filter((x) => x.needsBuy).length;
+    if (missing) warn.push("Hinweis: Die Datei enthält keine Einkaufspreise. Dein Gewinn wirkt zu hoch, bis du sie nachträgst (" + missing + " Einträge).");
+    msg($("io-warn"), warn.join(" "), warn.length ? "error" : "");
+    ioShowPlan(null, K.planTakeover(e.entries, liveRows(), ioOpt()), parts.join(", ") + ".");
+  }
+  async function ioNextFile() {
+    while (io.queue.length) {
+      const file = io.queue.shift();
+      io.file = file;
+      const label = file.name + (io.queue.length ? " (noch " + io.queue.length + " weitere)" : "");
+      if (file.size > MAX_FILE_BYTES) { ioMsg(file.name + ": Die Datei ist größer als 5 MB. Bitte teile sie nach Jahren auf.", "error"); continue; }
+      if (/\.(xlsx|xls|numbers|pdf|zip)$/i.test(file.name)) { ioMsg(file.name + ": Dieses Format kann ich nicht lesen. Speichere die Tabelle bitte als CSV (in Excel über „Speichern unter“ mit dem Dateityp CSV).", "error"); continue; }
+      let text;
+      try { text = P.decode(await file.arrayBuffer()); } catch { ioMsg(file.name + ": Die Datei konnte nicht gelesen werden.", "error"); continue; }
+      const a = P.analyze(text, { maxRows: K.MAX_IMPORT_ROWS });
+      if (!a.ok) { ioMsg(file.name + ": " + a.message, "error"); continue; }
+      io.a = a;
+      ioMsg("");
+      $("io-dateorder").value = a.dateOrder;
+      $("io-ask-date").hidden = !a.ambiguous;
+      $("io-platform").value = "";
+      $("io-positive").closest("div").hidden = false;
+      $("io-keyword").value = a.keyword;
+      $("io-ask-keyword").hidden = !a.bankLike;
+      $("io-positive").checked = !a.own;
+      $("io-file-name").textContent = label;
+      $("io-ask").hidden = false;
+      ioPreview();
+      // Plattform nur erfragen, wenn sie weder in der Datei steht noch aus dem Namen klar ist (wie in den Tools)
+      $("io-ask-platform").hidden = !P.entriesFrom(a, { platforms: IO_PLATFORMS, positiveOnly: !a.own, keyword: a.keyword }).entries.some((x) => x.platform === "Sonstige");
+      return;
+    }
+    if (!io.a) { $("io-ask").hidden = true; $("io-preview").hidden = true; $("io-actions").hidden = true; }
+  }
+  async function ioGo() {
+    if (io.busy) return;
+    if (!io.tools) ioPreview();
+    const rows = io.plan ? io.plan.rows : [];
+    if (!rows.length) return;
+    io.busy = true; $("io-go").disabled = true;
+    try {
+      const r = await store.save(rows);
+      if (failed(r, $("io-msg"))) return;
+      for (const x of rows) state.rows.set(x.id, x);
+      renderAll();
+      ioMsg(rows.length + (rows.length === 1 ? " Artikel übernommen." : " Artikel übernommen."), "ok");
+      io.plan = null;
+      if (io.tools) { io.tools = null; $("io-preview").hidden = true; $("io-actions").hidden = true; $("io-ask").hidden = true; return; }
+      io.a = null;
+      $("io-preview").hidden = true; $("io-actions").hidden = true; $("io-ask").hidden = true;
+      if (io.queue.length) { const done = $("io-msg").textContent; await ioNextFile(); if (io.a) ioMsg(done, "ok"); }
+    } finally { io.busy = false; $("io-go").disabled = !(io.plan && io.plan.rows.length); }
+  }
+  async function ioTakeover() {
+    ioReset();
+    state.lastSync = 0; await sync();   // zuerst den Stand im Konto holen, damit nichts doppelt angelegt wird
+    const entries = toolsEntries();
+    io.tools = entries;
+    $("io-ask").hidden = false;
+    for (const id of ["io-ask-date", "io-ask-platform", "io-ask-keyword", "io-warn"]) $(id).hidden = true;
+    $("io-positive").closest("div").hidden = true;
+    ioShowPlan("Einträge aus den Gratis-Tools (" + entries.length + ")", K.planTakeover(entries, liveRows(), ioOpt()));
+  }
+  function ioExport() {
+    const blob = new Blob([K.exportCsv([...state.rows.values()], state.profile)], { type: "text/csv;charset=utf-8" });
+    const a = document.createElement("a");
+    a.setAttribute("href", URL.createObjectURL(blob));
+    a.setAttribute("download", K.exportName(new Date()));
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.getAttribute("href")), 1000);
+  }
+  function wireIo() {
+    const sel = $("io-platform");
+    const none = el("option", "", "Bitte wählen …"); none.value = ""; sel.appendChild(none);
+    for (const n of IO_PLATFORMS) { const o = el("option", "", n); o.value = n; sel.appendChild(o); }
+    $("io-take").addEventListener("click", ioTakeover);
+    $("io-export").addEventListener("click", ioExport);
+    $("io-go").addEventListener("click", ioGo);
+    $("io-cancel").addEventListener("click", ioReset);
+    $("io-file").addEventListener("change", (e) => {
+      const files = [...e.target.files];
+      e.target.value = "";   // dieselbe Datei später erneut wählbar
+      if (!files.length) return;
+      ioReset();
+      io.queue = files;
+      ioNextFile();
+    });
+    for (const id of ["io-dateorder", "io-platform", "io-positive"]) $(id).addEventListener("input", ioPreview);
+    $("io-keyword").addEventListener("input", ioPreview);
+    $("io").addEventListener("toggle", () => { $("io-takeover").hidden = toolsEntries().length === 0; });
+  }
+  const showTakeover = () => { $("io-takeover").hidden = toolsEntries().length === 0; };
+
   /* ---------- Laden und Abgleich ---------- */
   async function load() {
     const p = await store.loadProfile();
@@ -515,7 +670,7 @@
     const g = await client.getSession();
     if (!g.session) return go(g.expired ? "anmelden.html#abgelaufen" : "anmelden.html");
     $("who").textContent = g.session.email;
-    wireTabs(); wireControls(); wireForm();
+    wireTabs(); wireControls(); wireForm(); wireIo(); showTakeover();
     if (g.offline) msg($("msg"), "Keine Verbindung zum Server. Prüfe dein Internet und versuche es noch einmal.", "error");
     if (!(await load())) {
       const loading = $("loading");

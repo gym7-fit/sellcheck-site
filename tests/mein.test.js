@@ -177,7 +177,7 @@ test("mein.js: Abgleich beim Zurückkehren in den Tab höchstens alle 60 Sekunde
   assert.match(js, /visibilitychange/);
   assert.match(js, /r\.expired\) \{ go\("anmelden\.html#abgelaufen"\)/);
   assert.match(js, /deletePhotos/, "altes Foto wird gelöscht");
-  assert.ok(js.indexOf("store.save([row])") < js.indexOf("store.deletePhotos(old)"), "altes Foto erst nach erfolgreichem Speichern löschen");
+  assert.ok(js.indexOf("store.save([row])") < js.indexOf("await cleanupPhotos(row, old)"), "altes Foto erst nach erfolgreichem Speichern löschen");
   assert.match(js, /revokeObjectURL/);
 });
 
@@ -216,4 +216,147 @@ test("mein.html: kein Schlusspunkt in Überschriften, Texte der Meldegrenze wie 
   assert.ok(!/<h[1-6][^>]*>[^<]*\.<\/h[1-6]>/.test(h));
   assert.match(h, /Ab 30 Verkäufen oder 2\.000 € Einnahmen im Jahr meldet eine Plattform deine Verkäufe an das Bundeszentralamt für Steuern\./);
   assert.ok(!/Alles bleibt auf deinem iPhone/.test(h + read("mein.js")), "gilt im Browser nicht");
+});
+
+/* ---------- Auftrag 04: Fotos ersetzen mit Nachlesen, Übernahme, Datei-Import, Export ---------- */
+const { after } = require("node:test");
+const A = require("../site/auth-lib.js");
+const N = require("../site/konto-net.js");
+const fake = require("./support/fake-supabase.js");
+const T = require("../site/tax-lib.js");
+const servers = [];
+after(() => Promise.all(servers.map((x) => x.close())));
+const memStorage = () => { const m = new Map(); return { getItem: (k) => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, String(v)), removeItem: (k) => m.delete(k) }; };
+const jpeg = (n, fill) => { const b = new Uint8Array(n).fill(fill); b[0] = 0xff; b[1] = 0xd8; b[2] = 0xff; return b; };
+const T0 = Date.UTC(2026, 9, 31, 12, 0, 0);
+async function setup() {
+  let t = T0;
+  const clock = { now: () => t, advance: (ms) => (t += ms) };
+  const srv = await fake.start(clock);
+  servers.push(srv);
+  const client = A.createClient({ url: srv.url, anonKey: srv.key, storage: memStorage(), now: clock.now });
+  await client.signUp("a@beispiel.de", "Fuchs-Mond-Wiese#7", { firstName: "A", sellerMode: "business" });
+  await fetch(srv.url + "/mock/confirm?email=a@beispiel.de");
+  await client.signIn("a@beispiel.de", "Fuchs-Mond-Wiese#7");
+  const store = N.createStore({ url: srv.url, anonKey: srv.key, client });
+  const remote = (op, r, later = 0) => fetch(srv.url + "/mock/remote", { method: "POST", body: JSON.stringify({ email: "a@beispiel.de", op, row: r, later }) });
+  const state = () => fetch(srv.url + "/mock/state?email=a@beispiel.de").then((x) => x.json());
+  return { srv, clock, store, remote, state };
+}
+
+test("Fotos ersetzen: Das alte Foto geht nur weg, wenn die Zeile im Konto den neuen Pfad trägt", async () => {
+  const { store, remote, state, clock } = await setup();
+  const oldUp = await store.uploadPhoto(ID(1), "foto", jpeg(500, 1));
+  await store.save([{ ...row(1), changed_at: new Date(clock.now()).toISOString(), photo_path: oldUp.path }]);
+  // Erster Fall: ruhiges Konto, das neue Foto wird gespeichert, das alte darf weg
+  clock.advance(60000);
+  const up1 = await store.uploadPhoto(ID(1), "foto", jpeg(500, 2));
+  const r1 = { ...row(1), changed_at: new Date(clock.now()).toISOString(), photo_path: up1.path };
+  await store.save([r1]);
+  let server = (await store.loadByIds([ID(1)])).rows[0];
+  let c = K.photoCleanup([{ col: "photo_path", path: oldUp.path }], server, r1);
+  assert.deepEqual(c, { remove: [oldUp.path], keep: [] });
+  await store.deletePhotos(c.remove);
+  assert.deepEqual((await state()).files, [up1.path]);
+  // Zweiter Fall: Ein zweites Gerät ändert später, der Server verwirrft unsere ältere Änderung
+  const up2 = await store.uploadPhoto(ID(1), "foto", jpeg(500, 3));
+  await remote("update", { id: ID(1), name: "Vom Laptop", photo_path: up1.path }, 3600);
+  clock.advance(1000);
+  const r2 = { ...row(1), changed_at: new Date(clock.now()).toISOString(), photo_path: up2.path };
+  await store.save([r2]);
+  server = (await store.loadByIds([ID(1)])).rows[0];
+  assert.equal(server.photo_path, up1.path, "der Server hat unsere ältere Änderung verworfen");
+  c = K.photoCleanup([{ col: "photo_path", path: up1.path }], server, r2);
+  assert.deepEqual(c, { remove: [], keep: [up1.path] }, "das alte Foto bleibt liegen");
+  assert.ok((await state()).files.includes(up1.path));
+  // Foto entfernen: Zeile trägt kein Foto mehr -> altes darf weg; trägt sie noch eins -> bleibt
+  assert.deepEqual(K.photoCleanup([{ col: "photo_path", path: "x" }], { photo_path: null }, { photo_path: null }), { remove: ["x"], keep: [] });
+  assert.deepEqual(K.photoCleanup([{ col: "photo_path", path: "x" }], { photo_path: "x" }, { photo_path: null }), { remove: [], keep: ["x"] });
+  assert.deepEqual(K.photoCleanup([{ col: "photo_path", path: "x" }], null, { photo_path: "y" }), { remove: [], keep: ["x"] }, "ohne Antwort aus dem Konto bleibt es liegen");
+  const js = read("mein.js"), f = js.slice(js.indexOf("async function cleanupPhotos"));
+  assert.ok(f.indexOf("loadByIds") < f.indexOf("deletePhotos"), "erst nachlesen, dann löschen");
+});
+
+const tools = [
+  { id: "t1", name: "Jacke", date: "2026-05-02", platform: "Vinted", buy: 10, sell: 25, cost: 2, status: "sold" },
+  { id: "t2", name: "Jacke", date: "2026-05-02", platform: "Vinted", buy: 10, sell: 25, cost: 2, status: "sold" },
+  { id: "t3", name: "Lampe", date: "2026-06-01", platform: "eBay", buy: 5, sell: 0, cost: 0, status: "stock" },
+];
+test("Übernahme: beim zweiten Mal keine neuen, zwei gleiche Verkäufe bleiben zwei, die Daten der Tools bleiben unverändert", async () => {
+  const { store, state } = await setup();
+  const before = JSON.stringify(tools);
+  const plan1 = K.planTakeover(tools, [], opt);
+  assert.deepEqual([plan1.rows.length, plan1.present], [3, 0], "zwei gleiche Jacken bleiben zwei");
+  let n = 0;
+  const rows = K.planTakeover(tools, [], { now: NOW, newId: () => ID(100 + n++) }).rows;
+  assert.equal((await store.save(rows)).ok, true);
+  const live = (await store.loadAll()).rows;
+  const plan2 = K.planTakeover(tools, live, opt);
+  assert.deepEqual([plan2.rows.length, plan2.present], [0, 3], "beim zweiten Mal liegt nichts doppelt");
+  assert.equal(JSON.stringify(tools), before, "Daten der Tools unverändert");
+  assert.equal((await state()).articles, 3);
+  const more = K.planTakeover(tools.concat([{ ...tools[0], id: "t4" }]), live, opt);
+  assert.equal(more.rows.length, 1, "ein dritter gleicher Verkauf ist neu");
+});
+
+test("Datei-Import: dieselbe Anzahl Einträge wie in den Tools, zweiter Import derselben Datei legt nichts an", () => {
+  const platforms = [...T.REPORTED_PLATFORMS, "Flohmarkt / bar", "Sonstige"];
+  const expected = { ebay: 2, etsy: 3, amazon: 2, paypal: 2, bank: 2 };
+  for (const [key, sample] of Object.entries(P.SAMPLES)) {
+    const a = P.analyze(sample.text, { maxRows: K.MAX_IMPORT_ROWS });
+    assert.equal(a.ok, true, key);
+    const o = { platform: sample.platform, keyword: sample.keyword, platforms };
+    const e = P.entriesFrom(a, o);
+    // gleiche Zeilen wie die Tools: dort läuft dieselbe buildEntries mit denselben Angaben
+    const viaTools = P.buildEntries(a.rows, a.map, { dateOrder: a.dateOrder, platform: sample.platform, positiveOnly: !a.own, keywords: (sample.keyword || "").split(/[|,]/), own: a.own, typeChecked: a.typeChecked, known: P.indexExisting([]), platforms });
+    assert.equal(e.entries.length, viaTools.entries.length, key);
+    assert.equal(e.entries.length, expected[key], key);
+    const plan1 = K.planTakeover(e.entries, [], opt);
+    assert.equal(plan1.rows.length, expected[key], key);
+    const plan2 = K.planTakeover(e.entries, plan1.rows, opt);
+    assert.deepEqual([plan2.rows.length, plan2.present], [0, expected[key]], key + ": zweiter Import");
+  }
+});
+
+test("Datei-Import: mehr als 5000 Zeilen werden abgelehnt, genau 5000 gehen", () => {
+  const body = (n) => "Datum;Artikel;Betrag\n" + Array.from({ length: n }, (_, i) => `01.05.2026;Artikel ${i};10,00`).join("\n");
+  const big = P.analyze(body(5001), { maxRows: K.MAX_IMPORT_ROWS });
+  assert.deepEqual([big.ok, big.tooMany, big.count], [false, true, 5001]);
+  assert.match(big.message, /nichts gespeichert/i);
+  const ok = P.analyze(body(5000), { maxRows: K.MAX_IMPORT_ROWS });
+  assert.equal(ok.ok, true);
+  assert.equal(P.entriesFrom(ok, { platform: "Vinted", platforms: ["Vinted"] }).entries.length, 5000);
+  assert.equal(K.MAX_IMPORT_ROWS, 5000);
+});
+
+test("Datei-Import: leere und kaputte Dateien bekommen die Meldungen der Tools", () => {
+  assert.equal(P.analyze("  ", {}).message, "Die Datei ist leer.");
+  assert.match(P.analyze("nur eine Zeile", {}).message, /keine Tabelle/);
+});
+
+test("Export: Zahlen mit Komma, Formel-Schutz, Datum, BOM, Spalten wie die App, Dateiname", () => {
+  const rows = [
+    row(1, { name: "=SUMME(1)", sell_cents: 150000, buy_cents: 12345, cost_cents: 5, sale_date: "2026-05-01" }),
+    row(2, { name: '+49 "Handy"', is_sold: false, sell_cents: 0, buy_cents: 700, sale_date: null, buy_date: "2026-04-02" }),
+    row(3, { name: "gelöscht", deleted_at: "2026-06-01T00:00:00Z" }),
+  ];
+  const csv = K.exportCsv(rows, { seller_mode: "private" });
+  assert.equal(csv.charCodeAt(0), 0xfeff, "BOM für Excel und Numbers");
+  const lines = csv.slice(1).trimEnd().split("\r\n");
+  assert.equal(lines[0], '"Datum";"Plattform";"Artikel";"Status";"Einkaufsdatum";"Einkaufspreis";"Verkaufspreis";"Nebenkosten";"Gewinn"');
+  assert.equal(lines.length, 3, "gelöschte Artikel fehlen");
+  assert.ok(lines.some((l) => l === '"02.04.2026";"Vinted";"\'+49 ""Handy""";"im Bestand";"02.04.2026";"7,00";"0,00";"0,00";"0,00"'), lines.join("\n"));
+  assert.ok(lines.some((l) => l === '"01.05.2026";"Vinted";"\'=SUMME(1)";"verkauft";"";"123,45";"1500,00";"0,05";"1376,50"'), lines.join("\n"));
+  assert.equal(K.exportName(new Date(2026, 9, 31, 12)), "sellcheck-artikel-2026-10-31.csv");
+});
+
+test("mein.html und mein.js: Bereich zum Importieren und Exportieren, nur im Browser gelesen, kein neuer Host", () => {
+  const h = read("mein.html"), js = read("mein.js");
+  for (const id of ["io-take", "io-file", "io-go", "io-cancel", "io-export", "io-dateorder", "io-platform", "io-keyword"]) assert.ok(h.includes('id="' + id + '"'), id);
+  assert.match(h, /type="file"[^>]*multiple/);
+  assert.ok(!/<form[^>]*action=/.test(h));
+  assert.ok(!/localStorage\.(setItem|removeItem)\(\s*(TOOLS_KEYS|"sellcheck\.sales)/.test(js), "Daten der Tools werden nie geschrieben");
+  assert.ok(!/https?:\/\//.test(js.replace(/https:\/\/xjogkqttzfsgjeqhkndf/g, "")), "kein Host im Skript");
+  assert.ok(!/innerHTML|outerHTML|insertAdjacentHTML|document\.write|eval\(/.test(js.split("\n").filter((l) => !l.trim().startsWith("//")).join("\n")));
+  assert.match(h, /<meta http-equiv="Content-Security-Policy" content="[^"]*connect-src 'self' https:\/\/xjogkqttzfsgjeqhkndf\.supabase\.co;/);
 });

@@ -214,6 +214,28 @@
     return { width: Math.max(1, Math.round(w * k)), height: Math.max(1, Math.round(h * k)) };
   }
 
+  /** Nach dem Speichern mit neuem oder entferntem Foto: Das alte darf nur weg, wenn die Zeile im Konto jetzt den neuen Pfad trägt (sonst hat ein anderes Gerät später geändert). */
+  function photoCleanup(old, server, row) {
+    const out = { remove: [], keep: [] };
+    for (const o of old) (server && server[o.col] === (row[o.col] || null) ? out.remove : out.keep).push(o.path);
+    return out;
+  }
+
+  /** Export aller Artikel als CSV, Spalten und Schutz vor Formeln wie CSVExport.journal der App (Semikolon, Komma, BOM). */
+  function exportCsv(rows, profile) {
+    const list = rows.filter((r) => !r.deleted_at).slice().sort((a, b) => (sortKey(a) < sortKey(b) ? -1 : sortKey(a) > sortKey(b) ? 1 : a.id < b.id ? -1 : 1));
+    const t = T.cellT, n = T.cellN;
+    const head = ["Datum", "Plattform", "Artikel", "Status", "Einkaufsdatum", "Einkaufspreis", "Verkaufspreis", "Nebenkosten", "Gewinn"];
+    const body = list.map((r) => {
+      const sold = r.is_sold !== false;
+      return [t(T.deDate(sold ? r.sale_date : r.buy_date)), t(r.platform), t(r.name), t(sold ? "verkauft" : "im Bestand"), t(T.deDate(r.buy_date)),
+        n(r.buy_cents || 0), n(sold ? r.sell_cents || 0 : 0), n(r.cost_cents || 0), n(sold ? rowProfit(r, profile) : 0)];
+    });
+    return T.toCsv(head, body);
+  }
+  const exportName = (now) => { const d = now || new Date(); return "sellcheck-artikel-" + new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10) + ".csv"; };
+  const MAX_IMPORT_ROWS = 5000;
+
   const NUM_ERROR = "Das ist keine gültige Zahl. Beispiel: 12,50";
   /**
    * Formular zu Konto-Zeile (wie ArticleFormView.save). f: { sold, name, platform, buy, sell, cost, saleDate, hasBuyDate, buyDate, notes } mit Texten wie getippt.
@@ -241,5 +263,5 @@
     return { ok: true, row };
   }
 
-  return { TABS, tabFromHash, PLATFORMS, STALE_DAYS, euro, sales, stockDays, ageText, stockStats, rowProfit, sortRows, filterRows, yearsOf, LEVEL_LABEL, LEVEL_HINT, unreportedText, ratioPct, fitSize, formToRow, NUM_ERROR, rowToEntry, entryToRow, planTakeover, mergeChanges, nextCursor, since, vatCents, vatSettings, yearStats, checksum, storagePath, dupKey, UUID };
+  return { TABS, tabFromHash, PLATFORMS, STALE_DAYS, euro, sales, stockDays, ageText, stockStats, rowProfit, sortRows, filterRows, yearsOf, LEVEL_LABEL, LEVEL_HINT, unreportedText, ratioPct, fitSize, formToRow, photoCleanup, exportCsv, exportName, MAX_IMPORT_ROWS, NUM_ERROR, rowToEntry, entryToRow, planTakeover, mergeChanges, nextCursor, since, vatCents, vatSettings, yearStats, checksum, storagePath, dupKey, UUID };
 });
