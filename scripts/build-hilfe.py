@@ -235,7 +235,7 @@ DATA = [
         ],
         "good": [
             "Der Verlauf zeigt Auszahlungen, nicht jede einzelne Verkaufsbuchung. Guthaben, das du direkt für Käufe auf Vinted ausgibst, taucht dort nicht als Auszahlung auf. Die Summe der Auszahlungen kann also unter deinen Verkäufen liegen.",
-            "DAC7: Vinted meldet Verkäufer ab 30 Verkäufen oder mehr als 2.000 € je Kalenderjahr an die Steuerbehörden. Auf vinted.de/dac7 kannst du deinen „DAC7-Status“ prüfen. Was dort genau angezeigt wird, haben wir nicht gesehen, dafür braucht es ein Konto.",
+            "DAC7: Vinted meldet Verkäufer ab 30 Verkäufen oder 2.000 € Einnahmen je Kalenderjahr an die Steuerbehörden. Auf vinted.de/dac7 kannst du deinen „DAC7-Status“ prüfen. Was dort genau angezeigt wird, haben wir nicht gesehen, dafür braucht es ein Konto.",
             "Die Datenkopie ist ein ZIP-Archiv mit HTML-Dateien, Fotos und PDFs. Das ist keine CSV-Tabelle, SellCheck kann sie nicht direkt einlesen. Ob deine Verkäufe mit Preisen darin stehen, haben wir nicht geprüft.",
             "In der App können die Bezeichnungen leicht anders heißen. Englisch: „Privacy settings“, „Manage account data“, „Request data“, „Wallet“, „History“.",
         ],

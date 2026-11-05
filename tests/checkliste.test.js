@@ -113,3 +113,10 @@ test("Datenschutz: beschreibt Mein SellCheck im Browser, verneint keine Konten m
   for (const w of ["Anmelden und Registrieren", "Laden und Speichern", "verkleinert", "Übernahme und Datei-Import", "Export", "Konto löschen", "Gelöschte Artikel", "90 Tage"]) assert.ok(t.includes(w), w + " fehlt");
   assert.ok(!/[—–]/.test(t), "Gedankenstrich");
 });
+
+test("Meldegrenze: gleiches Zahlenformat auf Bildschirmen mit Cent", () => {
+  for (const f of ["mein.html", "tools.html", "tools.js", "report.js"]) {
+    assert.ok(!text(path.join(SITE, f)).includes("2.000 €"), f + ": Meldegrenze ohne Cent");
+  }
+  assert.ok(!text(path.join(SITE, "hilfe", "vinted.html")).includes("mehr als 2.000 €"), "Hilfeseite Vinted: 2.000,00 € ist schon Rot, nicht erst „mehr als“");
+});
