@@ -214,7 +214,7 @@ test("mein.html: kein Inline-Skript, kein Inline-Stil, genau ein h1, jedes Feld 
 test("mein.html: kein Schlusspunkt in Überschriften, Texte der Meldegrenze wie in der App", () => {
   const h = read("mein.html");
   assert.ok(!/<h[1-6][^>]*>[^<]*\.<\/h[1-6]>/.test(h));
-  assert.match(h, /Ab 30 Verkäufen oder 2\.000 € Einnahmen im Jahr meldet eine Plattform deine Verkäufe an das Bundeszentralamt für Steuern\./);
+  assert.match(h, /Ab 30 Verkäufen oder 2\.000,00 € Einnahmen im Jahr meldet eine Plattform deine Verkäufe an das Bundeszentralamt für Steuern\./);
   assert.ok(!/Alles bleibt auf deinem iPhone/.test(h + read("mein.js")), "gilt im Browser nicht");
 });
 

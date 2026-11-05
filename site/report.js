@@ -215,7 +215,7 @@
       "Gegenstände des täglichen Gebrauchs (z. B. Kleidung) sind von der Besteuerung ausgenommen (§ 23 Abs. 1 Satz 1 Nr. 2 Satz 2 EStG).",
       "Verkäufe anderer Gegenstände sind nur steuerbar, wenn zwischen Anschaffung und Verkauf höchstens ein Jahr liegt.",
       "Wer regelmäßig zum Weiterverkauf einkauft, kann gewerblich handeln. Dann gelten andere Regeln (Anlage EÜR). Nutze dafür den Modus „gewerblich“.",
-      "Die Daten der Plattformen (Meldung ab 30 Verkäufen oder 2.000 € pro Plattform) ersetzen diese Prüfung nicht.",
+      "Die Daten der Plattformen (Meldung ab 30 Verkäufen oder 2.000,00 € pro Plattform) ersetzen diese Prüfung nicht.",
     ].forEach((t) => ul.append(h("li", t)));
     frag.append(ul);
     frag.append(h("p", "Erstellt mit SellCheck, einem unabhängigen Projekt, das mit keiner Plattform und keiner Behörde verbunden ist. Keine Steuer- oder Rechtsberatung. Alle Angaben ohne Gewähr.", "footer-note"));

@@ -468,7 +468,7 @@ const SIGNALS = [
   "Ich biete viele gleiche oder neue Artikel an (Neuware, mehrere Stück desselben Produkts).",
   "Ich habe einen festen Ablauf: Einkauf, Lager, Fotos, Versand.",
   "Ich möchte mit dem Verkaufen Geld verdienen, nicht nur Platz schaffen.",
-  "Ich habe 30 oder mehr Verkäufe oder mindestens 2.000 € Einnahmen pro Jahr auf einer Plattform.",
+  "Ich habe 30 oder mehr Verkäufe oder mindestens 2.000,00 € Einnahmen pro Jahr auf einer Plattform.",
   "Ich verkaufe auf mehreren Plattformen parallel mit hohem Aufwand.",
 ];
 
